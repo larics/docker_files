@@ -26,10 +26,6 @@ RUN apt-get update &&  apt-get install -q -y \
     tmux \ 
     wget 
 
-# Add sources and keys for ROS installation 
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-RUN curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | apt-key add -
-
 # Add sources and keys for Gazebo installation 
 RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
 RUN wget https://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
@@ -41,18 +37,22 @@ RUN apt-get install -q -y \
     gazebo11 \
     libgazebo11-dev 
 
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
+RUN apt-get update
+
 # Install ROS 
 RUN apt-get install -y \
-    ros-${ROS_DISTRO}-ros-core \
-    ros-${ROS_DISTRO}-gazebo11 \
-    ros-${ROS_DISTRO}-robot-state-publisher \
-    ros-${ROS_DISTRO}-joint-state-publisher \
-    ros-${ROS_DISTRO}-robot-pose-publisher \
-    ros-${ROS_DISTRO}-xacro \
-    ros-${ROS_DISTRO}-image-transport-plugins \
-    ros-${ROS_DISTRO}-teleop-twist-joy \
-    ros-${ROS_DISTRO}-map-server \
-    && rm -rf /var/lib/apt/lists/*
+    ros-${ROS_DISTRO}-ros-base 
+#    ros-${ROS_DISTRO}-gazebo11 \
+#    ros-${ROS_DISTRO}-robot-state-publisher \
+#    ros-${ROS_DISTRO}-joint-state-publisher \
+#    ros-${ROS_DISTRO}-robot-pose-publisher \
+#    ros-${ROS_DISTRO}-xacro \
+#    ros-${ROS_DISTRO}-image-transport-plugins \
+#    ros-${ROS_DISTRO}-teleop-twist-joy \
+#    ros-${ROS_DISTRO}-map-server \
 
 # Install ROS python packages
 RUN apt-get install -y \
