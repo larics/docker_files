@@ -1,5 +1,4 @@
-FROM nvidia/opengl:1.0-glvnd-runtime
-
+FROM ubuntu:bionic
 LABEL maintainer filip.zoric@fer.hr
 
 # Setup environment
@@ -18,8 +17,8 @@ RUN apt-get update &&  apt-get install -q -y \
     cmake \
     curl \
     imagemagick \
-    libboost-all-dev \
     lsb-release \
+    libboost-dev \
     sudo \
     nano \
     net-tools \
@@ -44,15 +43,13 @@ RUN apt-get update
 
 # Install ROS 
 RUN apt-get install -y \
-    ros-${ROS_DISTRO}-ros-base 
-#    ros-${ROS_DISTRO}-gazebo11 \
-#    ros-${ROS_DISTRO}-robot-state-publisher \
-#    ros-${ROS_DISTRO}-joint-state-publisher \
-#    ros-${ROS_DISTRO}-robot-pose-publisher \
-#    ros-${ROS_DISTRO}-xacro \
-#    ros-${ROS_DISTRO}-image-transport-plugins \
-#    ros-${ROS_DISTRO}-teleop-twist-joy \
-#    ros-${ROS_DISTRO}-map-server \
+    ros-${ROS_DISTRO}-ros-core \
+    ros-${ROS_DISTRO}-robot-state-publisher \
+    ros-${ROS_DISTRO}-joint-state-publisher \
+    ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-image-transport-plugins \
+    ros-${ROS_DISTRO}-teleop-twist-joy \
+    ros-${ROS_DISTRO}-map-server 
 
 # Install ROS python packages
 RUN apt-get install -y \
@@ -69,12 +66,12 @@ WORKDIR /home/developer
 # Init ROS workspace 
 RUN mkdir -p catkin_ws/src \
     && bash -c ". /opt/ros/melodic/setup.bash; catkin_init_workspace ~/catkin_ws/src" \
-    && bash -c ". /opt/ros/melodic/setup.bash; cd ~/catkin-ws; catkin_make -DCMAKE_TYPE=Release"
+    && bash -c ". /opt/ros/melodic/setup.bash; cd ~/catkin_ws; catkin_make -DCMAKE_TYPE=Release"
 
 # Setup bashrc environment 
 RUN echo '. /usr/share/gazebo/setup.sh' >> /home/developer/.bashrc \
-    && echo ". /home/developer/catkin_ws/devel/setup.bash" >> /home/developer/.bashrc \
-    && echo "export ROS_MASTER_URI=http://$(hostname --ip-address):11311" >> /home/ddeveloper/.bashrc \ 
-    && echo "export ROS_HOSTNAME="$(hostname --ip-address)" >> /home/developer/.bashrc
+    && echo '. /home/developer/catkin_ws/devel/setup.bash' >> /home/developer/.bashrc \
+    && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /home/developer/.bashrc \ 
+    && echo 'export ROS_HOSTNAME="$(hostname --ip-address)' >> /home/developer/.bashrc
 
 CMD ["tmux"]
