@@ -92,11 +92,17 @@ RUN mkdir -p catkin_ws/src \
     && bash -c ". /opt/ros/melodic/setup.bash; catkin_init_workspace ~/catkin_ws/src" \
     && bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build" 
 
+# Clone ethz-repos for uav simulation
 WORKDIR /home/developer/catkin_ws/src 
-RUN git clone -b master --single-branch https://github.com/ethz-asl/rotors_simulator.git 
-RUN git clone -b master --single-branch https://github.com/ethz-asl/mav_comm.git 
+RUN git clone -b master --single-branch https://github.com/ethz-asl/rotors_simulator.git \
+    && cd rotors_simulator \
+    && git checkout fe64a7157160781061c11b54678bb5845afaa6d7 
 
-# TODO: Uncomment this part --> contains catkin_build but after there's succesful Eigen3 installation
+RUN git clone -b master --single-branch https://github.com/ethz-asl/mav_comm.git \
+    && cd mav_comm \
+    && git checkout 46e4d40a13a37e768e438600ee58c824dffa570d 
+
+# Build catkin workspace
 WORKDIR /home/developer/catkin_ws
 RUN bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build" 
 
