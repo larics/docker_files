@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM nvidia/opengl:1.0-glvnd-runtime-ubuntu18.04
 LABEL maintainer filip.zoric@fer.hr
 
 # Setup environment
@@ -72,6 +72,6 @@ RUN mkdir -p catkin_ws/src \
 RUN echo '. /usr/share/gazebo/setup.sh' >> /home/developer/.bashrc \
     && echo '. /home/developer/catkin_ws/devel/setup.bash' >> /home/developer/.bashrc \
     && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /home/developer/.bashrc \ 
-    && echo 'export ROS_HOSTNAME="$(hostname --ip-address)' >> /home/developer/.bashrc
+    && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc
 
 CMD ["tmux"]
