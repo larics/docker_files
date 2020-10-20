@@ -102,6 +102,11 @@ RUN git clone -b master --single-branch https://github.com/ethz-asl/mav_comm.git
     && cd mav_comm \
     && git checkout 46e4d40a13a37e768e438600ee58c824dffa570d 
 
+RUN git clone https://fzoric:ML2yPHJyMzwb7vfdSRFn@bitbucket.org/fzoric/uav_msgs.git
+
+RUN git clone https://fzoric:ML2yPHJyMzwb7vfdSRFn@bitbucket.org/fzoric/uav_ros_control.git
+
+
 # Build catkin workspace
 WORKDIR /home/developer/catkin_ws
 RUN bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build" 
@@ -111,5 +116,13 @@ RUN echo '. /usr/share/gazebo/setup.sh' >> /home/developer/.bashrc \
     && echo '. /home/developer/catkin_ws/devel/setup.bash' >> /home/developer/.bashrc \
     && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /home/developer/.bashrc \ 
     && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc 
+
+# Pycharm installation 
+WORKDIR /home/developer
+ENV version 2020.2.3
+RUN wget -O /home/developer/pycharm.tar.gz "https://download.jetbrains.com/python/pycharm-community-$version.tar.gz"
+RUN mkdir -p /home/developer/pycharm
+RUN tar -xvf /home/developer/pycharm.tar.gz && rm -rf /home/developer/pycharm.tar.gz
+RUN echo 'alias pycharm=/home/developer/pycharm-community-$version/bin/pycharm.sh' >> /home/developer/.bashrc
 
 CMD ["tmux"]
