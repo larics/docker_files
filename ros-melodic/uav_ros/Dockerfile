@@ -67,14 +67,19 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-mavros-msgs \
     ros-${ROS_DISTRO}-mavlink \
     ros-${ROS_DISTRO}-joy \
-    ros-${ROS_DISTRO}-rqt-gui
+    ros-${ROS_DISTRO}-rqt-gui \
+    ros-${ROS_DISTRO}-control-toolbox \
+    ros-${ROS_DISTRO}-position-controllers \
+    ros-${ROS_DISTRO}-dynamic-edt-3d \
+    ros-${ROS_DISTRO}-effort-controllers \
+    ros-${ROS_DISTRO}-hector-gazebo-plugins 
 
 # Install ROS python packages
 RUN apt-get install -y \
     python-rosdep  \
     python-rosinstall \
     python-vcstool \
-    python-rosinstall-generator 
+    python-rosinstall-generator  
 
 # Install catkin tools 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -83,7 +88,14 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
     python-catkin-tools \
     protobuf-compiler \
-    libgoogle-glog-dev 
+    libgoogle-glog-dev \
+    libopencv-dev \
+    python-pip
+
+# Install neccessary pip packages
+RUN pip install \
+    pymavlink \
+    mavproxy
 
 WORKDIR /opt/ros/${ROS_DISTRO}/lib/mavros/
 RUN bash -c "./install_geographiclib_datasets.sh"     
@@ -117,37 +129,39 @@ RUN bash -c "./install-prereqs-ubuntu.sh -y"; exit 0
 RUN echo 'export PATH=$PATH:$HOME/ardupilot/Tools/autotest' >> ~/.bashrc 
 RUN echo 'export PATH=/usr/lib/ccache:$PATH' >> ~/.bashrc 
 
-WORKDIR /home/developer 
-# Init ROS workspace 
+# Init ROS workspace
+WORKDIR /home/developer  
 RUN mkdir -p catkin_ws/src \
     && bash -c ". /opt/ros/melodic/setup.bash; catkin_init_workspace ~/catkin_ws/src" \
     && bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build" 
 
-# Clone ethz-repos for uav simulation
+# Clone ethz-repos for uav simulation - rotors simulator
 WORKDIR /home/developer/catkin_ws/src 
-
-# Rotors simulator
-RUN git clone -b master --single-branch https://github.com/ethz-asl/rotors_simulator.git \
+RUN git clone https://github.com/larics/rotors_simulator.git \ 
     && cd rotors_simulator \
-    && git checkout fe64a7157160781061c11b54678bb5845afaa6d7 
+    && git checkout larics_melodic_master 
 
-# Mav comm 
-RUN git clone -b master --single-branch https://github.com/ethz-asl/mav_comm.git \
+# Mav comm
+WORKDIR /home/developer/catkin_ws/src 
+RUN git clone https://github.com/larics/mav_comm.git \
     && cd mav_comm \
-    && git checkout 46e4d40a13a37e768e438600ee58c824dffa570d 
+    && git checkout larics_master 
 
-#Ardupilot Gazebo 
-RUN git clone https://0a028a24f2f6da7f08027dcc1f49634fe1a4f922:x-outh-basic@github.com/larics/ardupilot_gazebo \
+# Ardupilot gazebo
+WORKDIR /home/developer/catkin_ws/src
+RUN git clone https://github.com/larics/ardupilot_gazebo.git \
     && cd ardupilot_gazebo \
     && git checkout larics-master 
 
-RUN git clone https://fzoric:ML2yPHJyMzwb7vfdSRFn@bitbucket.org/fzoric/uav_msgs.git
-
-RUN git clone https://fzoric:ML2yPHJyMzwb7vfdSRFn@bitbucket.org/fzoric/uav_ros_control.git
+# ROS control 
+WORKDIR /home/developer/catkin_ws/src 
+RUN git clone https://github.com/larics/uav_ros_control.git \
+    && cd uav_ros_control \
+    && git checkout master-v3 
 
 # Build catkin workspace
 WORKDIR /home/developer/catkin_ws
-RUN bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build" 
+RUN bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build"  
 
 # Setup bashrc environment 
 RUN echo '. /usr/share/gazebo/setup.sh' >> /home/developer/.bashrc \
@@ -156,15 +170,16 @@ RUN echo '. /usr/share/gazebo/setup.sh' >> /home/developer/.bashrc \
     && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc \ 
     && echo 'source ~/catkin_ws/src/ardupilot_gazebo/scripts/shell_scripts.sh' >> ~/.bashrc \ 
     && echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc \
-    && echo 'export GAZEBO_MODEL_PATH=~/catkin_ws/ardupilot_gazebo/models:$GAZEBO_MODEL_PATH' >> ~/.bashrc \
-    && echo 'export GAZEBO_PLUGIN_PATH=~/catkin_ws/build/ardupilot_gazebo:${GAZEBO_PLUGIN_PATH}' >> ~/.bashrc
+    && echo 'export GAZEBO_MODEL_PATH=/home/developer/catkin_ws/ardupilot_gazebo/models:$GAZEBO_MODEL_PATH' >> ~/.bashrc \
+    && echo 'export GAZEBO_PLUGIN_PATH=/home/developer/catkin_ws/build/ardupilot_gazebo:${GAZEBO_PLUGIN_PATH}' >> ~/.bashrc \
+    && echo 'export PATH=$PATH:$HOME/.local/bin' >> ~/.bashrc
 
 # Pycharm installation 
-WORKDIR /home/developer
-ENV version 2020.2.3
-RUN wget -O /home/developer/pycharm.tar.gz "https://download.jetbrains.com/python/pycharm-community-$version.tar.gz"
-RUN mkdir -p /home/developer/pycharm
-RUN tar -xvf /home/developer/pycharm.tar.gz && rm -rf /home/developer/pycharm.tar.gz
-RUN echo 'alias pycharm=/home/developer/pycharm-community-$version/bin/pycharm.sh' >> /home/developer/.bashrc
+#WORKDIR /home/developer
+#ENV version 2020.2.3
+#RUN wget -O /home/developer/pycharm.tar.gz "https://download.jetbrains.com/python/pycharm-community-$version.tar.gz"
+#RUN mkdir -p /home/developer/pycharm
+#RUN tar -xvf /home/developer/pycharm.tar.gz && rm -rf /home/developer/pycharm.tar.gz
+#RUN echo 'alias pycharm=/home/developer/pycharm-community-$version/bin/pycharm.sh' >> /home/developer/.bashrc
 
 CMD ["tmux"]
