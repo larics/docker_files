@@ -18,9 +18,15 @@ RUN apt-get update &&  apt-get install -q -y \
     cmake \
     curl \
     git \
+    gitk \
+    geographiclib-doc \
+    geographiclib-tools \
     imagemagick \
     lsb-release \
     libboost-dev \
+    libgeographic-dev \
+    libgeographic17 \
+    node-geographiclib \
     sudo \
     nano \
     net-tools \
@@ -56,7 +62,12 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-octomap-msgs \ 
     ros-${ROS_DISTRO}-gazebo-plugins \
     ros-${ROS_DISTRO}-gazebo-ros \
-    ros-${ROS_DISTRO}-gazebo-dev 
+    ros-${ROS_DISTRO}-gazebo-dev \
+    ros-${ROS_DISTRO}-mavros \
+    ros-${ROS_DISTRO}-mavros-msgs \
+    ros-${ROS_DISTRO}-mavlink \
+    ros-${ROS_DISTRO}-joy \
+    ros-${ROS_DISTRO}-rqt-gui
 
 # Install ROS python packages
 RUN apt-get install -y \
@@ -69,24 +80,44 @@ RUN apt-get install -y \
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends python-catkin-tools
+RUN apt-get install -y --no-install-recommends \
+    python-catkin-tools \
+    protobuf-compiler \
+    libgoogle-glog-dev 
 
-# Install glog 
-RUN git clone https://github.com/google/glog.git
-RUN cd glog \ 
-    && cmake -H. -Bbuild -G "Unix Makefiles" \
-    && cmake --build build \
-    && cmake --build build --target install 
-
+WORKDIR /opt/ros/${ROS_DISTRO}/lib/mavros/
+RUN bash -c "./install_geographiclib_datasets.sh"     
+ 
+RUN apt-get install  -y ros-${ROS_DISTRO}-rqt-gui-py
+    
 # Install Eigen3 
 RUN apt-get install -y --no-install-recommends \
     libeigen3-dev
 
 RUN useradd -ms /bin/bash -G sudo developer && echo "developer:developer" | chpasswd 
 
+# Setup sudo config for prereqs ardupilot script
+ADD /sudoers.txt /etc/sudoers
+RUN chmod 400 /etc/sudoers 
+
 USER developer
 WORKDIR /home/developer
 
+# Setup Ardupilot 
+RUN git clone https://github.com/ArduPilot/ardupilot.git 
+WORKDIR /home/developer/ardupilot 
+RUN git submodule update --init --recursive 
+
+ARG DEBIAN_FRONTEND=noninteractive 
+RUN sudo usermod -G users developer 
+ENV SKIP_AT_EXT_ENV=1 SKIP_API_GRAPHIC_ENV=1 SKP_AP_COV_ENV=1 SKIP_AP_GIT_CHECK=1
+
+WORKDIR /home/developer/ardupilot/Tools/environment_install 
+RUN bash -c "./install-prereqs-ubuntu.sh -y"; exit 0
+RUN echo 'export PATH=$PATH:$HOME/ardupilot/Tools/autotest' >> ~/.bashrc 
+RUN echo 'export PATH=/usr/lib/ccache:$PATH' >> ~/.bashrc 
+
+WORKDIR /home/developer 
 # Init ROS workspace 
 RUN mkdir -p catkin_ws/src \
     && bash -c ". /opt/ros/melodic/setup.bash; catkin_init_workspace ~/catkin_ws/src" \
@@ -94,18 +125,25 @@ RUN mkdir -p catkin_ws/src \
 
 # Clone ethz-repos for uav simulation
 WORKDIR /home/developer/catkin_ws/src 
+
+# Rotors simulator
 RUN git clone -b master --single-branch https://github.com/ethz-asl/rotors_simulator.git \
     && cd rotors_simulator \
     && git checkout fe64a7157160781061c11b54678bb5845afaa6d7 
 
+# Mav comm 
 RUN git clone -b master --single-branch https://github.com/ethz-asl/mav_comm.git \
     && cd mav_comm \
     && git checkout 46e4d40a13a37e768e438600ee58c824dffa570d 
 
+#Ardupilot Gazebo 
+RUN git clone https://0a028a24f2f6da7f08027dcc1f49634fe1a4f922:x-outh-basic@github.com/larics/ardupilot_gazebo \
+    && cd ardupilot_gazebo \
+    && git checkout larics-master 
+
 RUN git clone https://fzoric:ML2yPHJyMzwb7vfdSRFn@bitbucket.org/fzoric/uav_msgs.git
 
 RUN git clone https://fzoric:ML2yPHJyMzwb7vfdSRFn@bitbucket.org/fzoric/uav_ros_control.git
-
 
 # Build catkin workspace
 WORKDIR /home/developer/catkin_ws
@@ -115,7 +153,11 @@ RUN bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build"
 RUN echo '. /usr/share/gazebo/setup.sh' >> /home/developer/.bashrc \
     && echo '. /home/developer/catkin_ws/devel/setup.bash' >> /home/developer/.bashrc \
     && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /home/developer/.bashrc \ 
-    && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc 
+    && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc \ 
+    && echo 'source ~/catkin_ws/src/ardupilot_gazebo/scripts/shell_scripts.sh' >> ~/.bashrc \ 
+    && echo 'source /usr/share/gazebo/setup.sh' >> ~/.bashrc \
+    && echo 'export GAZEBO_MODEL_PATH=~/catkin_ws/ardupilot_gazebo/models:$GAZEBO_MODEL_PATH' >> ~/.bashrc \
+    && echo 'export GAZEBO_PLUGIN_PATH=~/catkin_ws/build/ardupilot_gazebo:${GAZEBO_PLUGIN_PATH}' >> ~/.bashrc
 
 # Pycharm installation 
 WORKDIR /home/developer
