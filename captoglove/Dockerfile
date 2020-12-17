@@ -58,45 +58,68 @@ WORKDIR /home/developer
 RUN mkdir -p catkin_ws/src \
     && bash -c ". /opt/ros/kinetic/setup.bash; catkin_init_workspace /home/developer/catkin_ws/src" \
     && bash -c ". /opt/ros/kinetic/setup.bash; cd catkin_ws; catkin_make" \
-    && echo '. /home/developer/catkin_ws/devel/setup.bash' >> /home/developer/.bashrc \
-    && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /home/developer/.bashrc \
-    && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc 
+    && echo '. /home/developer/catkin_ws/devel/setup.bash' >> /root/.bashrc \
+    && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /root/.bashrc \
+    && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /root/.bashrc
 
-
-# Download QT 
-#RUN wget http://download.qt.io/official_releases/qt/${QT_MAJOR_VERSION}/${QT_MINOR_VERSION}/qt-opensource-linux-x64-${QT_MINOR_VERSION}.run 
-#RUN pwd
-#RUN chmod +x ./qt-opensource-linux-x64-${QT_MINOR_VERSION}.run 
-#COPY qt-installer-noninteractive.qs ./
-#RUN ls
-#RUN ./qt-opensource-linux-x64-${QT_MINOR_VERSION}.run -platform minimal --script qt-installer-noninteractive.qs
-
+# Install QT
 # Download QT and install from sources to have good verson 
 RUN wget download.qt.io/official_releases/qt/5.15/5.15.2/single/qt-everywhere-src-5.15.2.tar.xz
 RUN tar -xvf qt-everywhere-src-5.15.2.tar.xz
+
+# Install BlueZ and rest of the packages neccessary for qtconnectivity to work (first 2 are used for protobuf)
+RUN apt-get install -y \
+    autoconf \
+    libtool \ 
+    libbluetooth-dev \
+    bluetooth \
+    blueman \
+    bluez \
+    libusb-dev \
+    bluez-hcidump \
+    bluez-tools 
 
 COPY configuration.sh /home/developer/qt-everywhere-src-5.15.2 
 
 WORKDIR /home/developer/qt-everywhere-src-5.15.2
 RUN ./configuration.sh \
-    && make -j${nproc} \
-    && make install -j${nproc}
+    && make -j6 \
+    && make install -j6
 
-RUN echo 'export PATH=/home/Qt/bin:$PATH' >> /home/developer/.bashc
+RUN echo 'export PATH=/home/Qt/bin:$PATH' >> /root/.bashrc
 
 RUN rm -rf /home/developer/qt-everywhere-src-5.15.2.tar.xz
 RUN rm -rf /home/developer/qt-everywhere-src-5.15.2
 
-WORKDIR /home/developer
-RUN mkdir code 
-WORKDIR /home/developer/code 
+RUN mkdir code
+WORKDIR /home/developer/code
+## Build protobuf
+RUN git clone https://github.com/protocolbuffers/protobuf.git \
+    && cd protobuf \
+    && git checkout 3.11.x \ 
+    && mkdir build \
+    && cd build \
+    && bash -c "cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF ../cmake " \
+    && bash -c "make -j7; make install"
 
 ENV BUILD_DIR_SUFFIX buildGCC_x64
 
-RUN git clone https://0a028a24f2f6da7f08027dcc1f49634fe1a4f922:x-outh-basic@github.com/larics/CaptoGloveAPI.git
-RUN mkdir CaptoGloveAPI-${BUILD_DIR_SUFFIX}
+# Create CaptoGloveAPI
+RUN git clone https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/CaptoGloveAPI.git
+RUN export PATH=/home/Qt/bin:$PATH \
+    && mkdir CaptoGloveAPI-${BUILD_DIR_SUFFIX} \
+    && cd CaptoGloveAPI-${BUILD_DIR_SUFFIX} \
+    && qmake ../CaptoGloveAPI/CaptoGloveAPI.pro \ 
+    && make -j6
 
-# Create catkin workspace 
+# Install Clion for debugging    
+#WORKDIR /home/developer
+#RUN wget "https://download-cf.jetbrains.com/cpp/CLion-2018.3.4.tar.gz"
+#RUN tar -xzf CLion-*.tar.gz
+#RUN apt-get install -y openjdk-8-jre
 
 
-CMD ["bash"]
+WORKDIR /root
+COPY docker_entrypoint.sh ./
+
+ENTRYPOINT sh docker_entrypoint.sh

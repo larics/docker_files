@@ -1,5 +1,4 @@
-  GNU nano 2.5.3                       File: configuration.sh                                                      
-
+#!/bin/bash
 ./configure -prefix /home/Qt \
             -skip qt3d \
             -skip qtactiveqt \
