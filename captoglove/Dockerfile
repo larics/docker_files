@@ -92,7 +92,8 @@ RUN rm -rf /home/developer/qt-everywhere-src-5.15.2.tar.xz
 RUN rm -rf /home/developer/qt-everywhere-src-5.15.2
 
 RUN mkdir code
-WORKDIR /home/developer/code
+WORKDIR /home/developer
+
 ## Build protobuf
 RUN git clone https://github.com/protocolbuffers/protobuf.git \
     && cd protobuf \
@@ -104,8 +105,13 @@ RUN git clone https://github.com/protocolbuffers/protobuf.git \
 
 ENV BUILD_DIR_SUFFIX buildGCC_x64
 
+RUN echo "Test change" 
 # Create CaptoGloveAPI
-RUN git clone https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/CaptoGloveAPI.git
+RUN git clone https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/CaptoGloveAPI.git \
+    && cd CaptoGloveAPI \
+    && git submodule update --init 
+    
+WORKDIR /home/developer
 RUN export PATH=/home/Qt/bin:$PATH \
     && mkdir CaptoGloveAPI-${BUILD_DIR_SUFFIX} \
     && cd CaptoGloveAPI-${BUILD_DIR_SUFFIX} \
