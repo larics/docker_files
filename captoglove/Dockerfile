@@ -36,6 +36,7 @@ RUN apt-get install -q -y --no-install-recommends \
     ros-${ROS_DISTRO}-robot-state-publisher \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-qt-build \
     ros-${ROS_DISTRO}-image-transport-plugins \
     ros-${ROS_DISTRO}-teleop-twist-joy
 
@@ -105,8 +106,7 @@ RUN git clone https://github.com/protocolbuffers/protobuf.git \
 
 ENV BUILD_DIR_SUFFIX buildGCC_x64
 
-RUN echo "Test change" 
-# Create CaptoGloveAPI
+# Build CaptoGloveAPI
 RUN git clone https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/CaptoGloveAPI.git \
     && cd CaptoGloveAPI \
     && git submodule update --init 
@@ -118,14 +118,17 @@ RUN export PATH=/home/Qt/bin:$PATH \
     && qmake ../CaptoGloveAPI/CaptoGloveAPI.pro \ 
     && make -j6
 
+ENV CAPTOGLOVEAPI_SRC_PATH=/home/CaptoGloveAPI
+ENV CAPTOGLOVEAPI_LIBRARY_PATH=/home/CaptoGloveAPI-buildGCC_x64
+
 # Install Clion for debugging    
 #WORKDIR /home/developer
 #RUN wget "https://download-cf.jetbrains.com/cpp/CLion-2018.3.4.tar.gz"
 #RUN tar -xzf CLion-*.tar.gz
 #RUN apt-get install -y openjdk-8-jre
 
-
 WORKDIR /root
+RUN apt-get install -y rfkill
 COPY docker_entrypoint.sh ./
 
 ENTRYPOINT sh docker_entrypoint.sh
