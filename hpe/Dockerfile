@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:1.7.0-cuda11.0-cudnn8-runtime 
+FROM pytorch/pytorch:1.7.0-cuda11.0-cudnn8-devel
 
 LABEL maintainer filip.zoric@fer.hr
 
@@ -34,5 +34,8 @@ RUN git clone https://github.com/Naman-ntc/Pytorch-Human-Pose-Estimation.git
 RUN whereis conda
 RUN conda install -c anaconda scipy configargparse cython
 RUN conda install -c conda-forge progress json_tricks 
+
+# Create input data directory
+RUN mkdir data
 
 CMD ["bash"]
