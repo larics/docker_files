@@ -118,8 +118,8 @@ RUN export PATH=/home/Qt/bin:$PATH \
     && qmake ../CaptoGloveAPI/CaptoGloveAPI.pro \ 
     && make -j6
 
-ENV CAPTOGLOVEAPI_SRC_PATH=/home/CaptoGloveAPI
-ENV CAPTOGLOVEAPI_LIBRARY_PATH=/home/CaptoGloveAPI-buildGCC_x64
+ENV CAPTOGLOVEAPI_SRC_PATH=/home/${USER}/CaptoGloveAPI
+ENV CAPTOGLOVEAPI_LIBRARY_PATH=/home/${USER}/CaptoGloveAPI-buildGCC_x64
 
 # Install Clion for debugging    
 #WORKDIR /home/developer
