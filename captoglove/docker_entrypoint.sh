@@ -9,4 +9,4 @@ rfkill unblock bluetooth
 service bluetooth start 
 
 /bin/bash
-
+cd /home/${USER}
