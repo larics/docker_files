@@ -12,16 +12,16 @@ ARG PW=developer
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \ 
     build-essential \
-    software-properties-common \ 
+    git \
+    nano \
     python \
     python-pip \
-    python3 \ 
+    python3 \
     python3-pip \
-    git \ 
-    nano \
+    software-properties-common \ 
     sudo 
 
-# Add developer user
+# Add developer user / remove neccessity to type password for sudo command
 RUN adduser --disabled-password \
     --gecos '' ${USER}
 RUN adduser ${USER} sudo 
@@ -31,9 +31,19 @@ WORKDIR /home/${USER}
 # Use conda to install neccessary packages 
 RUN git clone https://github.com/Naman-ntc/Pytorch-Human-Pose-Estimation.git
 
-RUN whereis conda
-RUN conda install -c anaconda scipy configargparse cython
-RUN conda install -c conda-forge progress json_tricks 
+# Install packages neccessary for training and testing neural networks
+RUN conda install -c anaconda \
+                     scipy \
+                     configargparse \
+                     cython
+
+RUN conda install -c conda-forge \
+                     progress \
+                     json_tricks \
+                     tensorboardx \
+                     easydict \
+                     opencv \
+                     pycocotools
 
 # Create input data directory
 RUN mkdir data
