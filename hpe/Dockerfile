@@ -12,6 +12,7 @@ ARG PW=developer
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \ 
     build-essential \
+    feh \ 
     git \
     nano \
     python \
@@ -19,7 +20,8 @@ RUN apt-get update && \
     python3 \
     python3-pip \
     software-properties-common \ 
-    sudo 
+    sudo \ 
+    wget 
 
 # Add developer user / remove neccessity to type password for sudo command
 RUN adduser --disabled-password \
@@ -45,7 +47,17 @@ RUN conda install -c conda-forge \
                      opencv \
                      pycocotools
 
+# Clone human pose estimation from microsoft 
+WORKDIR /home/${USER}
+RUN git clone https://github.com/larics/hpe-pytorch.git
+
 # Create input data directory
 RUN mkdir data
+
+# Add pycharm for faster development and testing 
+ENV version 2020.2.3
+RUN wget -O /home/developer/pycharm.tar.gz "https://download.jetbrains.com/python/pycharm-community-$version.tar.gz"
+RUN tar -xvf /home/developer/pycharm.tar.gz && rm -rf /home/developer/pycharm.tar.gz 
+RUN echo 'alias pycharm=/home/developer/pycharm-community-$version/bin/pycharm.sh' >> /home/developer/.bashrc 
 
 CMD ["bash"]
