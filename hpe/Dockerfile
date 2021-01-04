@@ -29,10 +29,6 @@ RUN adduser --disabled-password \
 RUN adduser ${USER} sudo 
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
 
-WORKDIR /home/${USER}
-# Use conda to install neccessary packages 
-RUN git clone https://github.com/Naman-ntc/Pytorch-Human-Pose-Estimation.git
-
 # Install packages neccessary for training and testing neural networks
 RUN conda install -c anaconda \
                      scipy \
@@ -49,7 +45,7 @@ RUN conda install -c conda-forge \
 
 # Clone human pose estimation from microsoft 
 WORKDIR /home/${USER}
-RUN git clone https://github.com/larics/hpe-pytorch.git
+RUN git clone https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/hpe-pytorch.git
 
 # Create input data directory
 RUN mkdir data
