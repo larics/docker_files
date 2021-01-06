@@ -49,7 +49,10 @@ RUN apt-get install -q -y --no-install-recommends \
     ros-${ROS_DISTRO}-dynamixel-sdk \
     ros-${ROS_DISTRO}-dynamixel-workbench-controllers \
     ros-${ROS_DISTRO}-dynamixel-workbench-operators \
-    ros-${ROS_DISTRO}-dynamixel-workbench-toolbox 
+    ros-${ROS_DISTRO}-dynamixel-workbench-toolbox \
+    ros-${ROS_DISTRO}-rqt \
+    ros-${ROS_DISTRO}-rqt-gui \
+    ros-${ROS_DISTRO}-rqt-service-caller 
 
 
 # Install ROS python packages 

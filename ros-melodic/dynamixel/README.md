@@ -42,3 +42,14 @@ When image is built, run as follows:
 ./first_run.sh 
 ```
 
+## Dynamixels 
+
+In order to check if there are dynamixels present, run following command: 
+
+```
+rosrun dynamixel_workbench_controllers find_dynamixel /dev/ttyUSB0
+```
+
+## Different operating modes 
+
+[Here](https://emanual.robotis.com/docs/en/dxl/x/xm430-w350/#operating-mode11) you can find list of all possible operating modes for Dynamixel. 
