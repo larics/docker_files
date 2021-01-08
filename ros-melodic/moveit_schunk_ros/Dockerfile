@@ -68,7 +68,6 @@ RUN apt-get install -y --no-install-recommends \
     python-rosdep \
     clang-format-10
 
-
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
 RUN adduser developer sudo 
@@ -92,8 +91,30 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; wstool init src" \
 RUN catkin config --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release 
 RUN catkin build 
 
-RUN echo 'source /opt/ros/melodic/setup.bash' >> /home/developer/.bashrc
+WORKDIR /home/developer
 
+# Install neccessary ROS package for Schunk simulation 
+RUN apt-get install -y no-install-recommends \
+    ros-melodic-cob-srvs \
+    ros-melodic-cob-control \
+    ros-melodic-costmap-2d \
+    ros-melodic-moveit-msgs \ 
+    ros-melodic-tf-conversions
+        
+
+RUN mkdir -p catkin_ws/src
+WORKDIR /home/developer/catkin_ws/src
+RUN git clone https://github.com/h3ct0r/schunk_lwa4p_gazebo_sim.git
+RUN git clone -b melodic_dev https://github.com/ipa320/cob_control.git 
+WORKDIR /home/developer/catkin_ws
+RUN catkin_make
+
+# Source all ROS packages
+RUN echo 'source /opt/ros/melodic/setup.bash' >> /home/developer/.bashrc
+RUN echo 'source /home/developer/moveit_ws/devel/setup.bash' >> /home/developer/.bashrc
+RUN echo 'source /home/developer/catkin_ws/devel/setup.bash' >> /home/developer/.bashrc
+
+WOKRDIR /home/developer
 CMD ["bash"]
 
 

@@ -104,6 +104,7 @@ RUN git clone https://github.com/protocolbuffers/protobuf.git \
     && bash -c "cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_BUILD_TYPE=Release -Dprotobuf_BUILD_TESTS=OFF ../cmake " \
     && bash -c "make -j7; make install"
 
+ENV PROTOBUF_LIB_PATH /home/developer/protobuf
 ENV BUILD_DIR_SUFFIX buildGCC_x64
 
 # Build CaptoGloveAPI
