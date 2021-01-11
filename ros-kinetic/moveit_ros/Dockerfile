@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -q -y \
     curl \
     git \
     imagemagick \
+    locate \
     lsb-release \
     libboost-dev \
     sudo \
@@ -62,8 +63,11 @@ RUN apt-get install -y \
     ros-kinetic-costmap-2d \ 
     ros-kinetic-ros-control \
     ros-kinetic-joint-state-controller \
+    ros-kinetic-position-controllers \
+    ros-kinetic-velocity-controllers \
     ros-kinetic-effort-controllers \
-    ros-kinetic-controller-manager
+    ros-kinetic-controller-manager \ 
+    ros-kinetic-ros-controllers 
 
 # Add user and add it to sudo group 
 RUN adduser --disabled-password --gecos '' developer 
@@ -75,6 +79,17 @@ WORKDIR /home/developer
 
 RUN sudo rosdep init 
 RUN rosdep update 
+
+# Add default path for Gazebo plugins
+ENV GAZEBO_PLUGIN_PATH /opt/ros/kinetic/lib
+
+# Install additional GAZEBO_PLUGINS (libhwi_switch_gazebo_ros_control) --> Add libhwi controller for switching between position and velocity control 
+RUN git clone --single-branch kinetic_dev https://github.com/ipa320/cob_gazebo_plugins
+WORKDIR /home/developer/cob_gazebo_plugins/cob_gazebo_plugins
+RUN mkdir build && cd build && cmake ../ && make -j${nproc}
+WORKDIR /home/developer/cob_gazebo_plugins/cob_gazebo_ros_control 
+RUN mkdir build && cd build && cmake ../ && make -j${nproc}
+RUN echo 'export GAZEBO_PLUGIN_PATH=/home/developer/cob_gazebo_plugins/cob_gazebo_ros_control:$GAZEBO_PLUGIN_PATH'  >> ~/.bashrc 
 
 # Init ROS workspace 
 RUN mkdir -p ~/ws_moveit/src 
@@ -91,6 +106,8 @@ RUN echo 'source ~/ws_moveit/devel/setup.bash' >> ~/.bashrc
 WORKDIR /home/developer/ws_moveit/src 
 RUN git clone --branch kinetic_dev https://github.com/ipa320/cob_control.git 
 RUN git clone https://github.com/h3ct0r/schunk_lwa4p_gazebo_sim.git 
+
+# Add libhwi controller for switching between position and velocity control 
 
 WORKDIR /home/developer/ws_moveit
 RUN catkin build 
