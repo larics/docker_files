@@ -26,8 +26,8 @@ RUN apt-get update
 
 # Install gazebo packages 
 RUN apt-get install -q -y \
-    gazebo7 \ 
-    libgazebo7-dev 
+    gazebo9 \ 
+    libgazebo9-dev 
 
 RUN sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -48,9 +48,11 @@ RUN apt-get install -y \
     ros-kinetic-map-server \
     ros-kinetic-octomap-ros \
     ros-kinetic-octomap-msgs \
-    ros-kinetic-gazebo-plugins \ 
-    ros-kinetic-gazebo-ros \
-    ros-kinetic-gazebo-dev \
+    ros-kinetic-gazebo9-plugins \ 
+    ros-kinetic-gazebo9-ros \
+    ros-kinetic-gazebo9-ros-pkgs \
+    ros-kinetic-gazebo9-ros-control \
+    ros-kinetic-gazebo9-dev \
     ros-kinetic-catkin \
     ros-kinetic-moveit \
     ros-kinetic-moveit-msgs \
@@ -58,7 +60,10 @@ RUN apt-get install -y \
     ros-kinetic-control-toolbox \
     ros-kinetic-controller-interface \
     ros-kinetic-costmap-2d \ 
-    ros-kinetic-ros-control 
+    ros-kinetic-ros-control \
+    ros-kinetic-joint-state-controller \
+    ros-kinetic-effort-controllers \
+    ros-kinetic-controller-manager
 
 # Add user and add it to sudo group 
 RUN adduser --disabled-password --gecos '' developer 
