@@ -59,7 +59,7 @@ RUN apt-get install -q -y --no-install-recommends \
     ros-${ROS_DISTRO}-octomap-msgs \
     ros-${ROS_DISTRO}-gazebo-plugins \
     ros-${ROS_DISTRO}-gazebo-ros \
-    ros-${ROS_DISTRO}-gazebo-dev  
+    ros-${ROS_DISTRO}-gazebo-dev
 
 
 # Install ROS python packages 
@@ -88,7 +88,6 @@ RUN cd glog \
 RUN apt-get install -y --no-install-recommends \
     libeigen3-dev
 
-
 RUN useradd -ms /bin/bash -G sudo developer && echo "developer:developer" | chpasswd 
 
 WORKDIR /home/developer
@@ -101,7 +100,7 @@ RUN mkdir -p catkin_ws/src \
 
 # Clone mavros msgs 
 RUN git clone https://github.com/mavlink/mavros.git
-RUN mkdir -p /home/deveoper/catkin_ws/src/mavros
+RUN mkdir -p /home/developer/catkin_ws/src/mavros
 RUN mv /home/developer/mavros/mavros_msgs /home/developer/catkin_ws/src/mavros/
 
 WORKDIR /home/developer/catkin_ws/src
@@ -114,12 +113,17 @@ RUN git clone -b master --single-branch https://github.com/ethz-asl/mav_comm.git
     && cd mav_comm \
     && git checkout 46e4d40a13a37e768e438600ee58c824dffa570d 
 
-RUN git clone -b devel --single-branch https://0a028a24f2f6da7f08027dcc1f49634fe1a4f922:x-outh-basic@github.com/larics/danieli_tcp_ip.git 
+RUN git clone -b devel --single-branch https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/danieli_tcp_ip.git 
     
-WORKDIR /home/developer/catkin_ws
+RUN apt-get install -y -q --no-install-recommends \
+    ros-${ROS_DISTRO}-geographic-msgs \
+    ros-${ROS_DISTRO}-rqt-gui \
+    ros-${ROS_DISTRO}-rqt-gui-py
 
-RUN bash -c "catkin build" \
-    && bash -c "source ${PWD}/devel/setup.bash"   
+WORKDIR /home/developer
+
+# Build workspace
+RUN bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make; source /home/developer/catkin_ws/devel/setup.bash" 
 
 # Add python3 ROS support
 RUN apt-get install -y --no-install-recommends \
@@ -131,7 +135,7 @@ RUN apt-get install -y --no-install-recommends \
 # Install python3 packages for TCP comm
 RUN pip3 install pyyaml \
     lxml \
-    ast  
+    ast 
 
 # Install PyCharm for development purposes 
 WORKDIR /home/developer 
