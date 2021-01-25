@@ -53,13 +53,15 @@ RUN apt-get install -q -y --no-install-recommends \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-image-transport-plugins \
-    ros-${ROS_DISTRO}-teleop-twist-joy \ 
+    ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-map-server \
     ros-${ROS_DISTRO}-octomap-ros \
     ros-${ROS_DISTRO}-octomap-msgs \
     ros-${ROS_DISTRO}-gazebo-plugins \
     ros-${ROS_DISTRO}-gazebo-ros \
-    ros-${ROS_DISTRO}-gazebo-dev
+    ros-${ROS_DISTRO}-gazebo-dev \
+    ros-${ROS_DISTRO}-mav-msgs \
+    ros-${ROS_DISTRO}-mavros-msgs
 
 
 # Install ROS python packages 
@@ -124,18 +126,19 @@ WORKDIR /home/developer
 
 # Build workspace
 RUN bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin_make; source /home/developer/catkin_ws/devel/setup.bash" 
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 
 # Add python3 ROS support
 RUN apt-get install -y --no-install-recommends \
-    python3-pip \
-    python3-rospkg \
-    python3-rosdep \
-    python3-rosinstall 
+    python3-pip 
 
 # Install python3 packages for TCP comm
-RUN pip3 install pyyaml \
+RUN pip3 install \
+    setuptools \
+    pyyaml \
     lxml \
-    ast 
+    rospkg \ 
+    rospy
 
 # Install PyCharm for development purposes 
 WORKDIR /home/developer 
