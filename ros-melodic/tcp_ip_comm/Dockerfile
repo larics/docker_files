@@ -148,4 +148,29 @@ RUN wget -O /home/developer/pycharm.tar.gz "https://download.jetbrains.com/pytho
 RUN tar -xvf /home/developer/pycharm.tar.gz && rm -rf /home/developer/pycharm.tar.gz 
 RUN echo 'alias pycharm=/home/developer/pycharm-community-$version/bin/pycharm.sh' >> /home/developer/.bashrc 
 
+# Adding waypoint follower from ETHZ and all neccessary pkgs (TODO Add argument) 
+
+# System packages
+RUN sudo apt-get install -q -y \
+    locate \
+    liblapack-dev \
+    libnlopt-dev 
+
+# ROS packages
+RUN sudo apt-get install -q -y \
+    ros-melodic-eigen-conversions \
+    ros-melodic-tf-conversions \
+    ros-melodic-eigen-catkin 
+
+# Neccessary ethz packages for waypoint following 
+WORKDIR /home/developer/catkin_ws/src
+RUN git clone https://github.com/ethz-asl/waypoint_navigator.git
+RUN git clone https://github.com/catkin/catkin_simple.git 
+RUN git clone https://github.com/ethz-asl/glog_catkin.git
+RUN git clone https://github.com/ethz-asl/geodetic_utils.git 
+RUN git clone https://github.com/ethz-asl/mav_trajectory_generation.git 
+RUN git clone https://github.com/ethz-asl/eigen_catkin.git
+RUN git clone https://github.com/ethz-asl/eigen_checks.git
+RUN git clone https://github.com/ethz-asl/mav_control_rw.git
+
 CMD ["tmux"]
