@@ -84,14 +84,6 @@ RUN rosdep update
 # Add default path for Gazebo plugins
 ENV GAZEBO_PLUGIN_PATH /opt/ros/kinetic/lib
 
-# Install additional GAZEBO_PLUGINS (libhwi_switch_gazebo_ros_control) --> Add libhwi controller for switching between position and velocity control
-RUN git clone --single-branch kinetic_dev https://github.com/ipa320/cob_gazebo_plugins
-WORKDIR /home/developer/cob_gazebo_plugins/cob_gazebo_plugins
-RUN mkdir build && cd build && cmake ../ && make -j${nproc}
-WORKDIR /home/developer/cob_gazebo_plugins/cob_gazebo_ros_control
-RUN mkdir build && cd build && cmake ../ && make -j${nproc}
-RUN echo 'export GAZEBO_PLUGIN_PATH=/home/developer/cob_gazebo_plugins/cob_gazebo_ros_control:$GAZEBO_PLUGIN_PATH'  >> ~/.bashrc
-
 # Init ROS workspace
 RUN mkdir -p ~/ws_moveit/src
 WORKDIR /home/developer/ws_moveit/src
@@ -119,6 +111,16 @@ RUN chmod +x install_nano.sh \
 
 WORKDIR /home/developer
 RUN curl https://raw.githubusercontent.com/scopatz/nanorc/master/install.sh | sh
+
+# Add Eigen3 and install (installs to user/local) 
+RUN /home/developer
+RUN git clone https://gitlab.com/libeigen/eigen.git
+WORKDIR /home/developer/eigen
+RUN mkdir build \
+    && cd build \
+    cmake ..
+
+
 
 CMD ["bash"]
 
