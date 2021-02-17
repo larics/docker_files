@@ -96,6 +96,14 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; wstool init src" \
     && bash -c "wstool update -t src" \
     && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}"
 
+# Add Cartesian planning / Descartes capability
+WORKDIR /home/developer/moveit_ws
+RUN git clone https://github.com/PickNikRobotics/descartes_capability.git
+RUN bash -c "source /opt/ros/melodic/setup.bash;" \
+    && bash -c "wstool merge -t src descartes_capability/descartes_capability.rosinstall" \
+    && bash -c "wstool update -t src" \
+    && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" 
+
 # Build moveit from source
 RUN catkin config --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release 
 RUN catkin build 
