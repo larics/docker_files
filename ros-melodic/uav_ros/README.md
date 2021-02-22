@@ -32,3 +32,58 @@ roslaunch uav_ros_control pid_carrot.launch # Nasa kontrola letjelice
 ```
 
 
+Run following commands for quadcopter control: 
+
+```
+roscore
+roslaunch ardupilot_gazebo sim_vehicle.launch
+roslaunch ardupilot_gazebo mavros.launch
+roslaunch gazebo empty_world.launch
+roslaunch ardupilot_gazebo spawn_kopterworx.launch fdm_port_in:=9002 fdm_port_out:=9003
+```
+
+Activate Carrot PID ROS control: 
+
+```
+rostopic pub --once /<uav_namespace>/joy sensor_msgs/Joy "buttons: [0, 0, 0, 0, 1]"; 
+```
+
+After activating Carrot PID ROS control it's possible to plan and 
+execute trajectories by using `topp_ros` package. 
+
+In order to use it run following (plan trajectory end execute it) : 
+```
+roslaunch toppra_uav_ros_tracker.launch
+```
+
+After that generate trajectory by calling one of the example files such as: 
+```
+python toppra_trajectory_call_example.py
+```
+
+Trajectory example can be found in upper file. 
+
+In order to enable executing trajectories, call service which enables 
+execution of current commanded trajectory: 
+```
+rosservice call /red/topp/enable "{}"
+```
+
+It's also possible to send only one pose. In order to do so, run 
+following launch file: 
+```
+roslaunch ardupilot_trajectory_gen.launch
+```
+
+And publish wanted pose on following topic: 
+```
+<uav_namespace>/topp/input/pose
+```
+
+Before running anything for trajectory generation, make sure you're 
+quadrotor is in mode GUIDED and that motors are armed. 
+In order to do so, run following two commands in mavProxy: 
+```
+mode guided
+arm throttle
+```
