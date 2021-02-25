@@ -65,7 +65,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-controller-interface \
     ros-${ROS_DISTRO}-costmap-2d \
     ros-${ROS_DISTRO}-ros-control \ 
-    ros-${ROS_DISTRO}-ros-controllers 
+    ros-${ROS_DISTRO}-ros-controllers \
+    ros-${ROS_DISTRO}-collada-urdf
 
 
 # Install catkin tools
@@ -75,7 +76,9 @@ RUN apt-get install -y --no-install-recommends \
     python-catkin-pkg \
     python-catkin-tools \
     python-rosdep \
-    clang-format-10
+    clang-format-10 \
+    libeigen3-dev \
+    libtf-conversions-dev
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -94,23 +97,38 @@ WORKDIR /home/developer/moveit_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; wstool init src" \
     && bash -c "wstool merge -t src https://raw.githubusercontent.com/ros-planning/moveit/master/moveit.rosinstall" \
     && bash -c "wstool update -t src" \
-    && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}"
+    && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" \
+    && bash -c "catkin build" 
 
-# Add Cartesian planning / Descartes capability
-WORKDIR /home/developer/moveit_ws
+
+# Add Cartesian planning -> Descartes planning capability
+WORKDIR /home/developer/moveit_ws/src
 RUN git clone https://github.com/PickNikRobotics/descartes_capability.git
-RUN bash -c "source /opt/ros/melodic/setup.bash;" \
-    && bash -c "wstool merge -t src descartes_capability/descartes_capability.rosinstall" \
+WORKDIR /home/developer/moveit_ws
+RUN bash -c "source /opt/ros/melodic/setup.bash; wstool merge -t src src/descartes_capability/descartes_capability.rosinstall" \
     && bash -c "wstool update -t src" \
-    && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" 
+    && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" \
+    && bash -c "catkin build" 
 
-# Build moveit from source
-RUN catkin config --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release 
-RUN catkin build 
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc 
+
+# Fails with fatal: could not read Username for https://github.com: No such file or directory
+#WORKDIR /home/developer/moveit_ws/src
+#RUN git clone -b melodic-dev --single-branch https://github.com/larics/schunk_lwa4p_ros.git
 
 
+# Install OpenRAVE for FastIK plugin 
+# Package denpendencies 
+RUN mkdir openrave-repos 
+WORKDIR /home/developer/openrave-repos
+RUN git clone https://github.com/crigroup/openrave-installation
+# To install openrave follow this instructions: https://github.com/crigroup/openrave-installation 
 
+# Currently is TracIK used for inverse kinematics 
 WORKDIR /home/developer
+RUN mkdir repos
+
 
 CMD ["bash"]
 
