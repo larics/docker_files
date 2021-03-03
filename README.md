@@ -70,7 +70,22 @@ docker system prune
 In order to run multiple docker containers which are build from docker images in certain configuration 
 use [docker-compose](https://docs.docker.com/compose/) 
 
+### How to correctly use OpenGL for better rendering capabilities in container? 
+
+Explanation for using ROS + Docker for GUI applications is available [here](http://wiki.ros.org/docker/Tutorials/GUI)
+
+### Explanation of OpenGL + NVIDIA in Docker
+
+Explanation for creating OpenGL image for CUDA applications can be found [here](https://medium.com/@benjamin.botto/opengl-and-cuda-applications-in-docker-af0eece000f1). 
+
+Available prebuilt nvidia/openGL dockers can be found [here](https://medium.com/@benjamin.botto/opengl-and-cuda-applications-in-docker-af0eece000f1) 
 
 
 
 
+## TODO: 
+
+- [ ] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
+- [ ] Refactor images to be multistage
+- [ ] Add BUILD_ARGS 
+- [ ] Add cloning of Github repo with ssh keys 
