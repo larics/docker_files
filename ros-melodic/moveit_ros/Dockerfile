@@ -1,4 +1,4 @@
-FROM nvidia/opengl:1.0-glvnd-runtime-ubuntu18.04
+FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu18.04
 LABEL maintainer filip.zoric@fer.hr
 
 # Setup environment
@@ -66,8 +66,9 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-costmap-2d \
     ros-${ROS_DISTRO}-ros-control \ 
     ros-${ROS_DISTRO}-ros-controllers \
-    ros-${ROS_DISTRO}-collada-urdf
-
+    ros-${ROS_DISTRO}-collada-urdf \
+    ros-${ROS_DISTRO}-trac-ik-kinematics-plugin \
+    ros-${ROS_DISTRO}-tf-conversions 
 
 # Install catkin tools
 RUN wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
@@ -98,7 +99,7 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; wstool init src" \
     && bash -c "wstool merge -t src https://raw.githubusercontent.com/ros-planning/moveit/master/moveit.rosinstall" \
     && bash -c "wstool update -t src" \
     && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" \
-    && bash -c "catkin build" 
+    && bash -c "source /opt/ros/melodic/setup.bash; catkin build" 
 
 
 # Add Cartesian planning -> Descartes planning capability
@@ -108,7 +109,7 @@ WORKDIR /home/developer/moveit_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; wstool merge -t src src/descartes_capability/descartes_capability.rosinstall" \
     && bash -c "wstool update -t src" \
     && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" \
-    && bash -c "catkin build" 
+    && bash -c "source /opt/ros/melodic/setup.bash; catkin build" 
 
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc 
@@ -120,15 +121,18 @@ RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc
 
 # Install OpenRAVE for FastIK plugin 
 # Package denpendencies 
-RUN mkdir openrave-repos 
-WORKDIR /home/developer/openrave-repos
-RUN git clone https://github.com/crigroup/openrave-installation
+# RUN mkdir openrave-repos 
+# WORKDIR /home/developer/openrave-repos
+# RUN git clone https://github.com/crigroup/openrave-installation
 # To install openrave follow this instructions: https://github.com/crigroup/openrave-installation 
 
 # Currently is TracIK used for inverse kinematics 
-WORKDIR /home/developer
-RUN mkdir repos
+# WORKDIR /home/developer
+# RUN mkdir repos
 
+# Env vars needed for NVIDIA container runtime 
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
 CMD ["bash"]
 
