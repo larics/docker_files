@@ -29,12 +29,14 @@ echo "Running docker..."
 
 docker run -it \
     --env="DISPLAY=$DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume="/dev:/dev" \
     --net=host \
     --privileged \
     --gpus all \
-    --name schunk_melodic_cont \
-    moveit_img:melodic 
+    --name schunk_melodic_cont2 \
+    melodic_img:opengl_1_2
+ 
 
 
