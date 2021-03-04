@@ -88,6 +88,10 @@ There's example of using build-args for installing IDE in container in following
 docker build --build-arg <arg_name>=<arg_value> -t <image_name>:<image_tag> .
 ```
 
+### Clion ROS Setup 
+
+Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/clion/ros-setup-tutorial.html#launch-in-sourced). 
+
 ## TODO: 
 
 - [ ] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
