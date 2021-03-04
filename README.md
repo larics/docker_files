@@ -80,12 +80,17 @@ Explanation for creating OpenGL image for CUDA applications can be found [here](
 
 Available prebuilt nvidia/openGL dockers can be found [here](https://medium.com/@benjamin.botto/opengl-and-cuda-applications-in-docker-af0eece000f1) 
 
+### Example of build args 
 
+There's example of using build-args for installing IDE in container in following [Dockerfile](https://github.com/larics/docker_files/blob/master/ros-melodic/moveit_ros/Dockerfile) 
 
+```
+docker build --build-arg <arg_name>=<arg_value> -t <image_name>:<image_tag> .
+```
 
 ## TODO: 
 
 - [ ] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
 - [ ] Refactor images to be multistage
-- [ ] Add BUILD_ARGS 
+- [x] Add BUILD_ARGS 
 - [ ] Add cloning of Github repo with ssh keys 

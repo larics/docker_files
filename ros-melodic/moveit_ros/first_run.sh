@@ -36,7 +36,7 @@ docker run -it \
     --privileged \
     --gpus all \
     --name schunk_melodic_cont2 \
-    melodic_img:opengl_1_2
- 
+    moveit_melodic_img:latest
+
 
 
