@@ -94,6 +94,8 @@ RUN rosdep update
  
 # Init ROS workspace 
 RUN mkdir -p moveit_ws/src 
+WORKDIR /home/developer/moveit_ws/src
+RUN bash-c "source /opt/ros/melodic/setup.bash"; catkin_init_workspace; 
 WORKDIR /home/developer/moveit_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; wstool init src" \
     && bash -c "wstool merge -t src https://raw.githubusercontent.com/ros-planning/moveit/master/moveit.rosinstall" \
@@ -138,11 +140,11 @@ ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 ARG ide
 WORKDIR /home/developer
 ENV version 2020.3.2
-RUN if "$ide"; then wget -O /home/developer/pycharm.tar.gz "https://download.jetbrains.com/python/pycharm-community-$version.tar.gz"; fi
-RUN if "$ide"; then mkdir -p /home/developer/pycharm; fi
-RUN if "$ide"; then tar -xvf /home/developer/pycharm.tar.gz && rm -rf /home/developer/pycharm.tar.gz; fi
-RUN if "$ide"; then echo 'alias pycharm=/home/developer/pycharm-community-$version/bin/pycharm.sh' >> /home/developer/.bashrc; fi
-RUN if "$ide"; then rm -rf /home/developer/pycharm.tar.gz; fi
+RUN if "$ide"; then wget -O /home/developer/clion.tar.gz "https://download.jetbrains.com/cpp/CLion-2020.3.2.tar.gz"; fi
+RUN if "$ide"; then mkdir -p /home/developer/clion; fi
+RUN if "$ide"; then tar -xvf /home/developer/clion.tar.gz && rm -rf /home/developer/clion.tar.gz; fi
+RUN if "$ide"; then echo 'alias clion=/home/developer/clion-$version/bin/clion.sh' >> /home/developer/.bashrc; fi
+RUN if "$ide"; then rm -rf /home/developer/clion.tar.gz; fi
 
 CMD ["bash"]
 
