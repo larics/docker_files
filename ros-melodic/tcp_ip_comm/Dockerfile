@@ -125,7 +125,8 @@ RUN git clone -b master --single-branch https://github.com/ethz-asl/mav_comm.git
     && cd mav_comm \
     && git checkout 46e4d40a13a37e768e438600ee58c824dffa570d 
 
-RUN git clone -b devel --single-branch https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/danieli_tcp_ip.git 
+# Removed XAuth, should enable SSH cloning 
+RUN git clone -b devel --single-branch https://github.com/larics/danieli_tcp_ip.git 
     
 
 WORKDIR /home/developer
