@@ -1,5 +1,7 @@
 # Dockerfile repo
 
+Brief theoretic introduction can be found in Instructions.md
+
 This repository contains all Dockerfiles which are used for software containerization that implies easier 
 integration and development. 
 
