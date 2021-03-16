@@ -15,7 +15,7 @@ For concrete example (ros-kinetic with gazebo) run following:
 docker build -t ros_gazebo_img:melodic_11
 ```
 
-## How to create contaier out of the Dockerfile? 
+## How to create container out of the Dockerfile? 
 
 In order to create container from Dockerfile run following commmand:
 ```
