@@ -62,7 +62,8 @@ Attach existing detached cotainer:
 docker attach <container_name> 
 ```
 
-Clean dangling images and stopped containers: 
+Clean dangling images and stopped containers (bear in mind that this deletes 
+every container that's not currently running, not recommended): 
 ```
 docker system prune 
 ```
