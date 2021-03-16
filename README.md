@@ -1,5 +1,7 @@
 # Dockerfile repo
 
+Brief theoretic introduction can be found in Instructions.md
+
 This repository contains all Dockerfiles which are used for software containerization that implies easier 
 integration and development. 
 
@@ -64,6 +66,8 @@ Clean dangling images and stopped containers:
 ```
 docker system prune 
 ```
+
+### [Docker-CLI reference](https://docs.docker.com/engine/reference/commandline/build/)
 
 ### How to create configuration file that runs multiple docker files at once? 
 
