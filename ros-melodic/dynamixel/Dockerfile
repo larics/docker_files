@@ -1,4 +1,4 @@
-FROM nvidia/opengl:1.0-glvnd-runtime-ubuntu18.04
+FROM ros:melodic-robot-bionic
 LABEL maintainer filip.zoric@fer.hr
 
 # Setup environment
@@ -27,17 +27,12 @@ RUN apt-get update &&  apt-get install -q -y \
     tmux \ 
     wget 
 
-# Add keys for ROS installation 
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
-RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 
-
 RUN apt-get update 
 
 # Install ROS
 ENV ROS_DISTRO melodic
 RUN apt-get update
 RUN apt-get install -q -y --no-install-recommends \
-    ros-${ROS_DISTRO}-ros-core \
     ros-${ROS_DISTRO}-robot-state-publisher \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-xacro \
@@ -52,7 +47,8 @@ RUN apt-get install -q -y --no-install-recommends \
     ros-${ROS_DISTRO}-dynamixel-workbench-toolbox \
     ros-${ROS_DISTRO}-rqt \
     ros-${ROS_DISTRO}-rqt-gui \
-    ros-${ROS_DISTRO}-rqt-service-caller 
+    ros-${ROS_DISTRO}-rqt-service-caller \
+    ros-${ROS_DISTRO}-serial 
 
 
 # Install ROS python packages 
@@ -72,6 +68,7 @@ RUN apt-get install -y --no-install-recommends \
 # Add user
 RUN useradd -ms /bin/bash -G sudo developer && echo "developer:developer" | chpasswd 
 
+# Basic catkin setup
 WORKDIR /home/developer
 RUN mkdir -p catkin_ws/src \
     && bash -c ". /opt/ros/melodic/setup.bash; catkin_init_workspace /home/developer/catkin_ws/src" \
@@ -80,13 +77,11 @@ RUN mkdir -p catkin_ws/src \
     && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /home/developer/.bashrc \
     && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc 
 
+# Add repo for handling closing and opening of dynamixels for separator 
 WORKDIR /home/developer/catkin_ws/src
+RUN git clone https://github.com/goranvasilj/separator_end_effector.git
+WORKDIR /home/developer/catkin_ws
+RUN bash -c "source /opt/ros/kinetic/setup.bash; catkin_make"
 
-# Install PyCharm for development purposes 
-#WORKDIR /home/developer 
-#ENV version 2020.2.3
-#RUN wget -O /home/developer/pycharm.tar.gz "https://download.jetbrains.com/python/pycharm-community-$version.tar.gz"
-#RUN tar -xvf /home/developer/pycharm.tar.gz && rm -rf /home/developer/pycharm.tar.gz 
-#RUN echo 'alias pycharm=/home/developer/pycharm-community-$version/bin/pycharm.sh' >> /home/developer/.bashrc 
 
 CMD ["tmux"]
