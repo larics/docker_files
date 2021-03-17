@@ -17,11 +17,12 @@ RUN apt-get update && apt-get install -q -y \
     imagemagick \
     lsb-release \
     libboost-dev \
+    libqt5serialport5-dev \
     sudo \
     nano \
     net-tools \
     tmux \
-    wget
+    wget 
 
 
 # Add sources for ROS installation
@@ -95,7 +96,8 @@ RUN rm -rf /home/developer/qt-everywhere-src-5.15.2
 RUN mkdir code
 WORKDIR /home/developer
 
-## Build protobuf
+# Build protobuf
+RUN echo "Change1" 
 RUN git clone https://github.com/protocolbuffers/protobuf.git \
     && cd protobuf \
     && git checkout 3.11.x \ 
@@ -108,9 +110,11 @@ ENV PROTOBUF_LIB_PATH /home/developer/protobuf
 ENV BUILD_DIR_SUFFIX buildGCC_x64
 
 # Build CaptoGloveAPI
-RUN git clone https://1179f5263f30983555405406fd4722fd537126f7@github.com/larics/CaptoGloveAPI.git \
+RUN git clone https://github.com/larics/CaptoGloveAPI.git \
     && cd CaptoGloveAPI \
-    && git submodule update --init 
+    && git checkout devel \
+    && git submodule init \
+    && git submodule update 
     
 WORKDIR /home/developer
 RUN export PATH=/home/Qt/bin:$PATH \
@@ -119,8 +123,17 @@ RUN export PATH=/home/Qt/bin:$PATH \
     && qmake ../CaptoGloveAPI/CaptoGloveAPI.pro \ 
     && make -j6
 
-ENV CAPTOGLOVEAPI_SRC_PATH=/home/${USER}/CaptoGloveAPI
-ENV CAPTOGLOVEAPI_LIBRARY_PATH=/home/${USER}/CaptoGloveAPI-buildGCC_x64
+ENV CAPTOGLOVEAPI_SRC_PATH /home/developer/CaptoGloveAPI
+ENV CAPTOGLOVEAPI_LIBRARY_PATH /home/developer/CaptoGloveAPI-buildGCC_x64
+
+# Cloning CaptoGlove related stuff for ROS integration 
+WORKDIR /home/developer/catkin_ws/src
+RUN git clone https://github.com/fzoric8/captoglove_ros_wrapper.git
+RUN git clone https://github.com/fzoric8/captoglove_ros_msgs.git 
+WORKDIR /home/developer/catkin_ws
+
+# For some reason, catkin_make fails because it's not able to find Qt5, but after running docker it is TODO:Check
+#RUN bash -c "source /opt/ros/kinetic/setup.bash; source /root/.bashrc; catkin_make" 
 
 # Install Clion for debugging    
 #WORKDIR /home/developer
