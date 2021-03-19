@@ -9,7 +9,7 @@ integration and development.
 
 Enter corresponding directory and run following command to build docker image: 
 ```
-docker build -t <image_name>:<image_path> <dockerfile_path> 
+docker build -t <image_name>:<tag_name> <dockerfile_path> 
 ```
 
 For concrete example (ros-kinetic with gazebo) run following: 
