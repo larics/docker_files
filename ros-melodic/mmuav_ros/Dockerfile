@@ -38,8 +38,8 @@ RUN apt-get update
 
 # Install gazebo packages
 RUN apt-get install -q -y \
-    gazebo11 \
-    libgazebo11-dev
+    gazebo9 \
+    libgazebo9-dev
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -72,7 +72,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-joy \
     ros-${ROS_DISTRO}-mavlink \
     ros-${ROS_DISTRO}-mavros \
-    ros-${ROS_DISTRO}-rqt-gui 
+    ros-${ROS_DISTRO}-rqt-gui \
+    ros-${ROS_DISTRO}-moveit
 
 # Install catkin tools
 RUN wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
@@ -110,7 +111,9 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
 RUN sudo apt-get install -y -q \
     ros-${ROS_DISTRO}-rqt-gui-py \
     ros-${ROS_DISTRO}-moveit-core \
-    ros-${ROS_DISTRO}-moveit-ros-planning  
+    ros-${ROS_DISTRO}-moveit-ros-planning \
+    ros-${ROS_DISTRO}-moveit-visual-tools \
+    ros-${ROS_DISTRO}-dynamixel-workbench-msgs
 
 WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/ethz-asl/rotors_simulator.git
@@ -119,8 +122,9 @@ RUN git clone https://github.com/catkin/catkin_simple.git
 RUN git clone https://github.com/larics/mmuav_gazebo.git
 
 # Demand moveit-ros-planning
-#RUN git clone https://github.com/larics/aerial_manipulators.git --branch devel --single-branch 
-#RUN git clone https://github.com/suiauthon/impedance_control.git
+RUN git clone https://github.com/larics/aerial_manipulators.git --branch devel --single-branch 
+RUN git clone https://github.com/suiauthon/impedance_control.git
+
 WORKDIR /home/developer/catkin_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build" 
 
