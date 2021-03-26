@@ -5,6 +5,24 @@ Brief theoretic introduction can be found in Instructions.md
 This repository contains all Dockerfiles which are used for software containerization that implies easier 
 integration and development. 
 
+## How to install Docker engine?
+
+In order to install docker engine follow this [instructions](https://docs.docker.com/engine/install/ubuntu/) for installation on ubuntu. 
+
+You will also need nvidia-docker which can be installed by executing following commands: 
+```
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+   && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - \
+   && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+```
+```
+sudo apt-get update
+```
+```
+sudo apt-get install -y nvidia-docker2
+```
+
+
 ## How to build Dockerfile? 
 
 Enter corresponding directory and run following command to build docker image: 
