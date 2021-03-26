@@ -38,7 +38,7 @@ RUN apt-get update
 
 # Install gazebo packages
 RUN apt-get install -q -y \
-    gazebo9 \
+    gazebo9-common \
     libgazebo9-dev
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -57,11 +57,11 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-map-server \
     ros-${ROS_DISTRO}-octomap-ros \
     ros-${ROS_DISTRO}-octomap-msgs \
-    ros-${ROS_DISTRO}-gazebo11-plugins \
-    ros-${ROS_DISTRO}-gazebo11-ros \
-    ros-${ROS_DISTRO}-gazebo11-ros-pkgs \
-    ros-${ROS_DISTRO}-gazebo11-ros-control \
-    ros-${ROS_DISTRO}-gazebo11-dev \ 
+    ros-${ROS_DISTRO}-gazebo-plugins \
+    ros-${ROS_DISTRO}-gazebo-ros \
+    ros-${ROS_DISTRO}-gazebo-ros-pkgs \
+    ros-${ROS_DISTRO}-gazebo-ros-control \
+    ros-${ROS_DISTRO}-gazebo-dev \ 
     ros-${ROS_DISTRO}-catkin \
     ros-${ROS_DISTRO}-control-toolbox \
     ros-${ROS_DISTRO}-controller-interface \
@@ -73,7 +73,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-mavlink \
     ros-${ROS_DISTRO}-mavros \
     ros-${ROS_DISTRO}-rqt-gui \
-    ros-${ROS_DISTRO}-moveit
+    ros-${ROS_DISTRO}-moveit \
+    ros-${ROS_DISTRO}-hector-gazebo-plugins
 
 # Install catkin tools
 RUN wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
@@ -116,10 +117,27 @@ RUN sudo apt-get install -y -q \
     ros-${ROS_DISTRO}-dynamixel-workbench-msgs
 
 WORKDIR /home/developer/catkin_ws/src
-RUN git clone https://github.com/ethz-asl/rotors_simulator.git
-RUN git clone https://github.com/ethz-asl/mav_comm.git
+RUN echo "REPEAT"
+
+# Clone rotors simulator 
+RUN git clone https://github.com/larics/rotors_simulator.git --branch larics_melodic_master --single-branch \
+    && cd rotors_simulator \
+    && git checkout tags/summer_semester21 \
+    && cd ..
+
+# Clone mav_comm
+RUN git clone https://github.com/larics/mav_comm.git --branch larics_master --single-branch \
+    && cd mav_comm \
+    && git checkout tags/summer_semester21 \
+    && cd ..
+
 RUN git clone https://github.com/catkin/catkin_simple.git
-RUN git clone https://github.com/larics/mmuav_gazebo.git
+
+# Clone mmuav_gazebo 
+RUN git clone https://github.com/larics/mmuav_gazebo.git \
+    && cd mmuav_gazebo \
+    && git checkout tags/summer_semester21 \
+    && cd .. 
 
 # Demand moveit-ros-planning
 RUN git clone https://github.com/larics/aerial_manipulators.git --branch devel --single-branch 
