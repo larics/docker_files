@@ -95,7 +95,7 @@ RUN rosdep update
 # Init ROS workspace 
 RUN mkdir -p moveit_ws/src 
 WORKDIR /home/developer/moveit_ws/src
-RUN bash-c "source /opt/ros/melodic/setup.bash"; catkin_init_workspace; 
+RUN bash -c "source /opt/ros/melodic/setup.bash; catkin_init_workspace"; 
 WORKDIR /home/developer/moveit_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; wstool init src" \
     && bash -c "wstool merge -t src https://raw.githubusercontent.com/ros-planning/moveit/master/moveit.rosinstall" \

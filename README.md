@@ -9,7 +9,7 @@ integration and development.
 
 Enter corresponding directory and run following command to build docker image: 
 ```
-docker build -t <image_name>:<image_path> <dockerfile_path> 
+docker build -t <image_name>:<tag_name> <dockerfile_path> 
 ```
 
 For concrete example (ros-kinetic with gazebo) run following: 
@@ -29,6 +29,13 @@ Run docker container with GUI support
 docker run -it --network host --gpus all --privileged -e DISPLAY=$DISPLAY -v /dev:/dev -v /tmp/.X11-unix:/tmp/.X11-unix \
        --name <container_name> <img_name>:<tag_name> 
 ```
+Also, before using param `--gpus` make sure you've installed `nvidia-container-toolkit` as follows: 
+
+```
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+```
+Make sure you have latest drivers for your GPU. 
 
 ## How to start existing docker container after stopping it? 
 ```
@@ -62,7 +69,8 @@ Attach existing detached cotainer:
 docker attach <container_name> 
 ```
 
-Clean dangling images and stopped containers: 
+Clean dangling images and stopped containers (bear in mind that this deletes 
+every container that's not currently running, not recommended): 
 ```
 docker system prune 
 ```
