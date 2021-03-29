@@ -104,8 +104,11 @@ docker build --build-arg <arg_name>=<arg_value> -t <image_name>:<image_tag> .
 
 Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/clion/ros-setup-tutorial.html#launch-in-sourced). 
 
+### [How to use hardware acceleration(GPU)  with Docker?](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration)
+
 ## TODO: 
 
+- [ ] Create example docker files with different hardware accelerations 
 - [ ] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
 - [ ] Refactor images to be multistage
 - [x] Add BUILD_ARGS 

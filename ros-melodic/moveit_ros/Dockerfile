@@ -116,10 +116,9 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; wstool merge -t src src/descart
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc 
 
-# Fails with fatal: could not read Username for https://github.com: No such file or directory
+# Fails with fatal: could not read Username for https://github.com: No such file or directory -> non-public repo (expeceted behaviour, add ssh keys) 
 #WORKDIR /home/developer/moveit_ws/src
 #RUN git clone -b melodic-dev --single-branch https://github.com/larics/schunk_lwa4p_ros.git
-
 
 # Install OpenRAVE for FastIK plugin 
 # Package denpendencies 

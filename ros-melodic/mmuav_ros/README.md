@@ -18,7 +18,7 @@ support.
 Build Docker image with following command when you're located in folder 
 containing this Dockerfile:
 ```
-docker build mmuav_img:latest .
+docker build -t mmuav_img:latest .
 ```
 After building image, run first_run.sh script to start container `mmuav_cont`
 ```
