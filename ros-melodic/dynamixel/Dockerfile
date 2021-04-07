@@ -27,6 +27,7 @@ RUN apt-get update &&  apt-get install -q -y \
     tmux \ 
     wget 
 
+RUN echo "Update"
 RUN apt-get update 
 
 # Install ROS
@@ -81,7 +82,7 @@ RUN mkdir -p catkin_ws/src \
 WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/goranvasilj/separator_end_effector.git
 WORKDIR /home/developer/catkin_ws
-RUN bash -c "source /opt/ros/kinetic/setup.bash; catkin_make"
+RUN bash -c "source /opt/ros/melodic/setup.bash; catkin_make"
 
 
 CMD ["tmux"]

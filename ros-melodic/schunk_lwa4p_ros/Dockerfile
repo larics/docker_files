@@ -20,10 +20,10 @@ RUN git clone --recurse-submodules https://bitbucket.org/lpresearch/openzenros.g
 # Donwload custom ROS package for IMUs
 RUN git clone https://github.com/fzoric8/openzen_acore_imu.git
 
-# Add privileges to serial ports that are used for IMUs --> Needs to be executed everytime when plugged/unpluged
-RUN sudo chmod 777 /dev/ttyUSB0 
-RUN sudo chmod 777 /dev/ttyUSB1
-RUN sudo chmod 777 /dev/ttyUSB2
+# Add privileges to serial ports that are used for IMUs --> Needs to be executed everytime when plugged/unpluged - add it to entrypoint script 
+#RUN sudo chmod 777 /dev/ttyUSB0 
+#RUN sudo chmod 777 /dev/ttyUSB1
+#RUN sudo chmod 777 /dev/ttyUSB2
 
 # Download driver for tool
 WORKDIR /home/developer/moveit_ws/src
