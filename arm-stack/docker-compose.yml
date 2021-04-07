@@ -1,0 +1,24 @@
+version: "3.9" 
+services:
+  arm-control: 
+    build: 
+      context: ../ros-melodic/schunk_lwa4p_ros/
+      network: host 
+      shm_size: '12gb'
+      dockerfile: Dockerfile 
+      args:
+        - ide=0 
+    volumes: 
+      - /dev:/dev
+    command: "--gpus all --privileged" 
+    entrypoint: ["source /home/developer/catkin_ws/devel/setup.bash; roslaunch schunk_lwa4p_gazebo lwa4p_real_robot.launch"]
+  tool-control:
+    build:
+      context: ../ros-melodic/dynamixel/
+      network: host
+      shm_size: '4gb'
+      dockerfile: Dockerfile 
+    volumes: 
+     - /dev:/dev
+    command: "--privileged"  
+    
