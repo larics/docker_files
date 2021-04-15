@@ -70,6 +70,12 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-trac-ik-kinematics-plugin \
     ros-${ROS_DISTRO}-tf-conversions 
 
+# Instal RQT debug/devel stuff
+RUN apt-get install -y \
+    rqt-common-plugins \
+    rqt-joint-trajectory-controller 
+
+
 # Install catkin tools
 RUN wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 RUN apt-get install -y --no-install-recommends \

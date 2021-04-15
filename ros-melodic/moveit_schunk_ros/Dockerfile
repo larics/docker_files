@@ -1,4 +1,4 @@
-FROM nvidia/opengl:1.0-glvnd-runtime-ubuntu18.04
+FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu18.04
 LABEL maintainer filip.zoric@fer.hr
 
 # Setup environment
