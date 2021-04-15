@@ -64,6 +64,7 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-control-toolbox \
     ros-${ROS_DISTRO}-controller-interface \
     ros-${ROS_DISTRO}-costmap-2d \
+    ros-${ROS_DISTRO}-plotjuggler \
     ros-${ROS_DISTRO}-ros-control \ 
     ros-${ROS_DISTRO}-ros-controllers \
     ros-${ROS_DISTRO}-collada-urdf \
