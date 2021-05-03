@@ -100,6 +100,14 @@ docker system prune
 In order to run multiple docker containers which are build from docker images in certain configuration 
 use [docker-compose](https://docs.docker.com/compose/) 
 
+## Hardware acceleration 
+
+To be able to properly use available GPU's it's necessary to follow instructions related to setting up docker 
+container with proper arguments depending on GPU vendor. There are different commands and prerequisites (drivers) 
+for almost every GPU vendor (NVIDIA,ATI,Intel). Rest of this instructions related to graphical rendering are written 
+for NVIDIA GPUs, but  [here](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration) you can find everything 
+else necessary to achieve same behaviour for different GPUs (Intel/ATI). 
+
 ### How to correctly use OpenGL for better rendering capabilities in container? 
 
 Explanation for using ROS + Docker for GUI applications is available [here](http://wiki.ros.org/docker/Tutorials/GUI)
