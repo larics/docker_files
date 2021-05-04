@@ -53,10 +53,22 @@ Or if you want manipulator mounted on uav, run following:
 roslaunch mmuav_gazebo uav_attitude_position.launch manipulator_type:="wp_manipulator" start_gazebo:=true z:=1.0 manipulator_tool:="rod"
 ```
 
+## How to generate machine-id? 
+
+Generate machine-id executing following command: 
+```
+systemd-machine-id-setup
+```
+
 # ADD Following stuff: 
 
-How to add machine id? 
+
 What is d-bus? 
 How to set up pulseaudio and alsa in docker container? 
 
+# Used links: 
 
+[run apps using audio in a docker container](https://stackoverflow.com/questions/28985714/run-apps-using-audio-in-a-docker-container) 
+[x11-alsa/pulseaudio config](https://github.com/mviereck/x11docker/wiki/Container-sound:-ALSA-or-Pulseaudio) 
+[simple solution?](https://stackoverflow.com/questions/45700653/can-my-docker-container-app-access-the-hosts-microphone-and-speaker-mac-wind/48795232) 
+[jasper docker](https://github.com/danielchalef/jasper-docker) -- check PCM devices to share / alsa config 
