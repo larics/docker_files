@@ -96,6 +96,7 @@ RUN apt-get install -y --no-install-recommends \
     alsa-utils \
     pulseaudio-utils \
     pulseaudio \
+    portaudio19-dev \
     libpulse0 \
     libasound-dev \
     swig \
