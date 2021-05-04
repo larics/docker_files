@@ -179,6 +179,14 @@ RUN git clone https://github.com/suiauthon/impedance_control.git
 WORKDIR /home/developer/catkin_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build" 
 
+# Copy pulse-client (enable server/client arch)
+COPY pulse-client.conf /etc/pulse/client.conf
 
-CMD ["bash"]
-#ENTRYPOINT /opt/bin/entrypoint.sh
+# Setup root user (neccessary for audio setup) 
+USER root
+
+# Copy entrypoint script
+COPY entrypoint.sh /root/entrypoint.sh 
+
+# Run entrypoint script
+ENTRYPOINT /root/entrypoint.sh

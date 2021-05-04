@@ -34,7 +34,7 @@ docker run -it \
     --volume="/dev:/dev" \
     --volume="/dev/snd:/dev/snd" \
     --volume="/etc/machine-id:/etc/machine-id" \
-    --volume="/run/user/$uid/pulse:/run/user/$uid/pulse" \
+    --volume="/run/user/$UID/pulse:/run/user/1000/pulse" \
     --volume="/var/lib/dbus:/var/lib/dbus" \
     --device /dev/snd \
     --net=host \
