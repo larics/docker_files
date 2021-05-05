@@ -73,8 +73,8 @@ RUN apt-get install -y \
 
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
-    rqt-common-plugins \
-    rqt-joint-trajectory-controller 
+    ros-${ROS_DISTRO}-rqt-common-plugins \
+    ros-${ROS_DISTRO}-rqt-joint-trajectory-controller 
 
 
 # Install catkin tools
