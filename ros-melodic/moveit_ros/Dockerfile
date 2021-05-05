@@ -10,6 +10,8 @@ ENV TZ=Europe/Zagreb
 # Setup timezone (fix interactive package installation)
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
+RUN apt-get update
+
 # Install necessary packages for ROS and Gazebo
 RUN apt-get update &&  apt-get install -q -y \
     apt-utils \
@@ -36,8 +38,8 @@ RUN apt-get update
 
 # Install gazebo packages
 RUN apt-get install -q -y \
-    gazebo11 \
-    libgazebo11-dev
+    gazebo9 \
+    libgazebo9-dev
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -55,11 +57,11 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-map-server \
     ros-${ROS_DISTRO}-octomap-ros \
     ros-${ROS_DISTRO}-octomap-msgs \
-    ros-${ROS_DISTRO}-gazebo11-plugins \
-    ros-${ROS_DISTRO}-gazebo11-ros \
-    ros-${ROS_DISTRO}-gazebo11-ros-pkgs \
-    ros-${ROS_DISTRO}-gazebo11-ros-control \
-    ros-${ROS_DISTRO}-gazebo11-dev \ 
+    ros-${ROS_DISTRO}-gazebo-plugins \
+    ros-${ROS_DISTRO}-gazebo-ros \
+    ros-${ROS_DISTRO}-gazebo-ros-pkgs \
+    ros-${ROS_DISTRO}-gazebo-ros-control \
+    ros-${ROS_DISTRO}-gazebo-dev \ 
     ros-${ROS_DISTRO}-catkin \
     ros-${ROS_DISTRO}-control-toolbox \
     ros-${ROS_DISTRO}-controller-interface \
