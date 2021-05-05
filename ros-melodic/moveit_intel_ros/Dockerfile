@@ -1,4 +1,4 @@
-FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu18.04
+FROM ubuntu:bionic 
 LABEL maintainer filip.zoric@fer.hr
 
 # Setup environment
@@ -9,8 +9,6 @@ ENV TZ=Europe/Zagreb
 
 # Setup timezone (fix interactive package installation)
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
-
-RUN apt-get update
 
 # Install necessary packages for ROS and Gazebo
 RUN apt-get update &&  apt-get install -q -y \
@@ -28,7 +26,14 @@ RUN apt-get update &&  apt-get install -q -y \
     net-tools \
     tmux \
     wget \
-    libncursesw5-dev
+    libncursesw5-dev 
+
+# Install mesa libraries in the image 
+RUN apt-get update && apt-get install -q -y \
+    libgl1-mesa-glx \
+    libgl1-mesa-dri \ 
+    && rm -rf /var/lib/apt/lists/*
+
 
 # Add sources and keys for Gazebo installation
 RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
@@ -38,8 +43,8 @@ RUN apt-get update
 
 # Install gazebo packages
 RUN apt-get install -q -y \
-    gazebo9 \
-    libgazebo9-dev
+    gazebo11 \
+    libgazebo11-dev
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -57,27 +62,20 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-map-server \
     ros-${ROS_DISTRO}-octomap-ros \
     ros-${ROS_DISTRO}-octomap-msgs \
-    ros-${ROS_DISTRO}-gazebo-plugins \
-    ros-${ROS_DISTRO}-gazebo-ros \
-    ros-${ROS_DISTRO}-gazebo-ros-pkgs \
-    ros-${ROS_DISTRO}-gazebo-ros-control \
-    ros-${ROS_DISTRO}-gazebo-dev \ 
+    ros-${ROS_DISTRO}-gazebo11-plugins \
+    ros-${ROS_DISTRO}-gazebo11-ros \
+    ros-${ROS_DISTRO}-gazebo11-ros-pkgs \
+    ros-${ROS_DISTRO}-gazebo11-ros-control \
+    ros-${ROS_DISTRO}-gazebo11-dev \ 
     ros-${ROS_DISTRO}-catkin \
     ros-${ROS_DISTRO}-control-toolbox \
     ros-${ROS_DISTRO}-controller-interface \
     ros-${ROS_DISTRO}-costmap-2d \
-    ros-${ROS_DISTRO}-plotjuggler \
     ros-${ROS_DISTRO}-ros-control \ 
     ros-${ROS_DISTRO}-ros-controllers \
     ros-${ROS_DISTRO}-collada-urdf \
     ros-${ROS_DISTRO}-trac-ik-kinematics-plugin \
     ros-${ROS_DISTRO}-tf-conversions 
-
-# Instal RQT debug/devel stuff
-RUN apt-get install -y \
-    ros-${ROS_DISTRO}-rqt-common-plugins \
-    ros-${ROS_DISTRO}-rqt-joint-trajectory-controller 
-
 
 # Install catkin tools
 RUN wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
@@ -125,9 +123,10 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; wstool merge -t src src/descart
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc 
 
-# Fails with fatal: could not read Username for https://github.com: No such file or directory -> non-public repo (expeceted behaviour, add ssh keys) 
+# Fails with fatal: could not read Username for https://github.com: No such file or directory
 #WORKDIR /home/developer/moveit_ws/src
 #RUN git clone -b melodic-dev --single-branch https://github.com/larics/schunk_lwa4p_ros.git
+
 
 # Install OpenRAVE for FastIK plugin 
 # Package denpendencies 
@@ -140,9 +139,6 @@ RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc
 # WORKDIR /home/developer
 # RUN mkdir repos
 
-# Env vars needed for NVIDIA container runtime (TODO: After build, pass them on the start of the Dockerfile) 
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
 # CLion installation 
 ARG ide
