@@ -137,5 +137,7 @@ Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/cl
 - [ ] Create example docker files with different hardware accelerations 
 - [ ] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
 - [ ] Refactor images to be multistage
-- [x] Add BUILD_ARGS 
+- [x] Add BUILD_ARGS -> ide for now
 - [ ] Add cloning of Github repo with ssh keys 
+- [ ] Create intial compose 
+- [ ] Check integration of Github actions for CI/CD

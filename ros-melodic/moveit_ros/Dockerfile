@@ -142,6 +142,15 @@ RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
+# plotJuggler
+ARG plotjuggler
+WORKDIR /home/developer/moveit_ws/src
+RUN if "$plotjuggler"; then git clone https://github.com/PlotJuggler/plotjuggler_msgs.git; fi
+RUN if "$plotjuggler"; git clone https://github.com/facontidavide/PlotJuggler.git; fi
+RUN if "$plotjuggler"; git clone https://github.com/PlotJuggler/plotjuggler-ros-plugins.git; fi
+WORKDIR /home/developer/moveit_ws
+RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
+
 # CLion installation 
 ARG ide
 WORKDIR /home/developer
@@ -151,6 +160,8 @@ RUN if "$ide"; then mkdir -p /home/developer/clion; fi
 RUN if "$ide"; then tar -xvf /home/developer/clion.tar.gz && rm -rf /home/developer/clion.tar.gz; fi
 RUN if "$ide"; then echo 'alias clion=/home/developer/clion-$version/bin/clion.sh' >> /home/developer/.bashrc; fi
 RUN if "$ide"; then rm -rf /home/developer/clion.tar.gz; fi
+
+
 
 CMD ["bash"]
 
