@@ -120,27 +120,32 @@ RUN sudo apt-get install -y -q \
     ros-${ROS_DISTRO}-moveit-visual-tools \
     ros-${ROS_DISTRO}-dynamixel-workbench-msgs
 
-# Clone rotors simulator 
+# Clone rotors simulator
+WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/larics/rotors_simulator.git --branch larics_melodic_master --single-branch \
     && cd rotors_simulator \
     && git checkout tags/summer_semester21 \
     && cd ..
 
 # Clone mav_comm
+WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/larics/mav_comm.git --branch larics_master --single-branch \
     && cd mav_comm \
     && git checkout tags/summer_semester21 \
     && cd ..
 
+WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/catkin/catkin_simple.git
 
-# Clone mmuav_gazebo 
+# Clone mmuav gazebo
+WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/larics/mmuav_gazebo.git \
     && cd mmuav_gazebo \
     && git checkout tags/summer_semester21 \
     && cd .. 
 
 # Demand moveit-ros-planning
+WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/larics/aerial_manipulators.git --branch devel --single-branch 
 RUN git clone https://github.com/suiauthon/impedance_control.git
 
