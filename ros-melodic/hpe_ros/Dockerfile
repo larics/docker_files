@@ -8,6 +8,10 @@ ARG UID=1000
 ARG GID=1000 
 ARG PW=developer
 ARG TZ=Europe/Zagreb
+ARG ROS_DISTRO=melodic
+
+# Setup timezone (fix interactive package installation) 
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
 
 # Install necessary software packages 
@@ -27,7 +31,7 @@ RUN apt-get update && \
 
 
 # Add ROS keys
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
 RUN apt-get update
@@ -72,15 +76,14 @@ RUN conda install -c conda-forge \
 USER developer 
 WORKDIR /home/developer
 
-RUN sudo rosdep init
-RUN rosdep update
+RUN sudo apt-get install -y python-catkin-tools
 
 # Init ROS workspace 
 RUN mkdir -p catkin_ws/src 
 WORKDIR /home/developer/catkin_ws/src
-RUN bash -c "source /opt/ros/noetic/setup.bash; catkin_init_workspace" 
+RUN bash -c "source /opt/ros/melodic/setup.bash; catkin_init_workspace" 
 WORKDIR /home/developer/catkin_ws
-RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"
+RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
 
 CMD ["bash"]
 
