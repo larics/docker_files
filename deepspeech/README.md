@@ -46,6 +46,24 @@ systemd-machine-id-setup
 What is d-bus? 
 How to set up pulseaudio and alsa in docker container? 
 
+# How to test pretrained deepspeech? 
+
+You can test deepspecch from mic streaming as follows:
+
+Run following script from `Deepspeech-examples folder`
+```
+cd Deepspeech-examples 
+cd mic_vad_streaming 
+python mic_vad_streaming.py --savewav ./test.wav -m ../../deepspeech/deepspeech-0.9.3-models.pbmm --scorer ../../deepspeech/deepspeech-0.9.3-models.scorer -r 16000
+```
+
+Detected words will be recorded in wav files, and you get output of recognized words:
+```
+INFO:root:write wav ./test.wav/savewav_2021-05-28_13-49-11_154568.wav
+Recognized: cried the german something for the voice
+
+```
+
 # Used links: 
 
 * [run apps using audio in a docker container](https://stackoverflow.com/questions/28985714/run-apps-using-audio-in-a-docker-container)   

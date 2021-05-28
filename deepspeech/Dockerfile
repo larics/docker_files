@@ -58,7 +58,7 @@ COPY pulse-client.conf /etc/pulse/client.conf
 # Install deepspeech
 
 WORKDIR /home/developer
-RUN pip3 install deepspeech deepspeech-gpu
+RUN pip3 install deepspeech deepspeech-gpu scipy numpy wave webrtcvad
 
 # Download pre-trained English model files
 RUN curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm
