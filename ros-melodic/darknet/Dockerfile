@@ -58,18 +58,27 @@ WORKDIR /home/developer
 # Install OpenCV from sources
 RUN mkdir opencv_build 
 WORKDIR opencv_build  
+#https://answers.opencv.org/question/5090/why-opencv-building-is-so-slow-with-cuda/
 RUN git clone -b 3.4 https://github.com/opencv/opencv.git
 RUN git clone -b 3.4 https://github.com/opencv/opencv_contrib.git
 WORKDIR /home/developer/opencv_build/
 RUN mkdir build 
+# Install qt, prerequisite for correct OpenCV buildy
+RUN sudo apt-get install qt5-default -y
 WORKDIR /home/developer/opencv_build/build
-RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
-    -D CMAKE_INSTALL_PREFIX=/usr/local \
-    -D INSTALL_C_EXAMPLES=ON \
-    -D INSTALL_PYTHON_EXAMPLES=ON \
-    -D OPENCV_GENERATE_PKGCONFIG=ON \
-    -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
-    -D BUILD_EXAMPLES=ON ../opencv/ \
+RUN cmake ../opencv/ -DCMAKE_BUILD_TYPE=RELEASE \
+    -DCMAKE_INSTALL_PREFIX=/usr/local \
+    -DOPENCV_GENERATE_PKGCONFIG=ON \
+    -DFORCE_VTK=ON \
+    -DWITH_TBB=ON \
+    -DWITH_V4L=ON \
+    -DWITH_QT=ON \ 
+    -DWITH_OPENGL=ON \ 
+    -DWITH_CUBLAS=ON \
+    -DCUDA_NVCC_FLAGS="-D_FORCE_INLINES" \
+    -DWITH_GDAL=ON \
+    -DWITH_XINE=ON \
+    -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
     && make -j${nproc-1} 
 # Final OpenCV install with 
 RUN sudo make install
