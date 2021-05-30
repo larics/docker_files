@@ -58,11 +58,13 @@ WORKDIR /home/developer
 # Install OpenCV from sources
 RUN mkdir opencv_build 
 WORKDIR opencv_build  
+
 #https://answers.opencv.org/question/5090/why-opencv-building-is-so-slow-with-cuda/
+
 RUN git clone -b 3.4 https://github.com/opencv/opencv.git
 RUN git clone -b 3.4 https://github.com/opencv/opencv_contrib.git
 WORKDIR /home/developer/opencv_build/
-RUN mkdir build 
+
 # Install qt, prerequisite for correct OpenCV buildy
 RUN sudo apt-get install qt5-default -y
 WORKDIR /home/developer/opencv_build/build

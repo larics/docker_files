@@ -34,7 +34,7 @@ docker run -it \
     --volume="/dev:/dev" \
     --volume="/dev/snd:/dev/snd" \
     --volume="/etc/machine-id:/etc/machine-id" \
-    --volume="/run/user/$UID/pulse:/run/user/1000/pulse" \
+    --volume="/run/user/1000/pulse:/run/user/1000/pulse" \
     --volume="/var/lib/dbus:/var/lib/dbus" \
     --device /dev/snd \
     --net=host \
@@ -45,3 +45,4 @@ docker run -it \
 
 
 
+#https://stackoverflow.com/questions/64037579/running-pulseaudio-inside-docker-container-to-record-system-audio
