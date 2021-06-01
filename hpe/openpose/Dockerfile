@@ -37,6 +37,7 @@ WORKDIR /protobuf
 RUN git submodule update --init --recursive 
 RUN ./autogen.sh 
 WORKDIR /protobuf 
+RUN git checkout tags/v3.13.0
 RUN ./configure
 RUN make \
     && make check \
@@ -50,7 +51,7 @@ WORKDIR /
 RUN git clone https://github.com/Kitware/CMake.git
 RUN apt-get install -y libssl-dev
 WORKDIR /CMake
-RUN git checkout -b v3.12.0
+RUN git checkout tags/v3.12.0
 RUN ./bootstrap \
     && make \
     && sudo make install 
@@ -68,25 +69,73 @@ RUN adduser ${USER} sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers 
 
 # Install packages neccessary for training and testing neural networks
-RUN conda install -c anaconda \
-                     scipy \
-                     configargparse \
-                     cython
+#RUN conda install -c anaconda \
+#                     scipy \
+#                     configargparse \
+#                     cython
 
-RUN conda install -c conda-forge \
-                     progress \
-                     json_tricks \
-                     tensorboardx \
-                     easydict \
-                     opencv \
-                     pycocotools
+#RUN conda install -c conda-forge \
+#                     progress \
+#                     json_tricks \
+#                     tensorboardx \
+#                     easydict \
+#                     opencv \
+#                     pycocotools
 
-RUN apt-get install -y libboost-dev 
+RUN apt-get install -y \ 
+    libboost-all-dev \
+    libatlas-dev \
+    libatlas-base-dev \ 
+    liblapacke-dev \
+    libpthread-stubs0-dev \
+    libopencv-dev \
+    locate \
+    cmake-gui 
+
+# ROS Installation 
+RUN sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+RUN sudo apt-get update \
+    && sudo apt-get install -y \
+    ros-kinetic-ros-base \
+    ros-kinetic-cv-bridge \
+    ros-kinetic-image-transport
+
+
+# Manual boost download (hassle with manual version definition) 
+#WORKDIR /home/developer
+#RUN git clone --recursive https://github.com/boostorg/boost.git
+#WORKDIR /home/developer/boost 
+#RUN git fetch --all --tags
+#RUN git checkout --force boost-1.65.1
+#RUN mkdir build 
+#RUN ./bootstrap.sh --prefix=./build 
+#RUN ./b2 headers
+
+WORKDIR /home/developer
+# Provided prebuilt versions (allegedly/not suer if only headers)
+#ARG BOOST_VERSION 
+#ARG BOOST_VERSION_
+#ENV BOOST_VERSION=${BOOST_VERSION}
+#ENV BOOST_VERSION_=${BOOST_VERSION_}
+
+#RUN wget --max-redirect 3 https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
+#RUN mkdir -p /usr/include/boost && tar zxf boost_${BOOST_VERSION_}.tar.gz -C /usr/include/boost --strip-components=1
+#RUN echo ${BOOST_ROOT}
+
+# Update g++/gcc for succesful openpose build 
+RUN sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+RUN sudo apt update
+RUN sudo apt install g++-7 -y
+RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 \
+                         --slave /usr/bin/g++ g++ /usr/bin/g++-7 
+RUN sudo update-alternatives --config gcc
+
 # Clone OpenPose from source
 WORKDIR /home/developer
 RUN git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose
 WORKDIR /home/developer/openpose
-RUN git checkout tags/v1.7.0
+RUN git checkout tags/v1.6.0
 RUN git submodule update --init --recursive --remote 
 
 CMD ["bash"]
