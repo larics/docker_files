@@ -1,6 +1,9 @@
-FROM pytorch/pytorch:1.1.0-cuda10.0-cudnn7.5-devel
-
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
 LABEL maintainer filip.zoric@fer.hr
+
+# Env vars needed for NVIDIA container runtime (TODO: After build, pass them on the start of the Dockerfile) 
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 
 # Set arguments 
 ARG USER=developer 
@@ -29,6 +32,15 @@ RUN apt-get update && \
     unzip \ 
     wget 
 
+# Remove cudnn7.6.5
+RUN apt-get purge -y \ 
+    libcudnn7 \
+    libcudnn7-dev
+
+# Install cudnn7.5.1
+RUN apt-get install -y \
+    libcudnn7-dev=7.5.1.10-1+cuda10.1 \
+    libcudnn7=7.5.1.10-1+cuda10.1 
 
 # Build protobuf
 WORKDIR /
@@ -38,25 +50,27 @@ RUN git submodule update --init --recursive
 RUN ./autogen.sh 
 WORKDIR /protobuf 
 RUN git checkout tags/v3.13.0
-RUN ./configure
+RUN ./configure 
 RUN make \
     && make check \
     && make install \
     && ldconfig
 
-
-RUN apt-get install -y openssl
+RUN apt-get install -y \
+    openssl \
+    qtbase5-dev
 # Build cmake
 WORKDIR /
 RUN git clone https://github.com/Kitware/CMake.git
 RUN apt-get install -y libssl-dev
 WORKDIR /CMake
-RUN git checkout tags/v3.12.0
+RUN git checkout tags/v3.20.0
+RUN ./configure --qt-gui 
 RUN ./bootstrap \
     && make \
     && sudo make install 
 
-# RUN 
+# Install some libs needed for openpose 
 RUN apt-get install -y --no-install-recommends \
     libhdf5-dev \
     libgoogle-glog-dev
@@ -82,25 +96,28 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 #                     opencv \
 #                     pycocotools
 
+ENV TZ=Europe/Zagreb 
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone 
+
 RUN apt-get install -y \ 
     libboost-all-dev \
-    libatlas-dev \
     libatlas-base-dev \ 
+    libhdf5-dev \
+    libgoogle-glog-dev \
     liblapacke-dev \
     libpthread-stubs0-dev \
     libopencv-dev \
-    locate \
-    cmake-gui 
+    locate 
 
+ENV ROS_DISTRO melodic
 # ROS Installation 
 RUN sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 RUN sudo apt-get update \
     && sudo apt-get install -y \
-    ros-kinetic-ros-base \
-    ros-kinetic-cv-bridge \
-    ros-kinetic-image-transport
-
+    ros-${ROS_DISTRO}-ros-base \
+    ros-${ROS_DISTRO}-cv-bridge \
+    ros-${ROS_DISTRO}-image-transport
 
 # Manual boost download (hassle with manual version definition) 
 #WORKDIR /home/developer
@@ -137,5 +154,7 @@ RUN git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose
 WORKDIR /home/developer/openpose
 RUN git checkout tags/v1.6.0
 RUN git submodule update --init --recursive --remote 
+# There is possibility of automated openPose build 
+
 
 CMD ["bash"]
