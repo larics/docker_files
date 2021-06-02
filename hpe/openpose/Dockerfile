@@ -156,5 +156,4 @@ RUN git checkout tags/v1.6.0
 RUN git submodule update --init --recursive --remote 
 # There is possibility of automated openPose build 
 
-
 CMD ["bash"]
