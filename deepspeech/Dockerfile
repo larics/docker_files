@@ -49,8 +49,10 @@ RUN make
 RUN sudo make install
 RUN sudo ldconfig
 
-RUN sudo apt-get install  -y python-dev python-setuptools
-RUN pip install pyaudio 
+RUN sudo apt-get install -y \ 
+    python3-dev \
+    python3-setuptools \
+    python3-pip 
 
 # Copy pulse-client (enable server/client arch)
 COPY pulse-client.conf /etc/pulse/client.conf
@@ -58,8 +60,17 @@ COPY pulse-client.conf /etc/pulse/client.conf
 # Install deepspeech
 
 WORKDIR /home/developer
-RUN pip3 install deepspeech deepspeech-gpu scipy numpy wave webrtcvad
+RUN pip3 install \
+    deepspeech \
+    deepspeech-gpu \
+    halo \
+    scipy \
+    numpy \
+    wave \
+    webrtcvad
 
+RUN mkdir deepspeech
+WORKDIR /home/developer/deepspeech
 # Download pre-trained English model files
 RUN curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm
 RUN curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.scorer
