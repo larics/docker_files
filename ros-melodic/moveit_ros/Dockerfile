@@ -153,6 +153,13 @@ RUN if "$plotjuggler"; git clone https://github.com/PlotJuggler/plotjuggler-ros-
 WORKDIR /home/developer/moveit_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
 
+# SMach
+ARG smach
+WORKDIR /home/developer/moveit_ws/src
+RUN if "$smach"; then sudo apt-get install -y --no-install-recommends \
+    ros-${ROS_DISTRO}-smach-ros \
+    ros-${ROS_DISTRO}-smach-viewer; fi  
+
 # CLion installation 
 ARG ide
 WORKDIR /home/developer
