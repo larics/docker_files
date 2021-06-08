@@ -138,6 +138,8 @@ Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/cl
 - [ ] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
 - [ ] Refactor images to be multistage
 - [x] Add BUILD_ARGS -> ide for now
+- [ ] Add gcc, CMake version and Boost installation in Docker 
+- [ ] Add image for decoupled NVIDIA + pytorch support for OpenPose
 - [ ] Add entrypoint script for every Docker containing ROS (can be used from darknet ros) 
 - [ ] Build image with [GAZEBO gym](https://github.com/erlerobot/gym-gazebo)  
 - [ ] Build image with [AirSim](https://microsoft.github.io/AirSim/docker_ubuntu/) 
