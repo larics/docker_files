@@ -69,6 +69,7 @@ RUN pip3 install \
     scipy \
     numpy \
     wave \
+    pyaudio \
     webrtcvad
 
 RUN mkdir deepspeech
@@ -77,6 +78,8 @@ WORKDIR /home/developer/deepspeech
 RUN curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm
 RUN curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.scorer
 
+
+WORKDIR /home/developer
 # Clone deepspeech examples
 RUN git clone https://github.com/mozilla/DeepSpeech-examples
 
