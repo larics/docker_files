@@ -109,6 +109,7 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; wstool init src" \
     && bash -c "wstool update -t src" \
     && bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" \
     && bash -c "source /opt/ros/melodic/setup.bash; catkin build" 
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 
 
 # Add Cartesian planning -> Descartes planning capability
