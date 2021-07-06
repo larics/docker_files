@@ -106,6 +106,7 @@ WORKDIR /home/developer
 RUN mkdir -p catkin_ws/src \
     && bash -c ". /opt/ros/melodic/setup.bash; catkin_init_workspace /home/developer/catkin_ws/src" \
     && bash -c ". /opt/ros/melodic/setup.bash; cd catkin_ws; catkin build" \
+    && echo 'source /opt/ros/melodic/setup.bash' >> /home/developer/.bashrc \
     && echo '. /home/developer/catkin_ws/devel/setup.bash' >> /home/developer/.bashrc \
     && echo 'export ROS_MASTER_URI=http://$(hostname --ip-address):11311' >> /home/developer/.bashrc \
     && echo 'export ROS_HOSTNAME=$(hostname --ip-address)' >> /home/developer/.bashrc 
