@@ -100,13 +100,15 @@ docker system prune
 In order to run multiple docker containers which are build from docker images in certain configuration 
 use [docker-compose](https://docs.docker.com/compose/) 
 
-## Hardware acceleration 
+## [Hardware acceleration](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration)
 
 To be able to properly use available GPU's it's necessary to follow instructions related to setting up docker 
 container with proper arguments depending on GPU vendor. There are different commands and prerequisites (drivers) 
 for almost every GPU vendor (NVIDIA,ATI,Intel). Rest of this instructions related to graphical rendering are written 
 for NVIDIA GPUs, but  [here](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration) you can find everything 
 else necessary to achieve same behaviour for different GPUs (Intel/ATI). 
+
+#### Some examples can be found in ros-melodic folder, such as moveit_intel_ros and moveit_ros (NVIDIA) 
 
 ### How to correctly use OpenGL for better rendering capabilities in container? 
 
@@ -128,21 +130,32 @@ docker build --build-arg <arg_name>=<arg_value> -t <image_name>:<image_tag> .
 
 ### Clion ROS Setup 
 
-Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/clion/ros-setup-tutorial.html#launch-in-sourced). 
+Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/clion/ros-setup-tutorial.html#launch-in-sourced)
 
-### [How to use hardware acceleration(GPU)  with Docker?](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration)
+### Most common problems 
+
+One of the main problems that occurs when using Docker files for robotic applications is expiration of GPG keys for ROS. 
+In order to fix that, in case that some `sudo apt-get update` or `sudo apt-get install` fails, please replace GPG 
+keys to newer ones. Error for expiration of GPG keys looks like following: 
+```
+An error occurred during the signature verification. The repository is not updated and the previous index files will be used. GPG error: http://packages.ros.org/ros/ubuntu bionic InRelease: 
+The following signatures were invalid: EXPKEYSIG F42ED6FBAB17C654 Open Robotics <info@osrfoundation.org>
+```
+
+You can add keys by following 1.3 section in Installation instructions for corresponding ROS distribution. 
+
 
 ## TODO: 
 
-- [ ] Create example docker files with different hardware accelerations 
-- [ ] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
+- [x] Create example docker files with different hardware accelerations 
+- [x] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
 - [ ] Refactor images to be multistage
 - [x] Add BUILD_ARGS -> ide for now
-- [ ] Add gcc, CMake version and Boost installation in Docker 
-- [ ] Add image for decoupled NVIDIA + pytorch support for OpenPose
+- [x] Add image for decoupled NVIDIA + pytorch support for OpenPose
 - [ ] Add entrypoint script for every Docker containing ROS (can be used from darknet ros) 
 - [ ] Build image with [GAZEBO gym](https://github.com/erlerobot/gym-gazebo)  
 - [ ] Build image with [AirSim](https://microsoft.github.io/AirSim/docker_ubuntu/) 
+- [ ] Build base blender image 
 - [ ] Add cloning of Github repo with ssh keys 
-- [ ] Create intial compose 
+- [x] Create intial compose 
 - [ ] Check integration of Github actions for CI/CD
