@@ -49,10 +49,12 @@ RUN make
 RUN sudo make install
 RUN sudo ldconfig
 
-RUN sudo apt-get install -y \ 
+RUN sudo apt-get install -y \
+    python-dev \
+    python-setuptools \
     python3-dev \
-    python3-setuptools \
-    python3-pip 
+    python3-pip
+RUN pip3 install pyaudio 
 
 # Copy pulse-client (enable server/client arch)
 COPY pulse-client.conf /etc/pulse/client.conf
