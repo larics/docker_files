@@ -178,22 +178,24 @@ RUN if "$ide"; then echo 'alias clion=/home/developer/clion-$version/bin/clion.s
 RUN if "$ide"; then rm -rf /home/developer/clion.tar.gz; fi
 
 # Dynamixel installation 
-ARG dynamixel 
+ARG real_robot 
 WORKDIR /home/developer
-RUN if "dynamixel"; then sudo apt-get install ros-noetic-dynamixel-sdk dynamixel-workbench dynamixel-workbench-msgs; fi
+RUN if "real_robot"; then sudo apt-get install ros-noetic-dynamixel-sdk dynamixel-workbench dynamixel-workbench-msgs; fi
 WORKDIR /home/developer/moveit_ws/src
-RUN if "dynamixel"; then git clone https://github.com/wjwwood/serial.git; fi
+RUN if "real_robot"; then git clone https://github.com/wjwwood/serial.git; fi
 
 # IMU installation
-ARG imu
-RUN if "imu"; then sudo apt-get install ros-noetic-openzen-sensor; fi
+RUN if "real_robot"; then sudo apt-get install ros-noetic-openzen-sensor; fi
 WORKDIR /home/developer/moveit_ws/src
-# TODO: Add ssh cloning 
-RUN if "imu"; then git clone https://github.com/fzoric8/openzen_acore_imu.git;fi 
+RUN if "real_robot"; then git clone https://github.com/fzoric8/openzen_acore_imu.git;fi 
+
+# Clone separator end effector repository 
+RUN if "real_robot"; 
+RUN git clone https://github.com/goranvasilj/separator_end_effector.git
 
 # Build initial ROS workspace
 WORKDIR /home/developer/moveit_ws
-RUN bash -c "source /opt/ros/noetic/setup.bash"; catkin build;  
+RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"  
 
 # Added code snippet for using SSH keys during docker build
 ENV DOCKER_BUILDKIT=1
