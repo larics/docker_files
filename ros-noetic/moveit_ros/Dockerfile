@@ -7,6 +7,8 @@ ENV LANG C.UTF-8
 ENV LC_AL C.UTF-8
 ENV ROS_DISTRO noetic
 ENV DEBIAN_FRONTEND noninteractive
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 ENV TZ=Europe/Zagreb
 
 # Mitigate interactive prompt for choosing keyboard type
@@ -147,10 +149,6 @@ RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc
 # WORKDIR /home/developer
 # RUN mkdir repos
 
-# Env vars needed for NVIDIA container runtime (TODO: After build, pass them on the start of the Dockerfile) 
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
-
 # plotJuggler
 ARG plotjuggler
 WORKDIR /home/developer/moveit_ws/src
@@ -167,7 +165,8 @@ RUN if "$smach"; then sudo apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-smach-ros \
     ros-${ROS_DISTRO}-smach-viewer; fi  
 
-# CLion installation 
+# ===================== IDE =========================
+# CLion installation
 ARG ide
 WORKDIR /home/developer
 ENV version 2020.3.2
@@ -177,6 +176,7 @@ RUN if "$ide"; then tar -xvf /home/developer/clion.tar.gz && rm -rf /home/develo
 RUN if "$ide"; then echo 'alias clion=/home/developer/clion-$version/bin/clion.sh' >> /home/developer/.bashrc; fi
 RUN if "$ide"; then rm -rf /home/developer/clion.tar.gz; fi
 
+# =================== Real robot=====================
 # Dynamixel installation 
 ARG real_robot 
 WORKDIR /home/developer
@@ -187,17 +187,19 @@ RUN if "real_robot"; then git clone https://github.com/wjwwood/serial.git; fi
 # IMU installation
 RUN if "real_robot"; then sudo apt-get install ros-noetic-openzen-sensor; fi
 WORKDIR /home/developer/moveit_ws/src
-RUN if "real_robot"; then git clone https://github.com/fzoric8/openzen_acore_imu.git;fi 
+RUN if "real_robot"; then git clone https://github.com/fzoric8/openzen_acore_imu.git; fi
 
 # Clone separator end effector repository 
-RUN if "real_robot"; 
-RUN git clone https://github.com/goranvasilj/separator_end_effector.git
+RUN if "real_robot"; then git clone https://github.com/goranvasilj/separator_end_effector.git; fi
+RUN if "real_robot"; then git clone --single-branch --branch https://github.com/fzoric8/schunk_robots.git; fi
+
+# =====================================================
 
 # Build initial ROS workspace
 WORKDIR /home/developer/moveit_ws
 RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"  
 
-# Added code snippet for using SSH keys during docker build
+# ===================== ssh cloning ===================
 ENV DOCKER_BUILDKIT=1
 RUN sudo apt-get install -y openssh-client
 RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan -t rsa github.com 2>&1 >> ~/.ssh/known_hosts
