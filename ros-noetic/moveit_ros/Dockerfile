@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.3
 FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu20.04
 LABEL maintainer filip.zoric@fer.hr
 
@@ -77,7 +78,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-velocity-controllers \
     ros-${ROS_DISTRO}-collada-urdf \
     ros-${ROS_DISTRO}-trac-ik-kinematics-plugin \
-    ros-${ROS_DISTRO}-tf-conversions 
+    ros-${ROS_DISTRO}-tf-conversions \
+    ros-${ROS_DISTRO}-rosserial
 
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
@@ -120,6 +122,7 @@ RUN bash -c "source /opt/ros/noetic/setup.bash; wstool init src" \
 
 
 # Add Cartesian planning -> Descartes planning capability
+# ========================================================= TBD
 #WORKDIR /home/developer/moveit_ws/src
 #RUN git clone https://github.com/PickNikRobotics/descartes_capability.git
 #WORKDIR /home/developer/moveit_ws
@@ -131,11 +134,9 @@ RUN bash -c "source /opt/ros/noetic/setup.bash; wstool init src" \
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 RUN echo "source /home/developer/moveit_ws/devel/setup.bash" >> ~/.bashrc 
 
-# Fails with fatal: could not read Username for https://github.com: No such file or directory -> non-public repo (expeceted behaviour, add ssh keys) 
-#WORKDIR /home/developer/moveit_ws/src
-#RUN git clone -b melodic-dev --single-branch https://github.com/larics/schunk_lwa4p_ros.git
 
 # Install OpenRAVE for FastIK plugin 
+# ========================================================= TBD
 # Package denpendencies 
 # RUN mkdir openrave-repos 
 # WORKDIR /home/developer/openrave-repos
@@ -175,5 +176,32 @@ RUN if "$ide"; then mkdir -p /home/developer/clion; fi
 RUN if "$ide"; then tar -xvf /home/developer/clion.tar.gz && rm -rf /home/developer/clion.tar.gz; fi
 RUN if "$ide"; then echo 'alias clion=/home/developer/clion-$version/bin/clion.sh' >> /home/developer/.bashrc; fi
 RUN if "$ide"; then rm -rf /home/developer/clion.tar.gz; fi
+
+# Dynamixel installation 
+ARG dynamixel 
+WORKDIR /home/developer
+RUN if "dynamixel"; then sudo apt-get install ros-noetic-dynamixel-sdk dynamixel-workbench dynamixel-workbench-msgs; fi
+WORKDIR /home/developer/moveit_ws/src
+RUN if "dynamixel"; then git clone https://github.com/wjwwood/serial.git; fi
+
+# IMU installation
+ARG imu
+RUN if "imu"; then sudo apt-get install ros-noetic-openzen-sensor; fi
+WORKDIR /home/developer/moveit_ws/src
+# TODO: Add ssh cloning 
+RUN if "imu"; then git clone https://github.com/fzoric8/openzen_acore_imu.git;fi 
+
+# Build initial ROS workspace
+WORKDIR /home/developer/moveit_ws
+RUN bash -c "source /opt/ros/noetic/setup.bash"; catkin build;  
+
+# Added code snippet for using SSH keys during docker build
+ENV DOCKER_BUILDKIT=1
+RUN sudo apt-get install -y openssh-client
+RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan -t rsa github.com 2>&1 >> ~/.ssh/known_hosts
+USER root
+WORKDIR /home/developer/moveit_ws/src
+#RUN --mount=type=ssh id=default ssh -vT git@github.com
+#RUN --mount=type=ssh id=default git clone git@github.com:fzoric8/schunk_lwa4p_ros.git
 
 CMD ["bash"]
