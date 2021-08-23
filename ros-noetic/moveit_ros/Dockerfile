@@ -38,7 +38,7 @@ RUN apt-get update &&  apt-get install -q -y \
     libncursesw5-dev
 
 # Add sources and keys for Gazebo installation
-RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable focal main" > /etc/apt/sources.list.d/gazebo-stable.list'
+RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
 RUN wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
 
 RUN apt-get update
@@ -81,7 +81,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-collada-urdf \
     ros-${ROS_DISTRO}-trac-ik-kinematics-plugin \
     ros-${ROS_DISTRO}-tf-conversions \
-    ros-${ROS_DISTRO}-rosserial
+    ros-${ROS_DISTRO}-rosserial \
+    ros-${ROS_DISTRO}-canopen-motor-node 
 
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
@@ -202,10 +203,15 @@ RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"
 # ===================== ssh cloning ===================
 ENV DOCKER_BUILDKIT=1
 RUN sudo apt-get install -y openssh-client
-RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan -t rsa github.com 2>&1 >> ~/.ssh/known_hosts
+ENV GIT_SSH_COMMAND="ssh -v" 
 USER root
+RUN --mount=type=ssh,id=default \
+    mkdir -p ~/.ssh/ && \
+    ssh-keyscan -H github.com >> ~/.ssh/known_hosts 
+
 WORKDIR /home/developer/moveit_ws/src
-#RUN --mount=type=ssh id=default ssh -vT git@github.com
-#RUN --mount=type=ssh id=default git clone git@github.com:fzoric8/schunk_lwa4p_ros.git
+RUN --mount=type=ssh id=default git clone git@github.com:larics/schunk_lwa4p_ros.git
+RUN bash -c "/opt/ros/noetic/setup.bash; catkin build"
 
 CMD ["bash"]
+
