@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.3
 FROM pytorch/pytorch:1.7.0-cuda11.0-cudnn8-devel
 
 LABEL maintainer filip.zoric@fer.hr
@@ -29,8 +30,8 @@ RUN apt-get update && \
     sudo \ 
     wget 
 
+# ================= ros-install =====================
 
-# Add ROS keys
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu bionic main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
@@ -43,6 +44,7 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-image-transport-plugins \
+    ros-${ROS_DISTRO}-image-common \
     ros-${ROS_DISTRO}-catkin \
     ros-${ROS_DISTRO}-control-toolbox \
     ros-${ROS_DISTRO}-ros-control \ 
@@ -77,13 +79,34 @@ USER developer
 WORKDIR /home/developer
 
 RUN sudo apt-get install -y python-catkin-tools
+RUN pip3 install rospkg 
 
-# Init ROS workspace 
+
+# ==================== catkin build ==================
+
 RUN mkdir -p catkin_ws/src 
 WORKDIR /home/developer/catkin_ws/src
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin_init_workspace" 
 WORKDIR /home/developer/catkin_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
+
+# ===================== ssh cloning ===================
+
+ENV DOCKER_BUILDKIT=1
+RUN sudo apt-get install -y openssh-client
+ENV GIT_SSH_COMMAND="ssh -v" 
+USER root
+RUN --mount=type=ssh,id=default \
+    mkdir -p ~/.ssh/ && \
+    ssh-keyscan -H github.com >> ~/.ssh/known_hosts 
+
+WORKDIR /home/developer/catkin_ws/src
+RUN git clone https://github.com/fzoric8/hpe_ros_package.git
+RUN git clone https://github.com/ros-drivers/usb_cam.git
+
+#RUN bash -c "/opt/ros/melodic/setup.bash; catkin build"
+
+
 
 CMD ["bash"]
 
