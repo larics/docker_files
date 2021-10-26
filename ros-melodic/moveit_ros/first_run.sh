@@ -35,7 +35,7 @@ docker run -it \
     --net=host \
     --privileged \
     --gpus all \
-    --name schunk_melodic_cont2 \
+    --name moveit_melodic_cont \
     moveit_melodic_img:latest
 
 
