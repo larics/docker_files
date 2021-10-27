@@ -135,6 +135,8 @@ Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/cl
 ### Most common problems 
 
 One of the main problems that occurs when using Docker files for robotic applications is expiration of GPG keys for ROS. 
+More about this incident can be found [here](https://discourse.ros.org/t/ros-gpg-key-expiration-incident/20669/)
+
 In order to fix that, in case that some `sudo apt-get update` or `sudo apt-get install` fails, please replace GPG 
 keys to newer ones. Error for expiration of GPG keys looks like following: 
 ```
@@ -143,6 +145,20 @@ The following signatures were invalid: EXPKEYSIG F42ED6FBAB17C654 Open Robotics 
 ```
 
 You can add keys by following 1.3 section in Installation instructions for corresponding ROS distribution. 
+
+If you already have docker image built, and you get following error message when trying to install new ROS package: 
+```
+
+E: Failed to fetch http://packages.ros.org/ros/ubuntu/pool/main/r/ros-melodic-sound-play/ros-melodic-sound-play_0.3.11-1bionic.20210414.224641_amd64.deb  404  Not Found [IP: 140.211.166.134 80]
+E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+
+```
+
+You can fix it by typing following command: 
+```
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+
+```
 
 
 ## TODO: 
