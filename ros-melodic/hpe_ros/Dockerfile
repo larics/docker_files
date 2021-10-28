@@ -21,6 +21,7 @@ RUN apt-get update && \
     build-essential \
     feh \ 
     git \
+    locate \
     nano \
     python \
     python-pip \
@@ -79,7 +80,7 @@ USER developer
 WORKDIR /home/developer
 
 RUN sudo apt-get install -y python-catkin-tools
-RUN pip3 install rospkg 
+RUN pip install rospkg 
 
 
 # ==================== catkin build ==================
@@ -105,7 +106,12 @@ RUN git clone https://github.com/fzoric8/hpe_ros_package.git
 RUN git clone https://github.com/ros-drivers/usb_cam.git
 
 #RUN bash -c "/opt/ros/melodic/setup.bash; catkin build"
-
+# ================= TODO: ============================
+#
+# set up Torch path in hpe_ros_package automatically
+# how to download weights automatically 
+#
+# =====================================================
 
 
 CMD ["bash"]
