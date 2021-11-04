@@ -33,7 +33,7 @@ RUN apt-get update && \
     wget 
 
 # Remove cudnn7.6.5
-RUN apt-get purge -y \ 
+RUN apt-get purge -y --allow-change-held-packages \ 
     libcudnn7 \
     libcudnn7-dev
 
@@ -130,7 +130,7 @@ RUN sudo apt-get update \
 #RUN ./b2 headers
 
 WORKDIR /home/developer
-# Provided prebuilt versions (allegedly/not suer if only headers)
+# Provided prebuilt versions (allegedly/not sure if only headers)
 #ARG BOOST_VERSION 
 #ARG BOOST_VERSION_
 #ENV BOOST_VERSION=${BOOST_VERSION}
