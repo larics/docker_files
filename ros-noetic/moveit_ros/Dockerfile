@@ -10,6 +10,8 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 ENV TZ=Europe/Zagreb
+ENV ROSCONSOLE_OUTPUT '[${severity}] [${time}] [${node}]: ${message}'
+
 
 # Mitigate interactive prompt for choosing keyboard type
 COPY ./keyboard /etc/default/keyboard
