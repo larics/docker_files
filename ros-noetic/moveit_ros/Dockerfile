@@ -10,7 +10,8 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 ENV TZ=Europe/Zagreb
-ENV ROSCONSOLE_OUTPUT '[${severity}] [${time}] [${node}]: ${message}'
+ENV ROSCONSOLE_FORMAT '[${severity}] [${time}] [${node}]: ${message}'
+#ROSCONSOLE_FORMAT=[${severity}] [${time}] [${node}] [${file}] [${thread}] [${function}]: ${message}
 
 
 # Mitigate interactive prompt for choosing keyboard type
