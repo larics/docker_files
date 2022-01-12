@@ -103,7 +103,6 @@ RUN apt-get install -y --no-install-recommends \
     python-pip \
     gstreamer1.0-pocketsphinx 
 
-
 #COPY entrypoint.sh /opt/bin/entrypoint.sh
 RUN adduser root pulse-access
 # Add user and add it to sudo group
@@ -144,6 +143,7 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; catkin config --extend /opt/ros
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release" 
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+RUN echo "source /home/developer/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
 
 RUN sudo apt-get install -y -q \
@@ -174,6 +174,12 @@ RUN git clone https://github.com/larics/mmuav_gazebo.git \
     && cd mmuav_gazebo \
     && git checkout tags/summer_semester21 \
     && cd .. 
+
+########## Multimaster if needed ###################
+# RUN sudo add-apt-repository ppa:roehling/grpc
+# RUN sudo apt-get update
+# RUN sudo apt install python-grpcio python-grpc-tools
+# RUN git clone https://github.com/fkie/multimaster_fkie.git
 
 # Demand moveit-ros-planning
 RUN git clone https://github.com/larics/aerial_manipulators.git --branch devel --single-branch 

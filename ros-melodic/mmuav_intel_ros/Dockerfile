@@ -113,6 +113,7 @@ RUN bash -c "source /opt/ros/melodic/setup.bash; catkin config --extend /opt/ros
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release" 
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+RUN echo "source /home/developer/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
 
 RUN sudo apt-get install -y -q \

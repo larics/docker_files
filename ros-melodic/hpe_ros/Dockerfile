@@ -92,6 +92,9 @@ WORKDIR /home/developer/catkin_ws
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin config -DPYTHON_EXECUTABLE="/opt/conda/bin/python3.8 -DPYTHON_INCLUDE_DIR=/opt/conda/include/python3.8 -DPYTHON_LIBRARY=/opt/conda/lib/libpython3.8.so -DSETUPTOOLS_DEB_LAYOUT=OFF"
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
 
+RUN echo "source /home/developer/catkin_ws/devel/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
+
 # ===================== ssh cloning ===================
 
 ENV DOCKER_BUILDKIT=1
