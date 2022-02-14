@@ -12,14 +12,21 @@ windows:
       panes:
         - bebop:
           - docker start -i mmuav_audio_cont
-          - sleep 5
+          - sleep 2
           - roslaunch med_uav_control bebop_full_experiment.launch rc_joy:=false
         - hpe:
           - docker start -i hpe_ros_cont
           - sleep 10
           - roslaunch hpe_ros_package hmi_integration.launch
+        - rtsp: 
+          - sleep 10
+          - docker exec -it mmuav_audio_cont bash
+          - roslaunch ros_rtsp rtsp_streams.launch 
         - fpv:
           - ssh rpi@raspberry
+          - cd /home/rpi/Desktop/gstreamer-python
+          - sleep 15
+          - python3 examples/pipeline_with_parse_launch.py -p "rtspsrc location=rtsp://hmi-server:8554/full drop-on-latency=false use-pipeline-clock=true do-retransmission=false latency=10 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false"
 
 
 

@@ -13,10 +13,17 @@ windows:
         - bebop:
           - docker start -i mmuav_audio_cont
           - sleep 5
-          - roslaunch med_uav_control bebop_full_experiment.launch rc_joy:=false
-        - hpe:
-          - docker start -i hpe_ros_cont
+          - roslaunch med_uav_control bebop_full_experiment.launch rc_joy:=true
+        - uav-ar-gui:
           - sleep 10
-          - roslaunch hpe_ros_package hmi_integration.launch
-        - fpv:
-          - ssh rpi@raspberry
+          - docker exec -it mmuav_audio_cont bash
+          - roslaunch uav_ar_gui uav_ar_gui.launch
+        - rtsp: 
+          - sleep 12
+          - docker exec -it mmuav_audio_cont bash 
+          - roslaunch ros_rtsp rtsp_streams.launch
+        #- fpv:
+        #  - ssh rpi@raspberry
+        #  - sleep 15
+        #  - export DISPLAY:=0; gst-launch-1.0 -v rtspsrc location=rtsp://hmi-server:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false
+          
