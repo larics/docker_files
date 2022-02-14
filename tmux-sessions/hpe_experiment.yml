@@ -1,0 +1,27 @@
+# /home/zozan-server/.config/tmuxinator/hpe_experiment.yml
+
+name: hpe_experiment
+root: ~/
+
+windows:
+  - editor:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - bebop:
+          - docker start -i mmuav_audio_cont
+          - sleep 5
+          - roslaunch med_uav_control bebop_full_experiment.launch rc_joy:=false
+        - hpe:
+          - docker start -i hpe_ros_cont
+          - sleep 10
+          - roslaunch hpe_ros_package hmi_integration.launch
+        - fpv:
+          - ssh rpi@raspberry
+
+
+
+
+
