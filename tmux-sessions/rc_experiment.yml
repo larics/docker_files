@@ -18,12 +18,12 @@ windows:
           - sleep 10
           - docker exec -it mmuav_audio_cont bash
           - roslaunch uav_ar_gui uav_ar_gui.launch
-        - rtsp: 
+        - rtsp:
           - sleep 12
-          - docker exec -it mmuav_audio_cont bash 
+          - docker exec -it mmuav_audio_cont bash
           - roslaunch ros_rtsp rtsp_streams.launch
-        #- fpv:
-        #  - ssh rpi@raspberry
-        #  - sleep 15
-        #  - export DISPLAY:=0; gst-launch-1.0 -v rtspsrc location=rtsp://hmi-server:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false
-          
+        - fpv:
+          - ssh rpi@raspberry
+          - sleep 15
+          - export DISPLAY=:0; gst-launch-1.0 -v rtspsrc location=rtsp://hmi-server:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false
+          - wmctrl -r ':ACTIVE:' -b toggle,fullscreen
