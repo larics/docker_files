@@ -32,6 +32,8 @@ RUN apt-get update &&  apt-get install -q -y \
     git \
     imagemagick \
     lsb-release \
+    libavahi-core-dev \
+    libavahi-client-dev \
     libboost-dev \
     sudo \
     nano \
