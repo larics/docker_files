@@ -17,10 +17,10 @@ windows:
         - uav-ar-gui:
           - sleep 10
           - docker exec -it mmuav_audio_cont bash
-          - roslaunch uav_ar_gui uav_ar_gui.launch
-        - rtsp:
+          - roslaunch uav_ar_gui uav_ar_gui.launch use_hpe:=false
+        - rtsp: 
           - sleep 12
-          - docker exec -it mmuav_audio_cont bash
+          - docker exec -it mmuav_audio_cont bash 
           - roslaunch ros_rtsp rtsp_streams.launch
         - fpv:
           - ssh rpi@raspberry
