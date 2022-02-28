@@ -53,6 +53,9 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-image-transport-plugins \
+    ros-${ROS_DISTRO}-image-common \
+    ros-${ROS_DISTRO}-geometry2 \
+    ros-${ROS_DISTRO}-roslint \
     ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-map-server \
     ros-${ROS_DISTRO}-octomap-ros \
