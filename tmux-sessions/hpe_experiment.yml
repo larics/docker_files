@@ -1,4 +1,3 @@
-  GNU nano 4.8                                                                                                 /home/zozan-server/.config/tmuxinator/hpe_experiment.yml                                                                                                           
 # /home/zozan-server/.config/tmuxinator/hpe_experiment.yml
 
 name: hpe_experiment
@@ -14,22 +13,22 @@ windows:
         - bebop:
           - docker start -i mmuav_audio_cont
           - sleep 5
-          - roslaunch med_uav_control bebop_full_experiment.launch rc_joy:=false
+          - roslaunch med_uav_control bebop_full_experiment.launch rc_joy:=false user_id:=<%= @settings["user_id"] %> run:=<%= @settings["run"] %>
         - hpe:
           - docker start -i hpe_ros_cont
           - sleep 10
           - roslaunch hpe_ros_package hmi_integration.launch
-        - uav-ar-gui:
+        - uav-ar-gui: 
           - sleep 15
           - docker exec -it mmuav_audio_cont bash
-          - roslaunch uav_ar_gui uav_ar_gui.launch use_hpe:=true
-        - rtsp:
+          - roslaunch uav_ar_gui uav_ar_gui.launch use_hpe:=true 
+        - rtsp: 
           - sleep 15
           - docker exec -it mmuav_audio_cont bash
-          - roslaunch ros_rtsp rtsp_streams.launch
+          - roslaunch ros_rtsp rtsp_streams.launch 
         - fpv:
           - ssh rpi@raspberry
-          - sleep 20
+          - sleep 20 
           - export DISPLAY=:0; gst-launch-1.0 -v rtspsrc location=rtsp://hmi-server:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false
           - wmctrl -r ':ACTIVE:' -b toggle,fullscreen
 
