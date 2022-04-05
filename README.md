@@ -32,7 +32,7 @@ docker build -t <image_name>:<tag_name> <dockerfile_path>
 
 For concrete example (ros-kinetic with gazebo) run following: 
 ```
-docker build -t ros_gazebo_img:melodic_11
+docker build -t ros_gazebo_img:melodic_11 .
 ```
 
 ## How to create container out of the Dockerfile? 
