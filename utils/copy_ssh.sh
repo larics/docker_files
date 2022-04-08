@@ -6,5 +6,5 @@ read cont_name
 
 echo "Container name where ssh_config is copied is: $cont_name"
 
-docker cp /home/$USER/.ssh/id_rsa $cont_name:/root/.ssh
+docker cp /home/$USER/.ssh/id_rsa $cont_name:/home/developer/.ssh
 
