@@ -1,6 +1,9 @@
 FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu18.04
 LABEL maintainer filip.zoric@fer.hr
 
+# TODO: 
+# - Add moveit source build
+
 # Setup environment
 ENV LANG C.UTF-8
 ENV LC_AL C.UTF-8
@@ -66,6 +69,7 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-control-toolbox \
     ros-${ROS_DISTRO}-controller-interface \
     ros-${ROS_DISTRO}-costmap-2d \
+    ros-${ROS_DISTRO}-rqt-launchtree \
     ros-${ROS_DISTRO}-ros-control \ 
     ros-${ROS_DISTRO}-ros-controllers \
     ros-${ROS_DISTRO}-tf-conversions \

@@ -1,0 +1,33 @@
+# /home/zozan-server/.config/tmuxinator/hpe_experiment.yml
+
+name: rc_experiment
+root: ~/
+
+windows:
+  - editor:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - bebop:
+          - docker start -i mmuav_audio_cont
+          - sleep 5
+          - roslaunch med_uav_control bebop_full_experiment.launch rc_joy:=true user_id:=<%= @settings["user_id"] %> run:=<%= @settings["run"] %>
+        - uav-ar-gui:
+          - sleep 10
+          - docker exec -it mmuav_audio_cont bash
+          - roslaunch uav_ar_gui uav_ar_gui.launch use_hpe:=false
+        - debug: 
+          - docker exec -it mmuav_audio_cont bash
+        - rtsp: 
+          - sleep 12
+          - docker exec -it mmuav_audio_cont bash 
+          - roslaunch ros_rtsp rtsp_streams.launch
+        - fpv:
+          - ssh rpi@raspberry
+          - sleep 15
+          - export DISPLAY=:0; gst-launch-1.0 -v rtspsrc location=rtsp://hmi-server:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false
+          - wmctrl -r ':ACTIVE:' -b toggle,fullscreen
+        - debug1: 
+          - echo "This is simple debug1 pane" 
