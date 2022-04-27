@@ -22,6 +22,17 @@ sudo apt-get update
 sudo apt-get install -y nvidia-docker2
 ```
 
+## Conceptual understanding
+
+In Figure 1. it is shown  how to create docker container from Dockerfile 
+
+![Figure 1.](./utils/assets/figure1.png) 
+
+In Figure 2. it's possible to see how different commands for docker container are used: 
+
+![Figure 2.](./utils/assets/figure2.png)
+
+
 
 ## How to build Dockerfile? 
 
