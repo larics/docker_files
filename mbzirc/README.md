@@ -100,6 +100,18 @@ To build a docker image of the simulator locally:
     bash run.bash mbzirc_sim
     ```
 
+## Download collection
+
+Download mbzirc models using script to prevent gazebo from crashing on initial run 
+if internet is too slow. 
+
+Run `download_collection.py` as follows: 
+```
+python3 download_collection.py` -o "OpenRobotics" -c "mbzirc" 
+```
+
+In `$HOME/.ignition/fuel/fuel/fuel.ignitionrobotics.org/openrobotics/models`.
+
 ## Running the simulator
 
 Please see the wiki:  https://github.com/osrf/mbzirc/wiki
