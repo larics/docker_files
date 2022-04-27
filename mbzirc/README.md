@@ -112,6 +112,32 @@ python3 download_collection.py` -o "OpenRobotics" -c "mbzirc"
 
 In `$HOME/.ignition/fuel/fuel/fuel.ignitionrobotics.org/openrobotics/models`.
 
+## Development environment
+
+For simple development, use vscode and install InteliSense as [Remote Containers](https://code.visualstudio.com/docs/remote/containers). 
+
+If you want to configure editor to include headers add this instead of your `c_cpp_properties.json` in editor: 
+```
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**", 
+                "/opt/ros/galactic/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
+```
+
+
 ## Running the simulator
 
 Please see the wiki:  https://github.com/osrf/mbzirc/wiki
