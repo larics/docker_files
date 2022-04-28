@@ -84,8 +84,6 @@ fi
 docker run -it \
   --env="DISPLAY=$DISPLAY" \
   --env="QT_X11_NO_MITSHM=1" \
-  --env="XAUTHORITY=$XAUTH" \
-  --volume="$XAUTH:$XAUTH" \
   --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
   --volume="/etc/localtime:/etc/localtime:ro" \
   --volume="/dev:/dev" \
