@@ -14,6 +14,11 @@ ARG ROS_DISTRO=melodic
 # Setup timezone (fix interactive package installation) 
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
+# NVIDIA keys fix
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+RUN apt-key del 7fa2af80
+RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
 
 # Install necessary software packages 
 RUN apt-get update && \
