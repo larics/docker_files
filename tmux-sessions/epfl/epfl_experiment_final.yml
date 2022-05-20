@@ -1,0 +1,96 @@
+name: epfl_experiment
+root: ~/
+on_project_exit:
+  - docker kill hpe_ros_cont 
+  - docker kill mmuav_ros_cont 
+  - ssh -X victor@jetson && bash -c "rosnode kill -a; killall -9 rosmaster; killall -9 roscore"; exit
+  - ssh -X rpi@raspberry && bash -c "rosnode kill -a; killall -9 rosmaster; killall -9 roscore"; exit
+  #- docker kill mmuav_audio_cont
+  #- docker kill hpe_ros_cont
+
+windows:
+  - hpe_pc:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - roscore:
+          - docker start -i hpe_ros_cont
+          - sleep 2
+          - roscore
+        - xtion_camera:
+          - sleep 5
+          - docker exec -it hpe_ros_cont bash
+          - waitForRos; roslaunch hpe_ros_package usb_cam.launch
+        - hpe_inference:
+          - sleep 5
+          - docker exec -it hpe_ros_cont bash
+          - waitForRos; waitFor /usb_camera/image_raw; roslaunch hpe_ros_package nn_inference.launch
+        - ref_gen:
+          - sleep 5
+          - docker exec -it hpe_ros_cont bash
+          - waitForRos; waitFor /stickman; roslaunch hpe_ros_package hpe_gen_reference.launch
+        - rtsp_stream:
+          - waitFor /stickman_cont_area; roslaunch ros_rtsp rtsp_streams.launch
+  - rpi_pc:
+      layout: tiled
+      panes:
+        - rtsp-uav:
+          - waitForRos; waitFor /stickman;  
+          - ssh rpi@raspberry
+          - sleep 45; export DISPLAY=:0; gst-launch-1.0 -v rtspsrc location=rtsp://jetson:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false
+        - hpe-stream:
+          - waitForRos; waitFor /stickman_cont_area; 
+          - ssh rpi@raspberry
+          - sleep 50; export DISPLAY=:0; gst-launch-1.0 -v rtspsrc location=rtsp://goran-pc:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false 
+  - jetson_pc:
+      layout: tiled
+      panes:
+        - roscore:
+          - ssh -X victor@jetson
+          - roscore
+        - flir_cam:
+          - ssh -X victor@jetson
+          - waitForRos; sleep 5; roslaunch spinnaker_camera_driver camera.launch
+        - rtsp_stream:
+          - ssh -X victor@jetson
+          - waitFor /camera/image_raw && roslaunch ros_rtsp rtsp_streams.launch
+        - px4:
+          - ssh -X victor@jetson
+          - waitForRos && sleep 8; export ROS_NAMESPACE=drone_1; roslaunch mavros px4.launch fcu_url:=/dev/ttyTHS1:921600 gcs_url:=udp://:14555@192.168.141.244:14550
+        - optitrack: 
+          - ssh victor@jetson 
+          - waitForRos && roslaunch dronedome dronedome.launch server:=192.168.0.249
+        - servo_control: 
+          - ssh victor@jetson
+          - waitForRos && sleep 12; roslaunch servo_controller servo_controller.launch 
+        - close_servo:
+          - ssh victor@jetson
+          - waitForRos && sleep 15; rosrun servo_controller close.py
+  - multimaster_network:
+      layout: tiled
+      panes:
+        - hpe-discovery:
+          - sleep 5; roscore;
+          - sleep 50; rosrun fkie_master_discovery master_discovery
+        - hpe-sync:
+          - sleep 60; roslaunch fkie_master_sync master_sync.launch
+        - jetson-discovery:
+          - ssh victor@jetson
+          - sleep 50; rosrun fkie_master_discovery master_discovery
+        - jetson-sync:
+          - ssh victor@jetson
+          - sleep 60; roslaunch fkie_master_sync master_sync.launch
+        - voice-control:
+          - sleep 15; 
+          - waitForRos; roslaunch uav_ros_control launchfile.launch
+  - jetson_dev:
+      layout: tiled
+      panes:
+        - ssh -X victor@jetson  
+  - record_bags:
+      layout: tiled 
+      panes: 
+        - cd /home/goran/experiments_epfl; waitFor /drone_1/mavros/setpoint_position/local; rosbag record -a
+
