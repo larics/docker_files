@@ -22,6 +22,17 @@ sudo apt-get update
 sudo apt-get install -y nvidia-docker2
 ```
 
+## Conceptual understanding
+
+In next figure it is shown  how to create docker container from Dockerfile 
+
+![Figure 1.](./utils/assets/figure1.png) 
+
+In following figure it's possible to see how different commands for docker container are used: 
+
+![Figure 2.](./utils/assets/figure2.png)
+
+
 
 ## How to build Dockerfile? 
 
@@ -32,7 +43,7 @@ docker build -t <image_name>:<tag_name> <dockerfile_path>
 
 For concrete example (ros-kinetic with gazebo) run following: 
 ```
-docker build -t ros_gazebo_img:melodic_11
+docker build -t ros_gazebo_img:melodic_11 .
 ```
 
 ## How to create container out of the Dockerfile? 

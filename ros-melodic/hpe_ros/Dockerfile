@@ -14,6 +14,11 @@ ARG ROS_DISTRO=melodic
 # Setup timezone (fix interactive package installation) 
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
 
+# NVIDIA keys fix
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+RUN apt-key del 7fa2af80
+RUN apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/3bf863cc.pub
 
 # Install necessary software packages 
 RUN apt-get update && \
@@ -89,7 +94,7 @@ RUN mkdir -p catkin_ws/src
 WORKDIR /home/developer/catkin_ws/src
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin_init_workspace" 
 WORKDIR /home/developer/catkin_ws
-RUN bash -c "source /opt/ros/melodic/setup.bash; catkin config -DPYTHON_EXECUTABLE="/opt/conda/bin/python3.8 -DPYTHON_INCLUDE_DIR=/opt/conda/include/python3.8 -DPYTHON_LIBRARY=/opt/conda/lib/libpython3.8.so -DSETUPTOOLS_DEB_LAYOUT=OFF"
+RUN bash -c "source /opt/ros/melodic/setup.bash; catkin config -DPYTHON_EXECUTABLE=/opt/conda/bin/python3.8 -DPYTHON_INCLUDE_DIR=/opt/conda/include/python3.8 -DPYTHON_LIBRARY=/opt/conda/lib/libpython3.8.so -DSETUPTOOLS_DEB_LAYOUT=OFF"
 RUN bash -c "source /opt/ros/melodic/setup.bash; catkin build"
 
 RUN echo "source /home/developer/catkin_ws/devel/setup.bash" >> ~/.bashrc

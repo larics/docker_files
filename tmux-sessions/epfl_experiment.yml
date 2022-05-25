@@ -1,0 +1,57 @@
+name: epfl_experiment
+root: ~/
+on_project_exit:
+  - ssh -X victor@jetson && bash -c "rosnode kill -a; killall -9 rosmaster; killall -9 roscore"
+  - ssh -X rpi@raspberry && bash -c "rosnode kill -a; killall -9 rosmaster; killall -9 roscore"
+  - docker stop mmuav_audio_cont && docker stop hpe_ros_cont
+
+windows:
+  - hpe_pc:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - hpe:
+          - docker start -i hpe_ros_cont
+          - sleep 10
+          - roslaunch hpe_ros_package hmi_integration.launch
+        - master_discovery:
+          - docker start -i mmuav_audio_cont
+          - sleep 15 && rosrun fkie_master_discovery master_discovery
+        - master_sync:
+          - sleep 5 && docker exec -it mmuav_audio_cont bash
+          - sleep 20 && roslaunch fkie_master_sync master_sync.launch
+  - rpi_pc:
+      layout: tiled
+      panes:
+        - roscore:
+          - ssh -X rpi@raspberry
+          - sleep 5 && roscore
+        - master_discovery:
+          - ssh -X rpi@raspberry
+          - sleep 16 && rosrun fkie_master_discovery master_discovery
+        - master_sync:
+          - ssh -X rpi@raspberry
+          - sleep 20 && echo "run_master_sync"
+          - roslaunch fkie_master_sync master_sync.launch
+        - dev:
+          - ssh -X rpi@raspberry
+  - jetson_pc:
+      layout: tiled
+      panes:
+        - roscore:
+          - ssh -X victor@jetson
+          - roscore
+        - flir_cam:
+          - ssh -X victor@jetson
+          - sleep 5 && roslaunch spinnaker_camera_driver camera.launch
+        - master_discovery:
+          - ssh -X victor@jetson
+          - sleep 16 && rosrun fkie_master_discovery master_discovery
+        - master_sync:
+          - ssh -X victor@jetson
+          - sleep 20 && roslaunch fkie_master_sync master_sync.launch
+        - dev:
+          - ssh -X victor@jetson
+          - export ROS_NAMESPACE=drone_1; roslaunch mavros px4.launch fcu_url:=/dev/ttyTHS1:921600 gcs_url:=udp://:14555@192.168.141.244:14550
