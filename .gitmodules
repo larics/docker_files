@@ -1,0 +1,3 @@
+[submodule "mbzirc"]
+	path = mbzirc
+	url = git@github.com:fzoric8/mbzirc.git
