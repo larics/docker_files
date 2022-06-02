@@ -171,6 +171,14 @@ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo ap
 
 ```
 
+## Git submodules
+
+You can use and initialize git submodules with following command: 
+```
+git submodule update --init <submodule_name>
+```
+
+In this repo, currently is only `mbzirc` submodule. 
 
 ## TODO: 
 
