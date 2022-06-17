@@ -11,9 +11,11 @@ blueBufferSize -1, alphaBufferSize -1, stencilBufferSize 8, samples -1,
 swapBehavior QSurfaceFormat::DoubleBuffer, swapInterval 1, colorSpace QSurfaceFormat::DefaultColorSpace, 
 profile  QSurfaceFormat::NoProfile) 
 
+```
+
+
 Following this [tutorial](https://github.com/andreamerello/docker-ssh-gui) 
 
-```
 
 TODO: 
  - [x] Building outside of docker context 
