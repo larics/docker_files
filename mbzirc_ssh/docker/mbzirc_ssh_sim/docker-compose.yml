@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  ros2-master:
+    network_mode: "host"
+    image: mbzirc_ssh_img
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: [gpu]
+    container_name: mbzirc_ssh_cont
+    build:
+      network: host
+      context: .
+      dockerfile: ./Dockerfile
+    privileged: true
+    # Not necessary when running in host network mode.
+    #ports:
+    #  - 8080:8080 # Passthrough for Jupyter Notebook
+    #  - 1234:1234 # Passthrough for SSH
+    environment:
+      - "DISPLAY"
+      - "QT_X11_NO_MITSHM=1" #fix some QT bugs
+    volumes: 
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw # Share X11 socket with container
+      - $HOME/.Xauthority:/home/developer/.Xauthority:rw # Share X11 permissions
+      - $PWD/dev:/home/developer/dev:rw
+    command: sleep infinity
