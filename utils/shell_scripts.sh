@@ -11,6 +11,16 @@ waitForRos() {
   done
 }
 
+waitForPing() {
+  while ! ping -c 1 -n -w 1 $1 &> /dev/null
+    do
+      echo "Waiting for $1 to come online!"
+      sleep 1; 
+  done
+      echo "$1 is online!"
+      sleep 1; 
+}
+
 waitForSimulation() {
   until timeout 3s rostopic echo /gazebo/model_states -n 1 --noarr > /dev/null 2>&1; do
     echo "waiting for simulation"
