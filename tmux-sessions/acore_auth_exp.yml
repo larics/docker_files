@@ -1,0 +1,84 @@
+# /home/zozan/.config/tmuxinator/acore_auth_exp.yml
+
+name: acore_auth_exp
+root: ~/
+
+# Optional tmux socket
+# socket_name: foo
+
+# Note that the pre and post options have been deprecated and will be replaced by
+# project hooks.
+
+# Project hooks
+# Runs on project start, always
+on_project_start: 
+ - docker start hpe_ros_cont
+ - sleep 2
+# Run on project start, the first time
+# on_project_first_start: command
+# Run on project start, after the first time
+# on_project_restart: command
+# Run on project exit ( detaching from tmux session )
+on_project_exit: 
+ - docker kill hpe_ros_cont
+ - sleep 2
+ - docker kill mmuav_audio_cont
+ - sleep 2
+# Run on project stop
+# on_project_stop: command
+
+# Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
+# pre_window: rbenv shell 2.0.0-p247
+
+# Pass command line options to tmux. Useful for specifying a different tmux.conf.
+# tmux_options: -f ~/.tmux.mac.conf
+
+# Change the command to call tmux.  This can be used by derivatives/wrappers like byobu.
+# tmux_command: byobu
+
+# Specifies (by name or index) which window will be selected on project startup. If not set, the first window is used.
+# startup_window: editor
+
+# Specifies (by index) which pane of the specified window will be selected on project startup. If not set, the first pane is used.
+# startup_pane: 1
+
+# Controls whether the tmux session should be attached to automatically. Defaults to true.
+# attach: false
+
+windows:
+  - hpe_ctl:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - roscore:
+          - docker exec -it hpe_ros_cont bash
+          - sleep 2;
+          - roscore
+        - auth_hpe:
+          - sleep 3;  docker exec -it hpe_ros_cont bash
+          - waitForRos; waitFor /usb_cam/image_raw; roslaunch visualanalysis_acw human_2d_pose.launch
+        - hpe_cam:
+          - sleep 4; docker exec -it hpe_ros_cont bash
+          - waitForRos; roslaunch usb_cam usb_cam-test.launch
+        - drone_ctl:
+          - sleep 5; docker exec -it hpe_ros_cont bash
+          - waitForRos; waitFor /uav/visualanalysis/pose_det; roslaunch hpe_ros_package uav_control.launch
+        - rtsp_stream:
+          - sleep 6; docker exec -it hpe_ros_cont bash
+          - waitFor /stickman_cont_area; roslaunch ros_rtsp rtsp_streams.launch
+  - bebop_ctl:
+      layout: tiled
+      panes:
+        - bebop_driver:
+          - docker start -i mmuav_audio_cont
+          - waitForPing bebop; roslaunch bebop_driver bebop_node.launch
+        - joy_ctl:
+          - sleep 2; docker exec -it mmuav_audio_cont bash
+          - waitForRos; waitFor /bebop/takeoff; bebop_joy_override.launch
+  - rpi:
+      layout: tiled
+      panes:
+        - rtsp:
+          - waitForPing raspberry; ssh -X rpi@raspberry
