@@ -1,0 +1,71 @@
+name: acore_sb_exp
+root: ~/
+on_project_exit:
+  - docker kill hpe_cont 
+  - docker kill uav_cont 
+  - ssh -X rpi@raspberry && bash -c "rosnode kill -a; killall -9 rosmaster; killall -9 roscore"; exit
+  #- docker kill mmuav_audio_cont
+  #- docker kill hpe_ros_cont
+
+windows:
+  - hpe_pc:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - roscore:
+          - docker start -i hpe_cont
+          - sleep 2
+          - roscore
+        - xtion_camera:
+          - sleep 5
+          - docker exec -it hpe_cont bash
+          - waitForRos; roslaunch hpe_ros_package usb_cam.launch
+        - hpe_inference:
+          - sleep 5
+          - docker exec -it hpe_cont bash
+          - waitForRos; waitFor /usb_camera/image_raw; roslaunch hpe_ros_package nn_inference.launch
+        - ref_gen:
+          - sleep 5
+          - docker exec -it hpe_cont bash
+          - waitForRos; waitFor /stickman; roslaunch hpe_ros_package hpe_gen_reference.launch
+        - uav_gui: 
+          - sleep 5
+          - source /uav_ws_aerialcore/devel/setup.bash 
+          - waitForRos; waitFor /stickman_cont_area; waitFor /bebop/camera/image_raw; roslaunch uav_ar_gui uav_ar_gui.launch
+        - rtsp_stream:
+          - waitFor /stickman_cont_area; roslaunch ros_rtsp rtsp_streams.launch
+  - bebop_ctl: 
+      layout: tiled 
+      panes: 
+        - bebop_driver: 
+          - docker start -i uav_cont 
+          - roslaunch bebop_driver bebop_node.launch 
+        - bebop_joy: 
+          - sleep 2; docker exec -it uav_cont bash
+          - roslaunch med_uav_control bebop_joy_override.launch            
+        - joy_out: 
+          - sleep 5; docker exec -it uav_cont bash
+          - waitFor /joy; rostopic echo /joy
+        - hpe_joy_out:
+          - sleep 5; docker exec -it uav_cont bash
+          - waitFor /hpe_joy; rostopic echo /hpe_joy 
+  - rpi_pc:
+      layout: tiled
+      panes:
+        - hpe-stream:
+          - waitForRos; waitFor /uav/gui; waitForPing raspberry
+          - ssh rpi@raspberry
+          - sleep 5; export DISPLAY=:0; gst-launch-1.0 -v rtspsrc location=rtsp://goran-pc:8554/full drop-on-latency=true use-pipeline-clock=true do-retransmission=false latency=0 protocols=GST_RTSP_LOWER_TRANS_UDP ! rtph264depay ! h264parse ! avdec_h264 ! autovideosink sync=false 
+        - full-screen: 
+          - waitForRos; waitFor /uav/gui; 
+          - waitForPing raspberry; ssh rpi@raspberry
+          - export DISPLAY=:0
+          - wmctrl -r ':ACTIVE:' -b toggle,fullscreen
+
+#  - record_bags:
+#      layout: tiled 
+#      panes: 
+#        - cd /home/goran/experiments_epfl; waitFor /drone_1/mavros/setpoint_position/local; rosbag record -a
+
