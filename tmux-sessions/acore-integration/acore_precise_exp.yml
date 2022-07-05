@@ -25,9 +25,9 @@ on_project_exit:
  - sleep 2
 # Run on project stop
 on_project_stop: 
- - docker stop hpe_cont 
+ - docker kill hpe_cont 
  - sleep 2 
- - docker stop uav_cont 
+ - docker kill uav_cont 
  - sleep 2
 
 # Runs in each window and pane before window/pane specific commands. Useful for setting up interpreter versions.
@@ -85,6 +85,9 @@ windows:
         - debug_hpe_joy:
           - sleep 5; docker exec -it uav_cont bash
           - waitForRos; waitFor /hpe_joy; rostopic echo /hpe_joy
+        - debug_cmd_vel:
+          - sleep 5; docker exec -it uav_cont bash
+          - waitForRos; waitFor /cmd_vel; rostopic echo /bebop/cmd_vel 
   - rpi:
       layout: tiled
       panes:
