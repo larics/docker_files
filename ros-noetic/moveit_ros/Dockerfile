@@ -213,8 +213,41 @@ RUN --mount=type=ssh,id=default \
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts 
 
 WORKDIR /home/developer/moveit_ws/src
-RUN --mount=type=ssh id=default git clone git@github.com:larics/schunk_lwa4p_ros.git
-RUN bash -c "/opt/ros/noetic/setup.bash; catkin build"
+RUN --mount=type=ssh id=default git clone -b noetic-dev --single-branch git@github.com:larics/schunk_lwa4p_ros.git
+
+# Deps for schunk_lwa4p_ros
+RUN --mount=type=ssh id=default git clone git@github.com:goranvasilj/separator_end_effector.git
+
+# Deps for schunk_lwa4p_ros
+RUN sudo apt-get install -y ros-noetic-serial \
+                            ros-noetic-dynamixel-workbench \
+                            ros-noetic-dynamixel-workbench-msgs 
+# Build fails because of the schunk_lwa4p_ros fail so I've added exit 0 
+RUN bash -c "/opt/ros/noetic/setup.bash; catkin build"; exit 0
+
+# ===================== VIM ============================
+
+# Install all packages needed for vim autocomplete
+RUN apt-get install -y build-essential \
+                       cmake \
+                       vim-nox \
+                       python3-dev \
+                       golang \
+                       nodejs \
+                       mono-complete \
+                       default-jdk \
+                       npm
+
+USER developer
+# Download and install Vundle (Vim bundle management tool) 
+RUN git clone https://github.com/VundleVim/Vundle.vim.git /home/developer/.vim/bundle/Vundle.vim
+WORKDIR /home/developer/.vim/bundle/Vundle.vim
+COPY vimrc /home/developer/.vimrc
+RUN vim +PluginInstall +qall 
+WORKDIR /home/developer/.vim/bundle/YouCompleteMe
+RUN python3 install.py --all
+
+# Add ROS autocomplete config + debug 
 
 CMD ["bash"]
 
