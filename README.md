@@ -22,6 +22,12 @@ sudo apt-get update
 sudo apt-get install -y nvidia-docker2
 ```
 
+** Add permissions for X server to enable GUI applications: **
+
+```
+echo `xhost local:root` >> ~/.bashrc  
+```
+
 ## Conceptual understanding
 
 In next figure it is shown  how to create docker container from Dockerfile 
