@@ -45,6 +45,6 @@ docker run -it \
     --net=host \
     --privileged \
     --gpus all \
-    --name ros_realsense_cont1 \
+    --name ros_realsense_cont \
     ros_realsense_img:latest
 

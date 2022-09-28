@@ -62,6 +62,6 @@ If you want to use/check camera depth run:
 ```bash
 roslaunch realsense2_camera rs_camera.launch
 ```
-and the topic '/camera/depth_registered/points' will be available.
+and the topic `/camera/depth_registered/points` will be available.
 
 For more information, please refer to [realsense-ros](https://github.com/IntelRealSense/realsense-ros).
