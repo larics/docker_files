@@ -29,12 +29,10 @@ echo "Running docker..."
 
 docker run -it \
     --env="DISPLAY=$DISPLAY" \
-    --env="QT_X11_NO_MITSHM=1" \
     --env="TERM=xterm-256color" \
-    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
     --volume="/dev:/dev" \
     --net=host \
     --privileged \
-    --gpus all \
     --name mrs_project \
     mrs_project_img:latest
