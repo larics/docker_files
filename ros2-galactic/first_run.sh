@@ -36,4 +36,4 @@ docker run -it \
     --privileged \
     --gpus all \
     --name ros2_galactic_cont \
-    ros2_galactic_img:latest
+    ros2_img:galactic
