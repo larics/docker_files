@@ -1,0 +1,18 @@
+# /home/zdenka/.config/tmuxinator/ecc_experiment.yml 
+
+
+name: ecc_experiment
+root: ~/
+
+windows:
+  - editor: 
+    layout: tiled
+    panes: 
+      - start_bag_recording: 
+        - docker exec -it mbzirc_ecc22_cont bash
+        - sleep 5
+        - /home/developer/mbzirc_ws/src/mbzirc_aerial_manipulation/scripts/record_bag.sh
+      - publish_finish_docking: 
+        - docker exec -it mbzirc_ecc22_cont bash
+        - sleep 10
+        - ros2 topic pub --once /usv/finish_docking std_msgs/Bool "data: true"
