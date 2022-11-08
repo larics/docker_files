@@ -22,6 +22,11 @@ sudo apt-get update
 sudo apt-get install -y nvidia-docker2
 ```
 
+**Add permissions for X server to enable GUI applications:**
+```
+echo `xhost local:root` >> ~/.bashrc  
+```
+
 ## Conceptual understanding
 
 In next figure it is shown  how to create docker container from Dockerfile 
@@ -138,6 +143,23 @@ There's example of using build-args for installing IDE in container in following
 ```
 docker build --build-arg <arg_name>=<arg_value> -t <image_name>:<image_tag> .
 ```
+### Commit docker container to docker image
+
+You can commit current state of docker image as follows: 
+```
+docker commit --author filip.zoric@fer.hr --pause --message "[fer-auth] integration" mmuav_audio_cont auth_fer_uav_img:latest
+```
+
+Such image you can then compress to `tar.gz` or push to docker registry. 
+
+### Save docker image
+
+You can save docker image with docker save command and compress it to gzip as follows: 
+```
+docker save <img_name>:<tag> | gzip > <archive_name>.tar.gz
+
+```
+
 
 ### Clion ROS Setup 
 
@@ -171,6 +193,14 @@ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo ap
 
 ```
 
+## Git submodules
+
+You can use and initialize git submodules with following command: 
+```
+git submodule update --init <submodule_name>
+```
+
+In this repo, currently is only `mbzirc` submodule. 
 
 ## TODO: 
 
