@@ -4,6 +4,15 @@
 ODOM_TOPIC="topic"
 CAMERA_TOPIC="/"
 
+
+waitForDockerContainer() {
+
+  until [ `docker inspect -f '{{.State.Status}}' mmuav_audio_cont | grep -c running` = 1 ]; do 
+    echo "Waiting for docker container to start";
+    sleep 1;   
+  done
+}
+
 waitForRos() {
   until rostopic list > /dev/null 2>&1; do
     echo "waiting for ros"
