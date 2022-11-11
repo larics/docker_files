@@ -1,42 +1,63 @@
 # Dockerfile repo
 
-Brief theoretic introduction can be found in Instructions.md
+Brief theoretic [introduction](./Introduction.md).
 
-This repository contains all Dockerfiles which are used for software containerization that implies easier 
-integration and development. 
+Repository contains all Dockerfiles which are used for software containerization for easier integration, deployment and development. 
 
 ## How to install Docker engine?
 
 In order to install docker engine follow this [instructions](https://docs.docker.com/engine/install/ubuntu/) for installation on ubuntu. 
 
-You will also need nvidia-docker which can be installed by executing following commands: 
+Besides official instructions it is now possible to install docker using following commands: 
+```
+curl https://get.docker.com | sh \
+  && sudo systemctl --now enable docker
+```
+
+## GPU support: 
+
+In order to be able to use GPU effectively (assuming you have NVIDIA-GPU which is nowdays prevalent
+for deep learning) you need to install `nvidia-container-toolkit`. 
+
+To use nvidia-container-toolkit, platform requirements are following: 
+* GNU/Linux x86_64 with kernel version > 3.10
+* Docker >= 19.03
+* NVIDIA GPU with Architecture >= Kepler (or compute capability 3.0)
+* [NVIDIA Linux drivers](https://www.nvidia.com/en-us/drivers/unix/) >= 418.81.07
+
+`nvidia-container-toolkit` can be installed by executing following commands: 
 ```
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
-   && curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add - \
-   && curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+      && curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+            sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+            sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 ```
+
 ```
 sudo apt-get update
 ```
 ```
 sudo apt-get install -y nvidia-docker2
 ```
+```
+sudo systemctl restart docker 
+```
 
-**Add permissions for X server to enable GUI applications:**
+**Add permissions for X server to enable running GUI applications from docker container:**
 ```
 echo `xhost local:root` >> ~/.bashrc  
 ```
 
 ## Conceptual understanding
 
-In next figure it is shown  how to create docker container from Dockerfile 
+In next figure it is shown how to create docker container from Dockerfile 
 
 ![Figure 1.](./utils/assets/figure1.png) 
 
 In following figure it's possible to see how different commands for docker container are used: 
 
 ![Figure 2.](./utils/assets/figure2.png)
-
 
 
 ## How to build Dockerfile? 
@@ -63,12 +84,8 @@ Run docker container with GUI support
 docker run -it --network host --gpus all --privileged -e DISPLAY=$DISPLAY -v /dev:/dev -v /tmp/.X11-unix:/tmp/.X11-unix \
        --name <container_name> <img_name>:<tag_name> 
 ```
-Also, before using param `--gpus` make sure you've installed `nvidia-container-toolkit` as follows: 
+Also, before using param `--gpus` make sure you've installed `nvidia-container-toolkit` as mentioned before. 
 
-```
-sudo apt-get update
-sudo apt-get install -y nvidia-container-toolkit
-```
 Make sure you have latest drivers for your GPU. 
 
 ## How to start existing docker container after stopping it? 
@@ -121,10 +138,10 @@ use [docker-compose](https://docs.docker.com/compose/)
 To be able to properly use available GPU's it's necessary to follow instructions related to setting up docker 
 container with proper arguments depending on GPU vendor. There are different commands and prerequisites (drivers) 
 for almost every GPU vendor (NVIDIA,ATI,Intel). Rest of this instructions related to graphical rendering are written 
-for NVIDIA GPUs, but  [here](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration) you can find everything 
+for NVIDIA GPUs, but [here](http://wiki.ros.org/docker/Tutorials/Hardware%20Acceleration) you can find everything 
 else necessary to achieve same behaviour for different GPUs (Intel/ATI). 
 
-#### Some examples can be found in ros-melodic folder, such as moveit_intel_ros and moveit_ros (NVIDIA) 
+#### Some examples can be found in ros-melodic folder, such as moveit_intel_ros (Intel) and moveit_ros (NVIDIA).  
 
 ### How to correctly use OpenGL for better rendering capabilities in container? 
 
@@ -159,11 +176,6 @@ You can save docker image with docker save command and compress it to gzip as fo
 docker save <img_name>:<tag> | gzip > <archive_name>.tar.gz
 
 ```
-
-
-### Clion ROS Setup 
-
-Info about CLion IDE setup can be found [here](https://www.jetbrains.com/help/clion/ros-setup-tutorial.html#launch-in-sourced)
 
 ### Most common problems 
 
@@ -201,18 +213,3 @@ git submodule update --init <submodule_name>
 ```
 
 In this repo, currently is only `mbzirc` submodule. 
-
-## TODO: 
-
-- [x] Create example docker files with different hardware accelerations 
-- [x] Create base images for ROS/Gazebo combinations (Kinetic/Gazebo9, Kinetic/Gazebo11, Melodic/Gazebo9, Melodic/Gazebo11) 
-- [ ] Refactor images to be multistage
-- [x] Add BUILD_ARGS -> ide for now
-- [x] Add image for decoupled NVIDIA + pytorch support for OpenPose
-- [ ] Add entrypoint script for every Docker containing ROS (can be used from darknet ros) 
-- [ ] Build image with [GAZEBO gym](https://github.com/erlerobot/gym-gazebo)  
-- [ ] Build image with [AirSim](https://microsoft.github.io/AirSim/docker_ubuntu/) 
-- [ ] Build base blender image 
-- [ ] Add cloning of Github repo with ssh keys 
-- [x] Create intial compose 
-- [ ] Check integration of Github actions for CI/CD
