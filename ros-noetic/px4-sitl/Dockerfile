@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.3
-FROM ubuntu:focal
-LABEL maintainer filip.zoric@fer.hr and ana.milas@fer.hr
+FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu20.04
+LABEL maintainer filip.zoric@fer.hr
 
 # Setup environment
 ENV LANG C.UTF-8
@@ -32,8 +32,6 @@ RUN apt-get update &&  apt-get install -q -y \
     git \
     imagemagick \
     lsb-release \
-    libavahi-core-dev \
-    libavahi-client-dev \
     libboost-dev \
     sudo \
     nano \
@@ -42,6 +40,16 @@ RUN apt-get update &&  apt-get install -q -y \
     wget \
     libncursesw5-dev
 
+# Add sources and keys for Gazebo installation
+RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+RUN wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
+
+RUN apt-get update
+
+# Install gazebo packages
+RUN apt-get install -q -y \
+    gazebo11 \
+    libgazebo11-dev
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -55,13 +63,15 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-image-transport-plugins \
-    ros-${ROS_DISTRO}-image-common \
-    ros-${ROS_DISTRO}-geometry2 \
-    ros-${ROS_DISTRO}-roslint \
     ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-map-server \
     ros-${ROS_DISTRO}-octomap-ros \
     ros-${ROS_DISTRO}-octomap-msgs \
+    ros-${ROS_DISTRO}-gazebo-plugins \
+    ros-${ROS_DISTRO}-gazebo-ros \
+    ros-${ROS_DISTRO}-gazebo-ros-pkgs \
+    ros-${ROS_DISTRO}-gazebo-ros-control \
+    ros-${ROS_DISTRO}-gazebo-dev \ 
     ros-${ROS_DISTRO}-catkin \
     ros-${ROS_DISTRO}-control-toolbox \
     ros-${ROS_DISTRO}-controller-interface \
@@ -71,8 +81,11 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-ros-controllers \
     ros-${ROS_DISTRO}-position-controllers \
     ros-${ROS_DISTRO}-velocity-controllers \
+    ros-${ROS_DISTRO}-collada-urdf \
+    ros-${ROS_DISTRO}-trac-ik-kinematics-plugin \
     ros-${ROS_DISTRO}-tf-conversions \
-    ros-${ROS_DISTRO}-rosserial 
+    ros-${ROS_DISTRO}-rosserial \
+    ros-${ROS_DISTRO}-canopen-motor-node 
 
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
@@ -89,8 +102,7 @@ RUN apt-get install -y --no-install-recommends \
     python3-rosdep \
     clang-format-10 \
     libeigen3-dev \
-    libtf-conversions-dev \
-    python
+    libtf-conversions-dev
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -104,36 +116,13 @@ RUN sudo rosdep init
 RUN rosdep update 
  
 # Init ROS workspace 
-RUN mkdir -p bebop_ws/src 
-WORKDIR /home/developer/bebop_ws/src
+RUN mkdir -p moveit_ws/src 
+WORKDIR /home/developer/moveit_ws/src
 RUN bash -c "source /opt/ros/noetic/setup.bash; catkin_init_workspace"; 
-WORKDIR /home/developer/bebop_ws
-
-
-# ================== plotJuggler =====================
-ARG plotjuggler
-WORKDIR /home/developer/bebop_ws/src
-RUN if "$plotjuggler"; then git clone https://github.com/PlotJuggler/plotjuggler_msgs.git; fi
-RUN if "$plotjuggler"; then git clone https://github.com/facontidavide/PlotJuggler.git; fi
-RUN if "$plotjuggler"; then git clone https://github.com/PlotJuggler/plotjuggler-ros-plugins.git; fi
-WORKDIR /home/developer/bebop_ws
-RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"
-
-# ===================== IDE =========================
-# CLion installation
-ARG ide
-WORKDIR /home/developer
-ENV version 2020.3.2
-RUN if "$ide"; then wget -O /home/developer/clion.tar.gz "https://download.jetbrains.com/cpp/CLion-2020.3.2.tar.gz"; fi
-RUN if "$ide"; then mkdir -p /home/developer/clion; fi
-RUN if "$ide"; then tar -xvf /home/developer/clion.tar.gz && rm -rf /home/developer/clion.tar.gz; fi
-RUN if "$ide"; then echo 'alias clion=/home/developer/clion-$version/bin/clion.sh' >> /home/developer/.bashrc; fi
-RUN if "$ide"; then rm -rf /home/developer/clion.tar.gz; fi
-
-# =====================================================
+WORKDIR /home/developer/moveit_ws
 
 # Build initial ROS workspace
-WORKDIR /home/developer/bebop_ws
+WORKDIR /home/developer/moveit_ws
 RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"  
 
 # ===================== ssh cloning ===================
@@ -141,21 +130,13 @@ ENV DOCKER_BUILDKIT=1
 RUN sudo apt-get install -y openssh-client
 ENV GIT_SSH_COMMAND="ssh -v" 
 USER root
-RUN --mount=type=ssh id=default \
+RUN --mount=type=ssh,id=default \
     mkdir -p ~/.ssh/ && \
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts 
 
-RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-WORKDIR /home/developer/bebop_ws/src
-# Clone all necessary packages
-RUN git clone https://github.com/antonellabarisic/parrot_arsdk.git
-RUN git clone https://github.com/larics/bebop_autonomy.git
-RUN git clone https://github.com/larics/med_uav_control.git
-WORKDIR /home/developer/bebop_ws/src/parrot_arsdk
-RUN git checkout noetic_dev
-USER developer
-RUN /bin/bash -c "catkin build"
-RUN echo "source ~/bebop_ws/devel/setup.bash" >> ~/.bashrc
-RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/developer/bebop_ws/devel/lib/parrot_arsdk' >> ~/.bashrc
+WORKDIR /home/developer/moveit_ws/src
+RUN --mount=type=ssh id=default git clone git@github.com:larics/schunk_lwa4p_ros.git
+RUN bash -c "/opt/ros/noetic/setup.bash; catkin build"
+
 CMD ["bash"]
 
