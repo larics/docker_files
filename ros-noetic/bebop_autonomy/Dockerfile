@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.3
 FROM ubuntu:focal
-LABEL maintainer filip.zoric@fer.hr
+LABEL maintainer filip.zoric@fer.hr and ana.milas@fer.hr
 
 # Setup environment
 ENV LANG C.UTF-8
@@ -89,7 +89,8 @@ RUN apt-get install -y --no-install-recommends \
     python3-rosdep \
     clang-format-10 \
     libeigen3-dev \
-    libtf-conversions-dev
+    libtf-conversions-dev \
+    python
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -144,12 +145,17 @@ RUN --mount=type=ssh id=default \
     mkdir -p ~/.ssh/ && \
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts 
 
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 WORKDIR /home/developer/bebop_ws/src
-RUN --mount=type=ssh,id=default git clone git@github.com:larics/parrot_arsdk.git
-RUN --mount=type=ssh,id=default git clone git@github.com:antonellabarisic/parrot_arsdk.git
+# Clone all necessary packages
+RUN git clone https://github.com/antonellabarisic/parrot_arsdk.git
+RUN git clone https://github.com/larics/bebop_autonomy.git
+RUN git clone https://github.com/larics/med_uav_control.git
+WORKDIR /home/developer/bebop_ws/src/parrot_arsdk
+RUN git checkout noetic_dev
 USER developer
-RUN bash -c "/opt/ros/noetic/setup.bash; catkin build"
-
-
+RUN /bin/bash -c "catkin build"
+RUN echo "source ~/bebop_ws/devel/setup.bash" >> ~/.bashrc
+RUN echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/developer/bebop_ws/devel/lib/parrot_arsdk' >> ~/.bashrc
 CMD ["bash"]
 
