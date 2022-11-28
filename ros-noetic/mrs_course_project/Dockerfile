@@ -36,7 +36,10 @@ RUN apt-get update &&  apt-get install -q -y \
     tmuxinator \
     wget \
     ranger \
-    htop
+    htop \
+    libgl1-mesa-glx \
+    libgl1-mesa-dri \
+    rfkill
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -73,7 +76,23 @@ RUN apt-get install -y --no-install-recommends \
     python3-rosdep \
     clang-format-10 \
     libeigen3-dev \
-    libtf-conversions-dev
+    libtf-conversions-dev \
+    python-is-python3 \
+    python3-pip libglib2.0-dev
+
+# Install BlueZ and rest of the packages neccessary for qtconnectivity to work
+RUN apt-get install -y \
+    dbus \
+    libbluetooth-dev \
+    bluetooth \
+    blueman \
+    bluez \
+    libusb-dev \
+    bluez-hcidump \
+    bluez-tools
+
+RUN pip3 install \
+    bluepy
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -112,5 +131,7 @@ COPY --chown=developer:developer ./to_copy/nanorc /home/developer/.nanorc
 COPY --chown=developer:developer ./to_copy/tmux /home/developer/.tmux.conf
 COPY --chown=developer:developer ./to_copy/ranger /home/developer/.config/ranger/rc.conf
 
-CMD ["bash"]
+COPY --chown=developer:developer ./to_copy/docker_entrypoint.sh ./
+
+ENTRYPOINT sh docker_entrypoint.sh
 
