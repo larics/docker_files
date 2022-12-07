@@ -37,6 +37,9 @@ RUN apt-get purge -y --allow-change-held-packages \
     libcudnn7 \
     libcudnn7-dev
 
+#RUN update-alternatives --config libcudnn
+
+RUN apt-get update
 # Install cudnn7.5.1
 RUN apt-get install -y \
     libcudnn7-dev=7.5.1.10-1+cuda10.1 \

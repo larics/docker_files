@@ -17,6 +17,8 @@ sudo update-alternatives --config libcudnn
 
 You can find FAQs and all related documentation for openpose [here](https://cmu-perceptual-computing-lab.github.io/openpose/web/html/doc/md_doc_05_faq.html) 
 
+Building OpenPose from source can be found [here](https://github.com/CMU-Perceptual-Computing-Lab/openpose/blob/master/doc/installation/0_index.md#compiling-and-running-openpose-from-source). 
+
 
 # Out of Memory Error 
 
