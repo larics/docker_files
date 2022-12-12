@@ -1,0 +1,27 @@
+# /home/zozan/.config/tmuxinator/christmas.yml
+
+name: christmas
+root: ~/
+
+on_project_start: docker start moveit_noetic_cont 
+
+
+windows:
+  - editor:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - roscore: 
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash
+          - roscore  
+        - master_discovery: 
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash 
+          - sleep 5; rosrun fkie_master_discovery master_discovery __ns:="schunk"
+        - master_sync: 
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash
+          - sleep 5; rosrun fkie_master_sync master_sync _sync_hosts:="["christmas_state_machine"]" __ns:="schunk"
+        - schunk_lwa4p: 
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash
+          - sleep 10; roslaunch schunk_lwa4p_gazebo lwa4p_real_robot_wsg50_moveit.launch   
