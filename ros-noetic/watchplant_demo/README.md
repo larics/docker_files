@@ -58,9 +58,9 @@ This signals that you are currently "inside" the container.
 
 > Short reminder on commands for working with the container:  
 > - Exiting from container - Press `Ctrl+d`
-> - Stopping container from the outside (some other terminal) - `docker stop mrs_project`
-> - Starting container - `docker start -i mrs_project`
-> - Open a new terminal connected to running container - `docker exec -it mrs_project bash`  
+> - Stopping container from the outside (some other terminal) - `docker stop wp_demo`
+> - Starting container - `docker start -i wp_demo`
+> - Open a new terminal connected to running container - `docker exec -it wp_demo bash`  
 > 
 > More details are available in the main [docker_files](https://github.com/larics/docker_files) repo and online.
 
