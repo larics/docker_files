@@ -54,6 +54,7 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-image-common \
     ros-${ROS_DISTRO}-geometry2 \
     ros-${ROS_DISTRO}-roslint \
+    ros-${ROS_DISTRO}-joy \
     ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-teleop-twist-keyboard \
     ros-${ROS_DISTRO}-map-server \
@@ -61,7 +62,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-costmap-2d \
     ros-${ROS_DISTRO}-plotjuggler \
     ros-${ROS_DISTRO}-tf-conversions \
-    ros-${ROS_DISTRO}-stage-ros
+    ros-${ROS_DISTRO}-stage-ros \
+    ros-${ROS_DISTRO}-rviz
 
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
@@ -77,7 +79,6 @@ RUN apt-get install -y --no-install-recommends \
     clang-format-10 \
     libeigen3-dev \
     libtf-conversions-dev \
-    python-is-python3 \
     python3-pip libglib2.0-dev
 
 # Install BlueZ and rest of the packages neccessary for qtconnectivity to work
@@ -92,7 +93,8 @@ RUN apt-get install -y \
     bluez-tools
 
 RUN pip3 install \
-    bluepy
+    bluepy \
+    bleak
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -123,6 +125,15 @@ RUN echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 # Clone packages
 WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/larics/sphero_simulation.git
+RUN git clone --recursive https://github.com/larics/sphero_robot.git
+RUN git clone https://github.com/mkrizmancic/spherov2.py.git && cd spherov2.py && git checkout devel && cd ..
+
+# Install dependencies
+RUN pip3 install numpy --upgrade
+RUN pip3 install imutils opencv-python
+RUN rosdep install --from-paths . --ignore-src -r -y
+RUN cd spherov2.py && pip3 install . && cd ..
+
 RUN bash -c "source ~/.bashrc; catkin build"
 
 # Copy configuration files
@@ -131,7 +142,5 @@ COPY --chown=developer:developer ./to_copy/nanorc /home/developer/.nanorc
 COPY --chown=developer:developer ./to_copy/tmux /home/developer/.tmux.conf
 COPY --chown=developer:developer ./to_copy/ranger /home/developer/.config/ranger/rc.conf
 
-COPY --chown=developer:developer ./to_copy/docker_entrypoint.sh ./
-
-ENTRYPOINT sh docker_entrypoint.sh
+CMD ["bash"]
 
