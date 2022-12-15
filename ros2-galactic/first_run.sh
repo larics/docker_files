@@ -35,9 +35,5 @@ docker run -it \
     --net=host \
     --privileged \
     --gpus all \
-    --name realsense_cont \
-    realsense_img:latest
-
-
-
-
+    --name ros2_galactic_cont \
+    ros2_img:galactic

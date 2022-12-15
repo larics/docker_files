@@ -32,8 +32,7 @@ docker run -it \
     --env="TERM=xterm-256color" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
     --volume="/dev:/dev" \
-    --volume="/var/run/dbus/:/var/run/dbus/:z" \
     --net=host \
     --privileged \
-    --name mrs_project \
-    mrs_project_img:latest
+    --name wp_demo \
+    wp_demo_img:latest

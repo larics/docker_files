@@ -1,0 +1,35 @@
+# /home/zozan/.config/tmuxinator/antrop_arms.yml
+
+name: antrop_arms
+root: ~/
+
+# Optional tmux socket
+# socket_name: foo
+
+# Note that the pre and post options have been deprecated and will be replaced by
+# project hooks.
+
+# Project hooks
+# Runs on project start, always
+on_project_start: docker start moveit_noetic_cont 
+on_project_stop: docker stop moveit_noetic_cont  
+
+windows:
+  - editor:
+      layout: tiled 
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - antrop_arms_gazebo: 
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash 
+          - roslaunch antrop_arms_description gazebo.launch
+        - antrop_arms_controller: 
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash
+          - sleep 5; roslaunch antrop_arms_description controller.launch  
+        - antrop_arms_moveit: 
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash
+          - sleep 5; roslaunch antrop_arms_moveit_config move_group.launch 
+        - antrop_arms_rviz:
+          - waitForDockerContainer moveit_noetic_cont; docker exec -it moveit_noetic_cont bash 
+          - sleep 5; roslaunch antrop_arms_moveit_config moveit_rviz.launch  

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+ip=$(ip -o route get to 8.8.8.8 | sed -n 's/.*src \([0-9.]\+\).*/\1/p')
+export ROS_MASTER_URI=http://$ip:11311
+export ROS_IP=$ip
+
