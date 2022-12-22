@@ -94,7 +94,8 @@ RUN apt-get install -y \
 
 RUN pip3 install \
     bluepy \
-    bleak
+    bleak \
+    ruamel.yaml
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 

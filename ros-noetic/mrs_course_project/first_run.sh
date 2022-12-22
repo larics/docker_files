@@ -35,5 +35,6 @@ docker run -it \
     --volume="/var/run/dbus/:/var/run/dbus/:z" \
     --net=host \
     --privileged \
-    --name mrs_project \
-    mrs_project_img:latest
+    --gpus all \
+    --name mrs_project_2 \
+    mrs_project_img_2:latest
