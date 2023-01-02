@@ -38,7 +38,8 @@ RUN apt-get update &&  apt-get install -q -y \
     ranger \
     htop \
     libgl1-mesa-glx \
-    libgl1-mesa-dri
+    libgl1-mesa-dri \
+    rfkill
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -53,6 +54,7 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-image-common \
     ros-${ROS_DISTRO}-geometry2 \
     ros-${ROS_DISTRO}-roslint \
+    ros-${ROS_DISTRO}-joy \
     ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-teleop-twist-keyboard \
     ros-${ROS_DISTRO}-map-server \
@@ -60,7 +62,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-costmap-2d \
     ros-${ROS_DISTRO}-plotjuggler \
     ros-${ROS_DISTRO}-tf-conversions \
-    ros-${ROS_DISTRO}-stage-ros
+    ros-${ROS_DISTRO}-stage-ros \
+    ros-${ROS_DISTRO}-rviz
 
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
@@ -75,7 +78,24 @@ RUN apt-get install -y --no-install-recommends \
     python3-rosdep \
     clang-format-10 \
     libeigen3-dev \
-    libtf-conversions-dev
+    libtf-conversions-dev \
+    python3-pip libglib2.0-dev
+
+# Install BlueZ and rest of the packages neccessary for qtconnectivity to work
+RUN apt-get install -y \
+    dbus \
+    libbluetooth-dev \
+    bluetooth \
+    blueman \
+    bluez \
+    libusb-dev \
+    bluez-hcidump \
+    bluez-tools
+
+RUN pip3 install \
+    bluepy \
+    bleak \
+    ruamel.yaml
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -106,6 +126,15 @@ RUN echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 # Clone packages
 WORKDIR /home/developer/catkin_ws/src
 RUN git clone https://github.com/larics/sphero_simulation.git
+RUN git clone --recursive https://github.com/larics/sphero_robot.git
+RUN git clone https://github.com/mkrizmancic/spherov2.py.git && cd spherov2.py && git checkout devel && cd ..
+
+# Install dependencies
+RUN pip3 install numpy --upgrade
+RUN pip3 install imutils opencv-python
+RUN rosdep install --from-paths . --ignore-src -r -y
+RUN cd spherov2.py && pip3 install . && cd ..
+
 RUN bash -c "source ~/.bashrc; catkin build"
 
 # Copy configuration files
