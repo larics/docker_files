@@ -7,7 +7,7 @@ CAMERA_TOPIC="/"
 
 waitForDockerContainer() {
 
-  until [ `docker inspect -f '{{.State.Status}}' mmuav_audio_cont | grep -c running` = 1 ]; do 
+  until [ `docker inspect -f '{{.State.Status}}' $1 | grep -c running` = 1 ]; do 
     echo "Waiting for docker container to start";
     sleep 1;   
   done

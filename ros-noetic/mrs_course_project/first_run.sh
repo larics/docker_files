@@ -36,5 +36,5 @@ docker run -it \
     --net=host \
     --privileged \
     --gpus all \
-    --name mrs_project_2 \
-    mrs_project_img_2:latest
+    --name for_cont \
+    for_img:latest
