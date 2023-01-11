@@ -74,7 +74,9 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-costmap-2d \
     ros-${ROS_DISTRO}-plotjuggler \
     ros-${ROS_DISTRO}-tf-conversions \
-    ros-${ROS_DISTRO}-rviz 
+    ros-${ROS_DISTRO}-rviz \
+    ros-${ROS_DISTRO}-ros-controllers \
+    ros-${ROS_DISTRO}-ros-control 
 
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
