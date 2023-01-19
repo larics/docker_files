@@ -5,6 +5,20 @@ ODOM_TOPIC="topic"
 CAMERA_TOPIC="/"
 
 
+
+dstart(){
+
+ docker start -i $1
+
+}
+
+dexec(){
+
+ docker exec -it $1 bash
+
+}
+
+
 waitForDockerContainer() {
 
   until [ `docker inspect -f '{{.State.Status}}' $1 | grep -c running` = 1 ]; do 

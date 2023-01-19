@@ -76,8 +76,10 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-tf-conversions \
     ros-${ROS_DISTRO}-rviz \
     ros-${ROS_DISTRO}-ros-controllers \
-    ros-${ROS_DISTRO}-ros-control 
+    ros-${ROS_DISTRO}-ros-control
 
+# Update due to some weird build error
+RUN apt-get update
 # Instal RQT debug/devel stuff
 RUN apt-get install -y \
     ros-${ROS_DISTRO}-rqt-common-plugins
@@ -147,7 +149,7 @@ RUN pip3 install numpy --upgrade
 WORKDIR /home/developer/catkin_ws/
 RUN bash -c "source ~/.bashrc; catkin build"
 
-RUN echo "source /home/developer/catkin_ws/devel/setup.bash"
+RUN echo "source /home/developer/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
 # Copy configuration files
 COPY --chown=developer:developer ./to_copy/aliases /home/developer/.bash_aliases
