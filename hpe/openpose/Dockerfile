@@ -38,8 +38,11 @@ RUN apt-get purge -y --allow-change-held-packages \
     libcudnn7-dev
 
 #RUN update-alternatives --config libcudnn
-
+# Fix CUDA keys: https://forums.developer.nvidia.com/t/notice-cuda-linux-repository-key-rotation/212772
+RUN apt-key del 7fa2af80
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/$distro/$arch/3bf863cc.pub
 RUN apt-get update
+
 # Install cudnn7.5.1
 RUN apt-get install -y \
     libcudnn7-dev=7.5.1.10-1+cuda10.1 \
