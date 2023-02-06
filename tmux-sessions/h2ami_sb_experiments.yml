@@ -1,0 +1,39 @@
+# /home/zozan-server/.config/tmuxinator/h2ami_sb_experiments.yml
+
+
+name: h2ami_sb_experiments
+root: ~/
+# Start local network between two PCs and enable multimaster for exchange of the body pose information 
+# as fast as possible 
+on_project_exit:
+  - docker kill openpose_cont
+  - docker kill realsense_cont
+
+windows:
+  - editor:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - tpc_realsense_ros:
+          - docker start -i realsense_cont
+          - waitForDockerContainer realsense_cont; roslaunch realsense2_camera rs_rgbd.launch
+        - tpc_simplebaselines:
+          - docker start -i hpe_ros_cont
+          - waitFor /camera/color/image_raw; sleep 5s; roslaunch hpe_ros_package hpe_3d.launch
+        - tpc_hpe_bagging:
+          - docker start -i openpose_cont 
+          - waitFor /upper_body_3d
+          - cd /home/developer/catkin_ws/src/hpe_ros_package/scripts
+          - sleep 20; timeout 45s bash -c ./rosbag_record.sh
+        - timer:
+          - while true; do printf '%s\r' "$(date +%H:%M:%S:%N)"; done
+        #- tpc_multimaster: 
+        #- tpc_master_discovery: 
+        #- gpc_sim:
+        #  - waitForPing 192.168.5.5; ssh hpc@192.168.5.5
+        #  - docker start -i mmuav_cont
+        #  - sleep 15; roslaunch antrop_arms_control antrop_arms_gazebo_control.launch
+        #- gpc_multimaster: 
+        #  - waitForPing 192.168.5.5; ssh hpc@192.168.5.5 
