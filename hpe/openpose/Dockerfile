@@ -146,10 +146,10 @@ RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 \
                          --slave /usr/bin/g++ g++ /usr/bin/g++-7 
 RUN sudo update-alternatives --config gcc
 
-# Clone OpenPose from source
-WORKDIR /home/developer
+# Clone OpenPose from source -> ros_openpose requires root
+WORKDIR /root
 RUN git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose
-WORKDIR /home/developer/openpose
+WORKDIR /root/openpose
 RUN git checkout tags/v1.7.0
 RUN git submodule update --init --recursive --remote 
 # There is possibility of automated openPose build 
