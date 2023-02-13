@@ -1,9 +1,17 @@
-FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:11.7.0-cudnn8-devel-ubuntu20.04
 LABEL maintainer filip.zoric@fer.hr
 
 # Env vars needed for NVIDIA container runtime (TODO: After build, pass them on the start of the Dockerfile) 
+ENV LANG C.UTF-8
+ENV LC_AL C.UTF-8
+ENV DEBIAN_FRONTED noninteractive
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
+ENV TZ=Europe/Zagreb
+
+
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
+
 
 # Set arguments 
 ARG USER=developer 
@@ -24,7 +32,6 @@ RUN apt-get update && \
     make \
     nano \
     python \
-    python-pip \
     python3 \
     python3-pip \
     software-properties-common \ 
@@ -100,7 +107,7 @@ RUN apt-get install -y \
     libopencv-dev \
     locate 
 
-ENV ROS_DISTRO melodic
+ENV ROS_DISTRO noetic
 # ROS Installation 
 RUN sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -150,5 +157,6 @@ RUN git submodule update --init --recursive --remote
 ## CMAKE-GUI
 ## https://github.com/CMU-Perceptual-Computing-Lab/openpose/issues/1953
 ## compute 86, for RTX graphics
+## NO CUDNN
 
 CMD ["bash"]
