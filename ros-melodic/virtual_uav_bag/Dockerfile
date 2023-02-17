@@ -48,3 +48,10 @@ RUN git clone https://github.com/larics/uav_ros_bridge && catkin build
 
 WORKDIR /root
 RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/EWSfkFOi_kRKgIMZGwBWnJ4BN32_ociWPKxNXF1SMtv4Ig?download=1
+
+#COPY entrypoint.sh /root/entrypoint.sh
+#RUN ["chmod", "+x", "/root/entrypoint.sh"]
+#ENTRYPOINT ["/root/entrypoint.sh"]
+
+COPY entrypoint.sh .
+CMD ["/bin/bash","-c","./entrypoint.sh"]
