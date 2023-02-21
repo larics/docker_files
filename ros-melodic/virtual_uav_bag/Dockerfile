@@ -41,6 +41,7 @@ RUN curl https://raw.githubusercontent.com/larics/uav_ros_stack/main/installatio
 RUN apt install ros-melodic-rosbridge* -y && \
     pip install Inject==3.5.4 paho-mqtt
 
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 WORKDIR /root/catkin_ws/src
 RUN git clone https://github.com/larics/mqtt_bridge.git && cd mqtt_bridge && git checkout 0.1.7
 WORKDIR /root/catkin_ws/src
@@ -53,5 +54,7 @@ RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/ai
 #RUN ["chmod", "+x", "/root/entrypoint.sh"]
 #ENTRYPOINT ["/root/entrypoint.sh"]
 
+# Environment variable for uav namespace
+ENV UAV_NAMESPACE red
 COPY entrypoint.sh .
 CMD ["/bin/bash","-c","./entrypoint.sh"]
