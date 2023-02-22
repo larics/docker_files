@@ -45,7 +45,9 @@ ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 WORKDIR /root/catkin_ws/src
 RUN git clone https://github.com/larics/mqtt_bridge.git && cd mqtt_bridge && git checkout 0.1.7
 WORKDIR /root/catkin_ws/src
-RUN git clone https://github.com/larics/uav_ros_bridge && catkin build
+RUN git clone https://github.com/larics/uav_ros_bridge && \
+    git clone https://github.com/larics/uav_ros_msgs && \
+    catkin build
 
 WORKDIR /root
 RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/EWSfkFOi_kRKgIMZGwBWnJ4BN32_ociWPKxNXF1SMtv4Ig?download=1
