@@ -41,6 +41,17 @@ RUN curl https://raw.githubusercontent.com/larics/uav_ros_stack/main/installatio
 RUN apt install ros-melodic-rosbridge* -y && \
     pip install Inject==3.5.4 paho-mqtt
 
+# Get 
+WORKDIR /root
+RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/EWSfkFOi_kRKgIMZGwBWnJ4BN32_ociWPKxNXF1SMtv4Ig?download=1
+RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/ESXBekRTdolNv_OGEhIJ-gIBjpSTBKDnaE366v3JbF_VHw?download=1
+
+# Get web server packages
+WORKDIR /root/catkin_ws/src
+RUN git clone https://github.com/larics/async_web_server_cpp.git --branch noetic-devel && \
+    git clone https://github.com/larics/web_video_server.git
+
+# Get mqtt stuff
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 WORKDIR /root/catkin_ws/src
 RUN git clone https://github.com/larics/mqtt_bridge.git && cd mqtt_bridge && git checkout 0.1.7
@@ -49,14 +60,12 @@ RUN git clone https://github.com/larics/uav_ros_bridge && \
     git clone https://github.com/larics/uav_ros_msgs && \
     catkin build
 
-WORKDIR /root
-RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/EWSfkFOi_kRKgIMZGwBWnJ4BN32_ociWPKxNXF1SMtv4Ig?download=1
-
 #COPY entrypoint.sh /root/entrypoint.sh
 #RUN ["chmod", "+x", "/root/entrypoint.sh"]
 #ENTRYPOINT ["/root/entrypoint.sh"]
 
 # Environment variable for uav namespace
 ENV UAV_NAMESPACE red
-COPY entrypoint.sh .
+COPY entrypoint.sh /root/entrypoint.sh
+WORKDIR /root
 CMD ["/bin/bash","-c","./entrypoint.sh"]
