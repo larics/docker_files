@@ -45,11 +45,17 @@ RUN apt install ros-melodic-rosbridge* -y && \
 WORKDIR /root
 RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/EWSfkFOi_kRKgIMZGwBWnJ4BN32_ociWPKxNXF1SMtv4Ig?download=1
 RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/ESXBekRTdolNv_OGEhIJ-gIBjpSTBKDnaE366v3JbF_VHw?download=1
+RUN wget --content-disposition https://ferhr-my.sharepoint.com/:u:/g/personal/aivanovic_fer_hr/EViCtB1qeDlCqSn0FfCAksoBzZQYPjCAn8UFGZPZez-Gog?download=1
+# Install dependencies for zbar. I am lazy so I just install and remove
+# the package
+RUN apt install ros-melodic-zbar-ros -y && \
+    apt remove ros-melodic-zbar-ros -y
 
 # Get web server packages
 WORKDIR /root/catkin_ws/src
 RUN git clone https://github.com/larics/async_web_server_cpp.git --branch noetic-devel && \
-    git clone https://github.com/larics/web_video_server.git
+    git clone https://github.com/larics/web_video_server.git && \
+    git clone https://github.com/larics/zbar_ros.git --branch melodic-devel
 
 # Get mqtt stuff
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
