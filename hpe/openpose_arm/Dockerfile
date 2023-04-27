@@ -12,16 +12,25 @@ ENV DEBIAN_FRONTED noninteractive
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 ENV TZ=Europe/Zagreb
-
-
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
-
 
 # Set arguments 
 ARG USER=developer 
 ARG UID=1000
 ARG GID=1000 
 ARG PW=developer
+
+# Remove old cuda 
+RUN rm -rf /usr/local/cuda-10.2
+
+# Install CUDA 11
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/sbsa/cuda-ubuntu1804.pin
+RUN sudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN wget http://developer.download.nvidia.com/compute/cuda/11.0.2/local_installers/cuda-repo-ubuntu1804-11-0-local_11.0.2-450.51.05-1_arm64.deb
+RUN sudo dpkg -i cuda-repo-ubuntu1804-11-0-local_11.0.2-450.51.05-1_arm64.deb
+RUN sudo apt-key add /var/cuda-repo-ubuntu1804-11-0-local/7fa2af80.pub
+RUN sudo apt-get update
+RUN sudo apt-get -y install cuda
 
 # Install necessary software packages 
 RUN apt-get update && \
@@ -43,8 +52,6 @@ RUN apt-get update && \
     unzip \ 
     wget 
 
-
-
 # Build protobuf
 WORKDIR /
 RUN git clone https://github.com/protocolbuffers/protobuf.git 
@@ -61,6 +68,7 @@ RUN make \
 RUN apt-get install -y \
     openssl \
     qtbase5-dev
+
 # Build cmake
 WORKDIR /
 RUN git clone https://github.com/Kitware/CMake.git

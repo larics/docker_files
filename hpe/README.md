@@ -1,15 +1,13 @@
-# Human pose estimation 
+# OpenPose 
 
-This Dockerfile contains neccessary environment to train and test different HPE 
-algorithms for GymX. Currently only for pytorch. Intended for training and testing 
-different HPE algorithms. 
+`openpose_x64` is OpenPose container for the Linux x64 (Normal PC) 
+`openpose_arm` is OpenPose container for the ARM processor (Jetson Xavier)
 
 
-# Remap data folder to the docker folder in order to have access to data 
-# Input folder is always same, output folder is related to the docker container only 
+## openpose_arm
 
-```
-docker run -it --network host --gpus all --privileged -e DISPLAY=$DISPLAY -v /dev:/dev -v <in_data_path>:<out_data_path> 
--v /tmp/.X11-unix:/tmp/.X11-unix --name <container_name> <img_name>:<tag_name> 
-```
+For the openpose_arm it is crucial to set `LD_LIBRARY_PATH` and `PATH` variable, 
+and set in `cmake-gui` USE_CUDNN on `False` and compute_capability to `72` 
+
+ 
 
