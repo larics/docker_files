@@ -24,34 +24,41 @@ RUN apt-get update && \
     sudo \
     xz-utils \
     wget 
-#    apt-get -y autoremove && \
-#    rm -rf /var/lib/apt/lists/*
 
-#ENV BLENDER_MAJOR 2.79
-#ENV BLENDER_VERSION 2.79
-#ENV BLENDER_URL https://download.blender.org/release/Blender${BLENDER_MAJOR}/blender-${BLENDER_VERSION}-linux-glibc219-x86_64.tar.bz2
+RUN apt-get update && \
+    apt-get install -y \
+    subversion \
+    cmake \
+    libx11-dev \
+    libxxf86vm-dev \
+    libxcursor-dev \
+    libxi-dev \
+    libxrandr-dev \
+    libxinerama-dev 
 
-# https://github.com/luvres/blender 
-# Index of blender releases
-#ENV BLENDER_URL https://download.blender.org/release/Blender${BLENDER_MAJOR}/blender-${BLENDER_VERSION}-linux64.tar.xz
-ENV BLENDER_URL https://download.blender.org/release/Blender3.0/blender-3.0.0-linux-x64.tar.xz  
-ENV BLENDER_VERSION 3.0.0
 
-WORKDIR /home
-RUN wget ${BLENDER_URL}
-RUN tar xvf blender-${BLENDER_VERSION}-linux-x64.tar.xz 
-RUN mv blender-${BLENDER_VERSION}-linux-x64 blender && \
-    rm blender-${BLENDER_VERSION}-linux-x64.tar.xz
+RUN apt-get install --reinstall ca-certificates
+RUN mkdir /home/blender-git
+WORKDIR /home/blender-git 
+RUN git clone https://git.blender.org/blender.git
+WORKDIR /home/blender-git/blender
+RUN git checkout tags/v2.80
 
-#RUN curl -L ${BLENDER_URL} | tar -xJ -C /usr/local/ && \
-#    mv /usr/local/blender-${BLENDER_VERSION}-linux64 /usr/local/blender
+WORKDIR /home/blender-git/lib
+RUN svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos7_x86_64
 
-#RUN curl -L ${BLENDER_URL} | tar jxf - -C /opt
-#RUN ls -la
-#    tar -xf blender*
-#| tar -xJ -C /usr/local/ && \
-#	mv /usr/local/blender-${BLENDER_VERSION}-linux64 /usr/local/blender
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+RUN apt update
+RUN apt install -y gcc-9
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
+RUN apt-get install -y \
+    python3 \
+    build-essential
 
-#VOLUME /media
-#ENTRYPOINT ["/usr/local/blender/blender", "-b"]
+WORKDIR /home/blender-git/blender
+RUN make update 
+RUN make -j7
+
+
 CMD ["/bin/bash"]
