@@ -75,3 +75,12 @@ How to set up pulseaudio and alsa in docker container?
 * [jasper docker](https://github.com/danielchalef/jasper-docker) -- check PCM devices to share 
 
 ### [PulseAudio examples](https://wiki.archlinux.org/title/PulseAudio/Examples)
+
+## Problem with GPG keys
+
+At some point in this docker can appear problem with GPG ROS keys.
+
+Fix it by using folowing command: 
+```
+curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add 
+```
