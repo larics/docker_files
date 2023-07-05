@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM arm32v7/ubuntu:bionic
 
 # Use ARG - persists only during docker build
 # https://github.com/moby/moby/issues/4032#issuecomment-192327844
