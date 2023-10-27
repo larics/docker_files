@@ -27,6 +27,16 @@ waitForDockerContainer() {
   done
 }
 
+waitAndExecCont() {
+ 
+ # Call waitForDockerContainer 
+ waitForDockerContainer $1
+ 
+ # Call execute command
+ docker exec -it $1 bash
+
+}
+
 waitForRos() {
   until rostopic list > /dev/null 2>&1; do
     echo "waiting for ros"

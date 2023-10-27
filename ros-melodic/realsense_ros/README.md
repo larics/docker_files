@@ -1,6 +1,14 @@
 ## Docker
 Install Docker using installation instruction found [here](https://docs.docker.com/engine/install/ubuntu/).
 
+`Dockerfile` is used for normal stand-alone PCs. 
+`Dockerfile.armv7` is used to build realsense on smaller PCs, such as raspberry or odroid. 
+
+To propagate file command to you can use flag -f and specify relative path to that file: 
+```
+docker build -t realsense_img -f Dockerfile .
+```
+
 Run Dockerfile from the project root directory using the following commands:
 ```bash
 # Build a Dockerfile
