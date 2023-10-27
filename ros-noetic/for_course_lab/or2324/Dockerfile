@@ -137,14 +137,14 @@ RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"
 RUN echo "" >> ~/.bashrc
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
+RUN echo "TEST"
+
 # Clone packages
 WORKDIR /home/developer/catkin_ws/src
-RUN git clone -b or22/23 --single-branch https://github.com/larics/schunk_lwa4p_ros.git
-RUN git clone https://github.com/fzoric8/schunk_robots.git
-RUN git clone https://github.com/larics/wsg50-ros-pkg.git
+RUN git clone https://github.com/justagist/panda_simulator.git
+WORKDIR /home/developer/catkin_ws/src/panda_simulator 
+RUN bash build_ws.sh
 
-# Install dependencies
-RUN pip3 install numpy --upgrade
 
 WORKDIR /home/developer/catkin_ws/
 RUN bash -c "source ~/.bashrc; catkin build"
