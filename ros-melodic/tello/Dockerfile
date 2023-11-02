@@ -1,4 +1,4 @@
-FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu18.04
+FROM ubuntu:bionic
 LABEL maintainer filip.zoric@fer.hr and marijana.peti@fer.hr
 
 # Setup environment
@@ -30,6 +30,7 @@ RUN apt-get update &&  apt-get install -q -y \
     wget \
     libncursesw5-dev
 
+RUN apt-get update
 # Add sources and keys for Gazebo installation
 RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
 RUN wget http://packages.osrfoundation.org/gazebo.key -O - | apt-key add -
