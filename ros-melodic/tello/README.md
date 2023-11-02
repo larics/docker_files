@@ -1,57 +1,58 @@
-# mmuav_gazebo
+#### tello-docker
 
-This Dockerfile is used to start mmuav_gazebo simulation with corresponding 
-UAVs. 
+This Dockerfile is used to control the tello-UAV.
 
-# Repos used:
+## Docker
+Install Docker using installation instruction found [here](https://docs.docker.com/engine/install/ubuntu/).
 
-Main repositories used in this docker are: 
- * [mmuav_gazebo](https://github.com/larics/mmuav_gazebo.git)
- * [rotors_simulator](https://github.com/larics/rotors_simulator.git) 
- * [mav_comm](https://github.com/larics/mav_comm) 
+## Run Parrot Bebop in the Docker container
 
-There is `first_run.sh` script which runs (first time) docker container with GUI 
-support. 
-
-# Instructions:
-
-Build Docker image with following command when you're located in folder 
-containing this Dockerfile:
+Clone the [repository](https://github.com/larics/docker_files):
 ```
-docker build -t mmuav_img:latest .
-```
-After building image, run first_run.sh script to start container `mmuav_cont`
-```
-./first_run.sh
-```
-
-When you've run (create + start) container, something like this should be 
-visible: 
-```
-Permissions:
--rw-r--r-- 1 your_pc_name your_pc_name  52 mar 26 11:53 /tmp/.docker.xauth
-
-Running docker...
-developer@<your_pc_name>:~/catkin_ws$ 
+git clone https://github.com/larics/docker_files.git
 
 ```
-
-After that you may need to source `catkin_ws` as follows: 
+Navigate to `ros_melodic` folder:
 ```
-source /home/developer/catkin_ws/devel/setup.bash
-```
-
-When you've sourced workspace, you can run following launches which 
-should launch simulation and hoovering example: 
+cd docker_files/ros-melodic
 
 ```
-roslaunch mmuav_gazebo uav_attitude_position.launch manipulator_type:="none" manipulator_tool:="none" z:=1.0
+Add  to  `~/.bashrc` and source it, or type in the current terminal: 
+```
+export DOCKER_BUILDKIT=1
 ```
 
-Or if you want manipulator mounted on uav, run following: 
+Run Dockerfile from the project root directory using the following commands:
+```bash
+# Build a Dockerfile
+docker build -t tello_img:latest
+
+# Run the tello_cont container for the fist time
+./tello/first_run.sh
+
+# This will create docker container tello_cont and position you into the container
+
+# Start the tello_cont:
+docker start -i tello_cont
+
+# Stop the conatainer
+docker stop tello_cont
+
+# Delete the container
+docker rm tello_cont
+
 ```
-roslaunch mmuav_gazebo uav_attitude_position.launch manipulator_type:="wp_manipulator" start_gazebo:=true z:=1.0 manipulator_tool:="rod"
+Launch bebop_driver in the container: 
+```
+roslaunch tello_driver tello_node.launch
 ```
 
+General information about Parrot Bebop can be found [here](https://bebop-autonomy.readthedocs.io/en/latest/).
 
+Tello driver node is described in [Running the Driver](http://wiki.ros.org/tello_driver).
 
+You can send commands to tello with joystick with running this node: 
+
+```
+roslaunch  med_uav_control tello_joy_override.launch
+```
