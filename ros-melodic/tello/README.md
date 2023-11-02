@@ -5,7 +5,7 @@ This Dockerfile is used to control the dji-tello UAV.
 ## Docker
 Install Docker using installation instruction found [here](https://docs.docker.com/engine/install/ubuntu/).
 
-## Run Parrot Bebop in the Docker container
+## Run Tello in the Docker container
 
 Clone the [repository](https://github.com/larics/docker_files):
 ```
@@ -42,7 +42,7 @@ docker stop tello_cont
 docker rm tello_cont
 
 ```
-Launch bebop_driver in the container: 
+Launch tello_driver in the container: 
 ```
 roslaunch tello_driver tello_node.launch
 ```
