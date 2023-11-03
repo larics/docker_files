@@ -44,6 +44,7 @@ RUN apt-get update &&  apt-get install -q -y \
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
+RUN echo "test" 
 RUN apt-get update
 
 # Install ROS
@@ -53,6 +54,7 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-moveit-servo \
     ros-${ROS_DISTRO}-moveit-planners-chomp \
     ros-${ROS_DISTRO}-moveit-planners-ompl \
+    ros-${ROS_DISTRO}-moveit-commander \
     ros-${ROS_DISTRO}-ompl \
     ros-${ROS_DISTRO}-controller-manager \
     ros-${ROS_DISTRO}-moveit-ros-planning-interface \
@@ -96,21 +98,11 @@ RUN apt-get install -y --no-install-recommends \
     libtf-conversions-dev \
     python3-pip libglib2.0-dev
 
-# Install BlueZ and rest of the packages neccessary for qtconnectivity to work
-RUN apt-get install -y \
-    dbus \
-    libbluetooth-dev \
-    bluetooth \
-    blueman \
-    bluez \
-    libusb-dev \
-    bluez-hcidump \
-    bluez-tools
-
 RUN pip3 install \
     bluepy \
     bleak \
-    ruamel.yaml
+    quaternion \
+    ruamel.yaml 
 
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -137,15 +129,18 @@ RUN bash -c "source /opt/ros/noetic/setup.bash; catkin build"
 RUN echo "" >> ~/.bashrc
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
-RUN echo "TEST"
-
-# Clone packages
+# Install libfranka
+RUN sudo apt install ros-noetic-libfranka ros-noetic-franka-ros -y
 WORKDIR /home/developer/catkin_ws/src
-RUN git clone https://github.com/justagist/panda_simulator.git
-WORKDIR /home/developer/catkin_ws/src/panda_simulator 
-RUN bash build_ws.sh
+RUN git clone https://github.com/frankaemika/franka_ros.git
+RUN git clone https://github.com/larics/for_franka_ros.git
+RUN git clone https://github.com/ros-planning/panda_moveit_config.git
 
+# Setup hostname
+RUN echo "export ROS_MASTER_URI=https://127.0.0.1:11311" >> ~/.bashrc
+RUN echo "export ROS_HOSTNAME=127.0.0.1" >> ~/.bashrc
 
+# Build workspace
 WORKDIR /home/developer/catkin_ws/
 RUN bash -c "source ~/.bashrc; catkin build"
 
