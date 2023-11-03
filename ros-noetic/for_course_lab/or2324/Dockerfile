@@ -137,8 +137,8 @@ RUN git clone https://github.com/larics/for_franka_ros.git
 RUN git clone https://github.com/ros-planning/panda_moveit_config.git
 
 # Setup hostname
-RUN echo "export ROS_MASTER_URI=https://127.0.0.1:11311" >> ~/.bashrc
-RUN echo "export ROS_HOSTNAME=127.0.0.1" >> ~/.bashrc
+RUN echo "export ROS_MASTER_URI=http://localhost:11311" >> ~/.bashrc
+RUN echo "export ROS_HOSTNAME=localhost" >> ~/.bashrc
 
 # Build workspace
 WORKDIR /home/developer/catkin_ws/
