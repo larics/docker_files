@@ -25,7 +25,7 @@ export DOCKER_BUILDKIT=1
 Run Dockerfile from the project root directory using the following commands:
 ```bash
 # Build a Dockerfile
-docker build -t tello_img:latest
+docker build -t tello_img:latest tello
 
 # Run the tello_cont container for the fist time
 ./tello/first_run.sh
@@ -34,6 +34,9 @@ docker build -t tello_img:latest
 
 # Start the tello_cont:
 docker start -i tello_cont
+
+# Execute container in terminal while already started in another terminal:
+docker exec -it tello_cont bash
 
 # Stop the conatainer
 docker stop tello_cont
