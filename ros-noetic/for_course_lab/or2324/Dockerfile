@@ -44,7 +44,7 @@ RUN apt-get update &&  apt-get install -q -y \
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros-latest.list'
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
-RUN echo "test" 
+RUN echo "test1" 
 RUN apt-get update
 
 # Install ROS
@@ -80,7 +80,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-tf-conversions \
     ros-${ROS_DISTRO}-rviz \
     ros-${ROS_DISTRO}-ros-controllers \
-    ros-${ROS_DISTRO}-ros-control
+    ros-${ROS_DISTRO}-ros-control \
+    ros-${ROS_DISTRO}-panda-moveit-config 
 
 # Update due to some weird build error
 RUN apt-get update
