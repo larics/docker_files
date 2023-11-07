@@ -55,6 +55,8 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-moveit-planners-chomp \
     ros-${ROS_DISTRO}-moveit-planners-ompl \
     ros-${ROS_DISTRO}-moveit-commander \
+    ros-${ROS_DISTRO}-moveit-visual-tools \
+    ros-${ROS_DISTRO}-moveit-ros-visualization \
     ros-${ROS_DISTRO}-ompl \
     ros-${ROS_DISTRO}-controller-manager \
     ros-${ROS_DISTRO}-moveit-ros-planning-interface \
@@ -97,17 +99,21 @@ RUN apt-get install -y --no-install-recommends \
     libeigen3-dev \
     libtf-conversions-dev \
     python3-pip libglib2.0-dev
+    
 
 RUN pip3 install \
     bluepy \
     bleak \
     quaternion \
     ruamel.yaml 
-
+    
 # Add user and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
 RUN adduser developer sudo 
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Install scipy
+RUN sudo apt-get install -y python3-scipy
 
 USER developer 
 WORKDIR /home/developer
