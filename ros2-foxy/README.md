@@ -8,8 +8,18 @@ Docker installation of the ROS 2 foxy.
 
 [Colcon build instructions](https://docs.ros.org/en/foxy/Tutorials/Beginner-Client-Libraries/Colcon-Tutorial.html) 
 
+## Multi-stage build 
+
+If you want to build gazebo with ROS 2, run following command:
+```
+docker build --target ign_gazebo -t ros2_img:foxy .
+```
+
+
 # TODO: 
-- [ ] Build init Dockerfile 
-- [ ] Add multistage build for the ignition gazebo 
-- [ ] Test gazebo 
-- [ ] Add init workspace build 
+- [x] Build init Dockerfile 
+- [x] Add multistage build for the ignition gazebo 
+- [x] Test gazebo 
+- [x] Add init workspace build 
+- [ ] Add gazebo_ros_pkgs
+- [ ] Add different gazebos 

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.3
-FROM ubuntu:focal
+FROM ubuntu:focal as ros2
 
 # Setup environment
 ENV LANG C.UTF-8
@@ -100,5 +100,12 @@ WORKDIR /home/developer/ros2_ws/src
 RUN git clone https://github.com/ros2/examples src/examples -b foxy
 RUN bash -c "source /opt/ros/foxy/setup.bash; colcon build --symlink-install"
 RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc	
+
+# Install gazebo 
+FROM ros2 as ign_gazebo
+RUN sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+RUN sudo apt-get update
+RUN sudo apt-get install -y gz-garden
 
 CMD ["bash"]
