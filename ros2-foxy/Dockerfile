@@ -4,7 +4,7 @@ FROM ubuntu:focal
 # Setup environment
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
-ENV ROS_DISTRO noetic
+ENV ROS_DISTRO foxy
 ENV DEBIAN_FRONTEND noninteractive
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
@@ -84,15 +84,9 @@ RUN apt install --no-install-recommends -y \
 RUN apt install --no-install-recommends -y \
   libcunit1-dev
 
-# install ros2 in root 
-RUN mkdir -p /root/ros2_foxy/src
-WORKDIR /root/ros2_foxy
-RUN vcs import --input https://raw.githubusercontent.com/ros2/ros2/foxy/ros2.repos ./src
+RUN sudo apt install python3-colcon-common-extensions
 
-# Update DDS and use rosdep 
-RUN rosdep init
-RUN rosdep update
-RUN rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-5.3.1 urdfdom_headers"
+RUN sudo apt install --no-install-recommends -y ros-foxy-desktop 
 
 # Add developer and add it to sudo group
 RUN adduser --disabled-password --gecos '' developer 
@@ -101,10 +95,10 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 WORKDIR /home/developer
 RUN mkdir -p ros2_ws/src
-WORKDIR /home/developer/src
-RUN sudo apt install python3-colcon-common-extensions
+WORKDIR /home/developer/ros2_ws/src
 
-#RUN git clone https://github.com/ros2/examples src/examples -b foxy
-#RUN bash -c "source /root/ros2_foxy/install/setup.sh; colcon build --symlink-install"
+RUN git clone https://github.com/ros2/examples src/examples -b foxy
+RUN bash -c "source /opt/ros/foxy/setup.bash; colcon build --symlink-install"
+RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc	
 
 CMD ["bash"]

@@ -37,4 +37,4 @@ docker run -it \
     --privileged \
     --gpus all \
     --name ros2_foxy_cont \
-    ros2:foxy
+    ros2_img:foxy
