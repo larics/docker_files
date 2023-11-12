@@ -11,16 +11,11 @@ ENV TZ=Europe/Zagreb
 # Not sure this is same in ROS and ROS 2
 #ENV ROSCONSOLE_FORMAT '[${severity}] [${time}] [${node}]: ${message}'
 
-# Fix for apt-get update? 
-
 # Mitigate interactive prompt for choosing keyboard type
 COPY ./to_copy/keyboard /etc/default/keyboard
 
 # Setup timezone (fix interactive package installation)
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
-
-#RUN apt remove libappstream4
-#RUN apt-get update
 
 # Install necessary packages for ROS and Gazebo
 RUN apt-get update &&  apt-get install -q -y \
@@ -94,6 +89,9 @@ RUN sudo apt-get install -y gz-harmonic
 RUN sudo apt-get install -y \
     ros-${ROS2_DISTRO}-ros-ign-bridge \
     ros-${ROS2_DISTRO}-vision-msgs \
+    ros-${ROS2_DISTRO}-joint-state-publisher \
+    ros-${ROS2_DISTRO}-ros2-control \
+    ros-${ROS2_DISTRO}-ros2-controllers \
     libignition-transport11-dev \
     libignition-gazebo6-dev 
 
