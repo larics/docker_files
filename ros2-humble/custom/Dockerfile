@@ -80,10 +80,10 @@ RUN echo "source /home/developer/ros2_ws/install/local_setup.bash" >> ~/.bashrc
 FROM ros2 as ign_gazebo
 
 # Gazebo installation 
-RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+RUN sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
 RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 RUN sudo apt-get update
-RUN sudo apt-get install -y gz-harmonic
+RUN sudo apt-get install -y ignition-fortress
 
 # ros2_gz
 RUN sudo apt-get install -y \
@@ -92,6 +92,9 @@ RUN sudo apt-get install -y \
     ros-${ROS2_DISTRO}-joint-state-publisher \
     ros-${ROS2_DISTRO}-ros2-control \
     ros-${ROS2_DISTRO}-ros2-controllers \
+    ros-${ROS2_DISTRO}-hardware-interface \
+    ros-${ROS2_DISTRO}-controller-interface \ 
+    ros-${ROS2_DISTRO}-controller-manager \
     libignition-transport11-dev \
     libignition-gazebo6-dev 
 
