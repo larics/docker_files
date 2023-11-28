@@ -60,16 +60,11 @@ COPY ./to_copy/nanorc /root/.nanorc
 COPY ./to_copy/tmux /root/.tmux.conf
 COPY ./to_copy/ranger /root/.config/ranger/rc.conf
 
-# Add developer and add it to sudo group
-RUN adduser --disabled-password --gecos '' developer 
-RUN adduser developer sudo 
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
 # Init ROS2 workspace
-RUN mkdir -p /home/developer/ros2_ws/src
-WORKDIR /home/developer/ros2_ws
+RUN mkdir -p /root/ros2_ws/src
+WORKDIR /root/ros2_ws
 RUN colcon build
-WORKDIR /home/developer/ros2_ws/src
+WORKDIR /root/ros2_ws/src
 
 # Modify .bashrc
 RUN echo "" >> ~/.bashrc
@@ -98,9 +93,9 @@ RUN sudo apt-get install -y \
     libignition-transport11-dev \
     libignition-gazebo6-dev 
 
-WORKDIR /home/developer/ros2_ws/src
+WORKDIR /root/ros2_ws/src
 RUN git clone https://github.com/gazebosim/ros_gz.git -b ${ROS2_DISTRO}
-WORKDIR /home/developer/ros2_ws
+WORKDIR /root/ros2_ws
 RUN sudo rosdep init
 RUN rosdep update
 RUN rosdep install -r --from-paths src -i -y --rosdistro ${ROS2_DISTRO}
