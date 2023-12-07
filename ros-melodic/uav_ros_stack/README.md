@@ -17,6 +17,8 @@ which basically add your private keys during docker image build.
 
 
 ## TODO: 
-- [ ] Build image with SSH 
-- [ ] Decouple build commands (if one fails, everything fails) 
-- [ ] Squash image and push it on Dockerhub
+- [x] Build image with SSH 
+- [x] Decouple build commands (if one fails, everything fails) (install/catkin build) 
+- [ ] Squash image and push it on Dockerhub for students 
+- [ ] Use it as base image for aerial_manipulation for students 
+
