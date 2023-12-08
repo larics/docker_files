@@ -16,6 +16,7 @@ ssh-add ~/.ssh/id_rsa
 which basically add your private keys during docker image build. 
 
 # TODO: 
+- [ ] Move meshes from aerial_manipulators to the uam_ros_pkg
 - [ ] Try and run `single_kopterworx` with aerial_manipulator
 - [ ] Use it as base image for aerial_manipulation for students 
 

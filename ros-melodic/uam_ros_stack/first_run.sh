@@ -35,5 +35,5 @@ docker run -it \
     --net=host \
     --privileged \
     --gpus all \
-    --name new_uav_ros_cont \
-    uav_ros_img:latest
+    --name uam_ros_cont \
+    uam_ros_img:latest
