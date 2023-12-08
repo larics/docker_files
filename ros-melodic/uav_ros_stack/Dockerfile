@@ -31,10 +31,9 @@ RUN --mount=type=ssh \
     mkdir -p $HOME/.ssh/ && \
     ssh-keyscan -H github.com >> $HOME/.ssh/known_hosts 
 
-# Clone uav_ros_stack
+# Clone uav_ros_stack --> Should be coupled in one command due to security reasons
 WORKDIR $HOME
 RUN --mount=type=ssh git clone git@github.com:larics/uav_ros_stack.git -b gitman-ssh-fix
-
 RUN --mount=type=ssh ./uav_ros_stack/installation/install.sh 
 RUN --mount=type=ssh  ./uav_ros_stack/installation/workspace_setup.sh $CATKIN_WORKSPACE && \
   # Install uav_ros_stack

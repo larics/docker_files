@@ -29,15 +29,11 @@ echo "Running docker..."
 
 docker run -it \
     --env="DISPLAY=$DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume="/dev:/dev" \
     --net=host \
     --privileged \
     --gpus all \
-    --name uav_ros_stack_cont \
-    uav_ros_stack_img:latest 
-
-
-
-
-
+    --name new_uav_ros_cont \
+    uav_ros_img:latest
