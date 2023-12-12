@@ -69,19 +69,17 @@ WORKDIR /root/ros2_ws/src
 # Modify .bashrc
 RUN echo "" >> ~/.bashrc
 RUN echo "source /opt/ros/${ROS2_DISTRO}/setup.bash" >> ~/.bashrc
-RUN echo "source /home/developer/ros2_ws/install/local_setup.bash" >> ~/.bashrc
+RUN echo "source /root/ros2_ws/install/local_setup.bash" >> ~/.bashrc
 
 # Install gazebo_harmonic
 FROM ros2 as ign_gazebo
 
 # Gazebo installation 
-RUN sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
-RUN sudo apt-get update
-RUN sudo apt-get install -y ignition-fortress
+RUN apt-get update
+RUN apt-get install ros-${ROS2_DISTRO}-ros-gz -y
 
 # ros2_gz
-RUN sudo apt-get install -y \
+RUN apt-get install -y \
     ros-${ROS2_DISTRO}-ros-ign-bridge \
     ros-${ROS2_DISTRO}-vision-msgs \
     ros-${ROS2_DISTRO}-joint-state-publisher \
@@ -93,10 +91,9 @@ RUN sudo apt-get install -y \
     libignition-transport11-dev \
     libignition-gazebo6-dev 
 
-WORKDIR /root/ros2_ws/src
-RUN git clone https://github.com/gazebosim/ros_gz.git -b ${ROS2_DISTRO}
+
 WORKDIR /root/ros2_ws
-RUN sudo rosdep init
+RUN rosdep init
 RUN rosdep update
 RUN rosdep install -r --from-paths src -i -y --rosdistro ${ROS2_DISTRO}
 
