@@ -15,7 +15,7 @@ docker run \
   --volume /tmp/.x11-unix:/tmp/.x11-unix \
   --volume ~/.ssh/ssh_auth_sock:/ssh-agent \
   --env SSH_AUTH_SOCK=/ssh-agent \
-  --env display=$display \
+  --env DISPLAY=$DISPLAY \
   --env TERM=xterm-256color \
   --name $CONTAINER_NAME \
   $IMAGE_NAME \
