@@ -1,0 +1,29 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/developer/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/developer/catkin_ws/src/for_franka_ros/include/**",
+        "/home/developer/catkin_ws/src/franka_ros/franka_control/include/**",
+        "/home/developer/catkin_ws/src/franka_ros/franka_example_controllers/include/**",
+        "/home/developer/catkin_ws/src/franka_ros/franka_gazebo/include/**",
+        "/home/developer/catkin_ws/src/franka_ros/franka_gripper/include/**",
+        "/home/developer/catkin_ws/src/franka_ros/franka_hw/include/**",
+        "/home/developer/catkin_ws/src/franka_ros_interface/franka_interface/include/**",
+        "/home/developer/catkin_ws/src/franka_ros_interface/franka_ros_controllers/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
