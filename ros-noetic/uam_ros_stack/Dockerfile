@@ -32,8 +32,10 @@ RUN --mount=type=ssh git clone git@github.com:larics/ardupilot_gazebo -b fzoric/
 RUN --mount=type=ssh git clone git@github.com:fzoric8/uam_ros_pkg.git
 # aerial_manipulators
 RUN --mount=type=ssh git clone git@github.com:larics/aerial_manipulators -b fzoric/devel
-# mav_msgs
-RUN git clone https://github.com/ethz-asl/mav_comm.git
+# mav_comm
+RUN --mount=type=ssh git clone git@github.com:larics/mav_comm.git -b larics_master
+# rotors simulator
+RUN --mount=type=ssh git clone git@github.com:larics/rotors_simulator.git -b larics_noetic_master
 WORKDIR $HOME/uam_ws/
 RUN bash -c "source /opt/ros/noetic/setup.bash; source ~/.bashrc;  catkin build" 
 
