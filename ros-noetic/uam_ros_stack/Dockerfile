@@ -3,7 +3,7 @@ FROM lmark1/uav_ros_simulation:focal-bin-0.0.1
 ARG CATKIN_WORKSPACE=uav_ws
 ARG DEBIAN_FRONTEND=noninteractive
 ARG HOME=/root
-ARG ROS_DISTRO=melodic
+ARG ROS_DISTRO=noetic
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
@@ -12,9 +12,9 @@ ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 RUN apt-get install -y \
     nano 
 
+RUN apt-get update
 # Install ROS packages
 RUN apt-get install -y \
-    ros-${ROS_DISTRO}-mav-msgs \
     ros-${ROS_DISTRO}-moveit-core \
     ros-${ROS_DISTRO}-moveit-ros-planning \
     ros-${ROS_DISTRO}-moveit-ros-planning-interface \
@@ -32,8 +32,10 @@ RUN --mount=type=ssh git clone git@github.com:larics/ardupilot_gazebo -b fzoric/
 RUN --mount=type=ssh git clone git@github.com:fzoric8/uam_ros_pkg.git
 # aerial_manipulators
 RUN --mount=type=ssh git clone git@github.com:larics/aerial_manipulators -b fzoric/devel
+# mav_msgs
+RUN git clone https://github.com/ethz-asl/mav_comm.git
 WORKDIR $HOME/uam_ws/
-RUN bash -c "source /opt/ros/melodic/setup.bash; source ~/.bashrc;  catkin build" 
+RUN bash -c "source /opt/ros/noetic/setup.bash; source ~/.bashrc;  catkin build" 
 
 # Add localhost for it 
 RUN echo "export ROS_MASTER_URI=http://127.0.0.1:11311" >> ~/.bashrc
