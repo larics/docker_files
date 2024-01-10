@@ -1,4 +1,4 @@
-FROM lmark1/uav_ros_simulation:focal-bin-0.0.1
+FROM lmark1/uav_ros_simulation:focal-bin-0.0.1 as uav_base
 
 ARG CATKIN_WORKSPACE=uav_ws
 ARG DEBIAN_FRONTEND=noninteractive
@@ -16,13 +16,20 @@ RUN apt-get update
 # Install ROS packages
 RUN apt-get install -y \
     ros-${ROS_DISTRO}-moveit-core \
+    ros-${ROS_DISTRO}-moveit-planners-ompl \
+    ros-${ROS_DISTRO}-moveit-planners-chomp \
     ros-${ROS_DISTRO}-moveit-ros-planning \
     ros-${ROS_DISTRO}-moveit-ros-planning-interface \
     ros-${ROS_DISTRO}-moveit-ros-perception \
     ros-${ROS_DISTRO}-moveit-visual-tools \
     ros-${ROS_DISTRO}-dynamixel-workbench-msgs \
-    ros-${ROS_DISTRO}-moveit-ros-visualization 
+    ros-${ROS_DISTRO}-moveit-ros-visualization \
+    ros-${ROS_DISTRO}-ompl \
+    ros-${ROS_DISTRO}-chomp \
+    ros-${ROS_DISTRO}-ros-controllers \
+    ros-${ROS_DISTRO}-pilz-industrial-motion-planner 
 
+FROM uav_base as uam_base
 # Create new workspace for aerial manipulator
 RUN mkdir -p $HOME/uam_ws/src
 WORKDIR $HOME/uam_ws/src
