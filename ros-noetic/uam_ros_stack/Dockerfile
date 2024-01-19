@@ -22,6 +22,7 @@ RUN apt-get install -y \
     ros-${ROS_DISTRO}-moveit-ros-planning-interface \
     ros-${ROS_DISTRO}-moveit-ros-perception \
     ros-${ROS_DISTRO}-moveit-visual-tools \
+    ros-${ROS_DISTRO}-moveit-simple-controller \
     ros-${ROS_DISTRO}-dynamixel-workbench-msgs \
     ros-${ROS_DISTRO}-moveit-ros-visualization \
     ros-${ROS_DISTRO}-ompl \
