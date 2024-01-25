@@ -126,6 +126,25 @@ every container that's not currently running, not recommended):
 docker system prune 
 ```
 
+## SSH keys
+
+Github removed support for the https cloning of private repositories. It is required to use 
+SSH keys. 
+
+In order to build docker image with SSH keys, you can use this command: 
+
+```
+DOCKER_BUILDKIT=1 docker build -t <img_name> --ssh default=${SSH_AUTH_SOCK} .
+```
+
+You can use ${SSH_AUTH_SOCK} after executing following commands: 
+```
+eval $(ssh-agent)
+ssh-add ~/.ssh/id_rsa
+```
+
+which basically add your private keys during docker image build. 
+
 ### [Docker-CLI reference](https://docs.docker.com/engine/reference/commandline/build/)
 
 ### How to create configuration file that runs multiple docker files at once? 
