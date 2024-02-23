@@ -82,7 +82,7 @@ General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/b
 
 ### TODO
 
-- [ ] Add SSH AUTH to first_run.sh
+- [x] Add SSH AUTH to first_run.sh
 - [ ] Change https to ssh 
 - [ ] Add ros2 to ros1 interfaces and ./configure
 - [ ] Add general example
