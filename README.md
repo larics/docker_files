@@ -18,6 +18,7 @@ On Windows, the Docker engine is not supported. Instead, please follow these ins
 1. [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install). WSL is used as the backend for Docker.
 2. [Install Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
 3. _(Optional but recommended)_ Run a demo container as shown [here](https://docs.docker.com/guides/walkthroughs/run-a-container/)
+4. You can use Docker with the help of the desktop application or use a command line interface in WSL as you normally would in Linux. **Important**: `docker` command will not work in WSL if Docker Desktop is not running (at least in the background).
 
 ## GPU support: 
 
