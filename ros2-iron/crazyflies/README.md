@@ -80,6 +80,14 @@ More info about Crazyswarm2 is described in [here](https://imrclab.github.io/cra
 
 General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html)
 
+### Available Equipment
+- 10 [Crazyflies](https://store.bitcraze.io/collections/kits/products/crazyflie-2-1)
+- 10 [Crazyradio dongles](https://store.bitcraze.io/collections/kits/products/crazyradio-2-0)
+- 8 [positioning nodes](https://store.bitcraze.io/collections/positioning/products/loco-positioning-node) + 10 [loco positioning decks](https://store.bitcraze.io/collections/positioning/products/loco-positioning-deck)
+- 5 [AI Decks (Grayscale cameras)](https://store.bitcraze.io/collections/decks/products/ai-deck-1-1)
+- 5 [Multiranger deck](https://store.bitcraze.io/collections/decks/products/multi-ranger-deck)
+- 5 [Flow decks](https://store.bitcraze.io/collections/decks/products/flow-deck-v2)
+
 ### TODO
 
 - [x] Add SSH AUTH to first_run.sh
