@@ -42,6 +42,16 @@ RUN apt-get update &&  apt-get install -q -y \
     rfkill \
     python3-pip
 
+# Install older torch to support (older) CUDA 11.4
+RUN pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+
+# Create CONDA directory
+#ENV CONDA_DIR /opt/conda
+#RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+#    /bin/bash ~/miniconda.sh -b -p /opt/conda
+# Create PATH variable
+#ENV PATH=$CONDA_DIR/bin:$PATH
+
 # Clone DREAM
 WORKDIR /root/home
 RUN git clone https://github.com/NVlabs/DREAM.git
@@ -49,4 +59,5 @@ RUN git clone https://github.com/NVlabs/DREAM.git
 WORKDIR /root/home/DREAM
 RUN pip install . -r requirements.txt
 
+WORKDIR /root/home
 CMD ["bash"] 
