@@ -2,17 +2,23 @@
 
 Brief theoretic [introduction](./Introduction.md).
 
-Repository contains all Dockerfiles which are used for software containerization for easier integration, deployment and development. 
+This repository contains all Dockerfiles which are used for software containerization for easier integration, deployment, and development. 
 
-## How to install Docker engine?
+## How to install the Docker engine?
 
-In order to install docker engine follow this [instructions](https://docs.docker.com/engine/install/ubuntu/) for installation on ubuntu. 
+To install the Docker engine follow these [instructions](https://docs.docker.com/engine/install/ubuntu/) for installation on Ubuntu. 
 
-Besides official instructions it is now possible to install docker using following commands: 
+Besides official instructions, it is now possible to install docker using the following commands: 
 ```
 curl https://get.docker.com | sh \
   && sudo systemctl --now enable docker
 ```
+
+On Windows, the Docker engine is not supported. Instead, please follow these instructions to install Docker Desktop:
+1. [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install). WSL is used as the backend for Docker.
+2. [Install Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+3. _(Optional but recommended)_ Run a demo container as shown [here](https://docs.docker.com/guides/walkthroughs/run-a-container/)
+4. You can use Docker with the help of the desktop application or use a command line interface in WSL as you normally would in Linux. **Important**: `docker` command will not work in WSL if Docker Desktop is not running (at least in the background).
 
 ## GPU support: 
 
