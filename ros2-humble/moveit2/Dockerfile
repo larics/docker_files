@@ -8,8 +8,8 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
 ENV TZ=Europe/Zagreb
-# Not sure this is same in ROS and ROS 2
-#ENV ROSCONSOLE_FORMAT '[${severity}] [${time}] [${node}]: ${message}'
+# Not sure this is same in ROS and ROS 2 
+# ENV ROSCONSOLE_FORMAT '[${severity}] [${time}] [${node}]: ${message}'
 
 # Mitigate interactive prompt for choosing keyboard type
 COPY ./to_copy/keyboard /etc/default/keyboard
@@ -36,7 +36,8 @@ RUN apt-get update &&  apt-get install -q -y \
     ranger \
     htop \
     libgl1-mesa-glx \
-    libgl1-mesa-dri
+    libgl1-mesa-dri \
+    libeigen-stl-containers-dev 
 
 # Prepare for ROS2
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg

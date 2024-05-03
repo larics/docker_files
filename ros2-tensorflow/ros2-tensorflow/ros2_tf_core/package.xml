@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ros2_tf_core</name>
+  <version>0.1.0</version>
+  <description>
+    Utilities for working with ROS 2 and Tensorflow
+  </description>
+  <maintainer email="alberto.soragna@gmail.com">Alberto Soragna</maintainer>
+  <author email="alberto.soragna@gmail.com">Alberto Soragna</author>
+
+  <license>Apache License 2.0</license>
+
+  <exec_depend>python3-opencv</exec_depend>
+  <exec_depend>python-tensorflow-pip</exec_depend>
+
+  <exec_depend>rclpy</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

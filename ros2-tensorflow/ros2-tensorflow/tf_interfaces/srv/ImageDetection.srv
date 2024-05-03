@@ -1,0 +1,3 @@
+sensor_msgs/Image image
+---
+vision_msgs/Detection2DArray detections
