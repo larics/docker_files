@@ -25,6 +25,7 @@ RUN apt-get update &&  apt-get install -q -y \
     cmake \
     curl \
     git \
+    gnupg \
     lsb-release \
     libboost-dev \
     sudo \
@@ -90,6 +91,7 @@ RUN apt-get install -y \
     ros-${ROS2_DISTRO}-vision-msgs \
     ros-${ROS2_DISTRO}-joint-state-publisher \
     ros-${ROS2_DISTRO}-ros2-control \
+    ros-${ROS2_DISTRO}-ign-ros2-control \
     ros-${ROS2_DISTRO}-ros2-controllers \
     ros-${ROS2_DISTRO}-hardware-interface \
     ros-${ROS2_DISTRO}-controller-interface \ 
@@ -118,19 +120,47 @@ RUN git clone https://github.com/moveit/moveit_task_constructor.git -b ${ROS2_DI
 # Install middleware 
 RUN sudo apt install ros-${ROS2_DISTRO}-rmw-cyclonedds-cpp -y
 RUN export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
 
 # Build MoveIt!
 WORKDIR ${COLCON_WS}
 RUN sudo apt install ros-${ROS2_DISTRO}-ament-cmake-python
 RUN sudo apt-get install ros-${ROS2_DISTRO}-rviz-visual-tools 
-RUN bash -c "source /opt/ros/humble/setup.sh; colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release"
+RUN bash -c "source /opt/ros/humble/setup.sh; source ~/.bashrc; colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release"
 WORKDIR ${COLCON_WS}/src
 RUN git clone https://github.com/moveit/moveit2_tutorials.git -b ${ROS2_DISTRO}
 RUN git clone https://github.com/moveit/moveit_visual_tools.git -b ros2
 RUN git clone https://github.com/PickNikRobotics/graph_msgs.git -b ros2
 WORKDIR ${COLCON_WS}
-RUN bash -c "source /opt/ros/humble/setup.sh; colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release"
+RUN bash -c "source /opt/ros/humble/setup.sh; source ~/.bashrc; colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release"
 RUN echo "source ${COLCON_WS}/install/setup.bash" >> ~/.bashrc
+
+# gz-harmonic
+RUN sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+RUN sudo apt-get update
+RUN sudo apt-get install gz-harmonic -y
+
+# franka 
+WORKDIR ${COLCON_WS}/src
+RUN git clone -b humble_devel https://github.com/AndrejOrsula/panda_ign_moveit2.git
+WORKDIR ${COLDON_WS}
+#RUN bash -c "source /opt/ros/humble/setup.bash; source ~/.bashrc; colcon build --packages-select panda panda_description panda_moveit_config"
+
+FROM ros2 as real_robot
+WORKDIR /root/
+RUN apt install -y \
+	libpoco-dev \
+	libeigen3-dev 
+
+RUN git clone https://github.com/frankaemika/libfranka.git --recursive 
+WORKDIR /root/libfranka
+RUN git switch 0.13.2
+RUN mkdir build && cd build 
+RUN cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=OFF
+RUN cmake --build . -j $(nproc-1)
+RUN cpack -G DEB
+RUN dpkg -i libfranka-*.deb
 
 
 CMD ["bash"]
