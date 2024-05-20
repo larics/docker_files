@@ -1,0 +1,148 @@
+alias re-source='source ~/.bashrc'
+alias ra='. ranger'
+alias cbt='catkin build --this'
+
+# allows killing process with all its children
+killp() {
+
+  if [ $# -eq 0 ]; then
+    echo "The command killp() needs an argument, but none was provided!"
+    return
+  else
+    pes=$1
+  fi
+
+  for child in $(ps -o pid,ppid -ax | \
+    awk "{ if ( \$2 == $pes ) { print \$1 }}")
+    do
+      # echo "Killing child process $child because ppid = $pes"
+      killp $child
+    done
+
+# echo "killing $1"
+kill -9 "$1" > /dev/null 2> /dev/null
+}
+
+waitForRos() {
+  until rostopic list > /dev/null 2>&1; do
+    echo "waiting for ros"
+    sleep 1;
+  done
+}
+
+colcon() {
+
+  CURRENT_PATH=`pwd`
+
+  case $* in
+
+    init*)
+
+      if [ ! -e "build/COLCON_IGNORE" ]; then # we are NOT at the workspace root
+        command colcon build # this creates a new workspace
+      fi
+
+      ;;
+
+    build*)
+
+      # go up the folder tree until we find the build/COLCON_IGNORE file or until we reach the root
+      while [ ! -e "build/COLCON_IGNORE" ]; do
+        cd ..
+        if [[ `pwd` == "/" ]]; then
+          # we reached the root and didn't find the build/COLCON_IGNORE file - that's a fail!
+          echo "Cannot compile, probably not in a workspace (if you want to create a new workspace, call \"colcon init\" in its root first)".
+          return 1
+        fi
+      done
+
+      # if the flow got here, we found the build/COLCON_IGNORE file!
+      # this is the folder we're looking for - call the actual colcon command here
+      command colcon "$@" --symlink-install
+      ret=$? # remember the return value of the colcon command
+      cd "$CURRENT_PATH" # return to the path where this command was originaly called
+      return $ret # return the original return value of the colcon command
+
+      ;;
+
+    test*)
+
+      # go up the folder tree until we find the build/COLCON_IGNORE file or until we reach the root
+      while [ ! -e "build/COLCON_IGNORE" ]; do
+        cd ..
+        if [[ `pwd` == "/" ]]; then
+          # we reached the root and didn't find the build/COLCON_IGNORE file - that's a fail!
+          echo "Cannot run tests, probably not in a workspace (if you want to create a new workspace, call \"colcon init\" in its root first)".
+          return 1
+        fi
+      done
+
+      # if the flow got here, we found the build/COLCON_IGNORE file!
+      # this is the folder we're looking for - call the actual colcon command here
+      command colcon "$@"
+      ret=$? # remember the return value of the colcon command
+      cd "$CURRENT_PATH" # return to the path where this command was originaly called
+      return $ret # return the original return value of the colcon command
+
+      ;;
+
+    clean*)
+
+      if [ -e "build/COLCON_IGNORE" ]; then # we are at the workspace root
+        rm -r build install log
+        mkdir build
+        cd build
+        touch COLCON_IGNORE
+      else
+        while [ ! -e "build/COLCON_IGNORE" ]; do
+          cd ..
+
+          if [[ `pwd` == "/" ]]; then
+            echo "Cannot clean, not in a workspace!"
+            break
+          elif [ -e "build/COLCON_IGNORE" ]; then
+            rm -r build install log
+            mkdir build
+            cd build
+            touch COLCON_IGNORE
+            break
+          fi
+        done
+      fi
+
+      cd "$CURRENT_PATH" # return to the original folder where the command was called
+
+      ;;
+
+    *)
+      command colcon $@
+      ;;
+
+  esac
+}
+
+countdown() {
+request_string="Please provide the duration in seconds."
+
+if [ $# -eq 0 ]
+then
+  echo "No countdown time provided." >&2
+  echo $request_string >&2
+  return 1
+fi
+
+re='^[0-9]+$'
+if ! [[ $1 =~ $re ]] ; then
+  echo "Error: argument is not a number." >&2
+  echo $request_string >&2
+  return 1
+fi
+
+for i in $(seq $1 -1 0)
+do
+ echo $i \.\.\.
+ sleep 1;
+done
+
+return 0
+}

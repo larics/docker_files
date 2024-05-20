@@ -6,7 +6,7 @@ LABEL maintainer="alberto dot soragna at gmail dot com"
 
 # working directory
 ENV HOME /root
-ENV ROS2_DISTRO humble
+ENV ROS_DISTRO humble
 WORKDIR $HOME
 
 # nvidia-container-runtime
@@ -76,7 +76,6 @@ RUN apt-get install --no-install-recommends -y \
   libcunit1-dev
 
 #### TENSORFLOW
-
 WORKDIR $HOME
 
 # install tensorflow
@@ -126,28 +125,45 @@ RUN pip install tf_slim
 #WORKDIR $HOME/ros2_vision_opencv_ws/src
 #RUN git clone -b ros2 https://github.com/ros-perception/vision_opencv.git
 
+
+# Install protobuf
+RUN apt-get install -y protobuf-compiler python3-lxml python-tk
+RUN pip install --user Cython contextlib2 jupyter matplotlib Pillow
+RUN pip3 install --upgrade protobuf==3.20.3
+RUN PYTHONDIRNAME=`python3 --version | awk -F ' ' '{ print $2 }' | awk -F . '{ print "python" $1 "." $2 }'`
+RUN mkdir models; sudo chmod 757 models
+RUN git clone https://github.com/tensorflow/models.git /usr/local/lib/$PYTHONDIRNAME/dist-packages/tensorflow/models
+WORKDIR /usr/local/lib/$PYTHONDIRNAME/dist-packages/tensorflow/models/research
+RUN protoc object_detection/protos/*.proto --python_out=.
+RUN echo "export PYTHONPATH=\$PYTHONPATH:/usr/local/lib/$PYTHONDIRNAME/dist-packages/tensorflow/models/research" >> $HOME/.bashrc
+
+
+
 ##### INSTALL ROS 2 TENSORFLOW
 
 WORKDIR $HOME
-
 RUN rosdep update
 RUN apt-get update
 
+RUN apt-get install -y \
+    ros-${ROS_DISTRO}-vision-msgs \
+    ros-${ROS_DISTRO}-rclpy \
+    ros-${ROS_DISTRO}-ament-cmake 
 RUN mkdir -p $HOME/tf_ws/src
-ADD https://api.github.com/repos/alsora/ros2-tensorflow/git/refs/heads/master version.json
-RUN git clone https://github.com/alsora/ros2-tensorflow $HOME/tf_ws/src/ros2-tensorflow
+#RUN git clone https://github.com/ros-perception/vision_msgs -b foxy
+WORKDIR $HOME/tf_ws/src
+RUN git clone https://github.com/beechwoods-software/ros2-tensorflow.git
 WORKDIR $HOME/tf_ws
-RUN rosdep install --from-paths src --ignore-src --rosdistro ${ROS2_DISTRO} -y
-RUN /bin/bash -c 'source /opt/ros/${ROS2_DISTRO}/setup.sh; \
+RUN rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y
+RUN /bin/bash -c 'source /opt/ros/${ROS_DISTRO}/setup.sh; \
   colcon build'
 
 #### SET ENVIRONMENT
-
 WORKDIR $HOME
 
 RUN echo ' \n\
 echo "Sourcing ROS2 packages..." \n\
-source /opt/ros/foxy/setup.sh \n\
+source /opt/ros/${ROS_DISTRO}/setup.sh \n\
 source $HOME/tf_ws/install/local_setup.sh' >> $HOME/.bashrc
 
 RUN echo ' \n\

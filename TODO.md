@@ -7,7 +7,9 @@
 - [x] Add image for decoupled NVIDIA + pytorch support for OpenPose 
 - [x] Build base blende image
 - [x] Create intial compose 
-- [ ] Add cloning of Github repo with ssh keys - this [issue](https://github.com/moby/buildkit/issues/2315)
+- [x] Add cloning of Github repo with ssh keys - this [issue](https://github.com/moby/buildkit/issues/2315)
+- [x] Create init documentation 
+- [x] Add branch protection
 - [ ] Refactor images to be multistage (production) 
 - [ ] Build image with [GAZEBO gym](https://github.com/erlerobot/gym-gazebo)  
 - [ ] Build image with [AirSim](https://microsoft.github.io/AirSim/docker_ubuntu/)  
