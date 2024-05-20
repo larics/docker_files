@@ -15,13 +15,16 @@ RUN apt-get install -y \
 # Install ROS packages
 RUN apt-get install -y \
     ros-${ROS_DISTRO}-mav-msgs \
+    ros-${ROS_DISTRO}-moveit \
     ros-${ROS_DISTRO}-moveit-core \
     ros-${ROS_DISTRO}-moveit-ros-planning \
     ros-${ROS_DISTRO}-moveit-ros-planning-interface \
     ros-${ROS_DISTRO}-moveit-ros-perception \
     ros-${ROS_DISTRO}-moveit-visual-tools \
     ros-${ROS_DISTRO}-dynamixel-workbench-msgs \
-    ros-${ROS_DISTRO}-moveit-ros-visualization 
+    ros-${ROS_DISTRO}-moveit-ros-visualization \
+    ros-${ROS_DISTRO}-ros-controllers \
+    ros-${ROS_DISTRO}-joint-trajectory-controller 
 
 # Create new workspace for aerial manipulator
 RUN mkdir -p $HOME/uam_ws/src
