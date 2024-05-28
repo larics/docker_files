@@ -1,0 +1,2 @@
+set vcs_aware true
+set vcs_backend_git local
