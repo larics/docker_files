@@ -34,8 +34,8 @@ docker run -it \
     --volume="/dev:/dev" \
     --net=host \
     --privileged \
-    --gpus all \
+    --runtime nvidia \
     --name openpose_cont \
-    openpose_img:latest
+    openpose:arm
 
 

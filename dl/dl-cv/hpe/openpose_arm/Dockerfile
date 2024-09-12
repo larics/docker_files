@@ -23,6 +23,9 @@ ARG PW=developer
 # Remove old cuda 
 RUN rm -rf /usr/local/cuda-10.2
 
+RUN apt-get update 
+RUN apt-get install -y --no-install-recommends sudo gnupg2
+
 # Install CUDA 11
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/sbsa/cuda-ubuntu1804.pin
 RUN sudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
