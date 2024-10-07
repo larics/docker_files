@@ -1,6 +1,6 @@
 name: mpc_case_study
 root: ./
-startup_window: crazyflies_setup
+startup_window: crazyflies_start
 pre_window: |
   source <%= @settings["setup_name"] %>
 windows:
@@ -18,4 +18,4 @@ windows:
         - source_ros;sleep 10;ros2_ws; ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
         - source_ros; roscore
         - source_ros; history -s "rostopic list"
- 
+

@@ -13,16 +13,16 @@ Navigate to `ros2-humble` folder:
 cd docker_files/ros2-humble/crazyflies
 
 ```
-Add  to  `~/.bashrc` and source it, or type in the current terminal: 
+Add  to  `~/.bashrc` and source it, or type in the current terminal:
 ```
 export DOCKER_BUILDKIT=1
 ```
 Run Dockerfile from the project root directory using the following commands:
 ```bash
 # Build a Dockerfile
-docker build -t crazyswarm2_img2 . 
+docker build -t crazysim_img2 .
 
-# Run the crazyswarm2_img2 container for the fist time
+# Run the crazysim_img2 container for the fist time
 ./first_run.sh
 
 # This will create docker container crazyswarm_container and position you into the container
@@ -80,7 +80,7 @@ General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/b
 ### TODO
 
 - [x] Add SSH AUTH to first_run.sh
-- [ ] Change https to ssh 
+- [ ] Change https to ssh
 - [ ] Add ros2 to ros1 interfaces and ./configure
 - [x] Add general example
 - [x] Add startup scripts

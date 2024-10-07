@@ -1,4 +1,4 @@
-# Ubuntu 22.04 
+# Ubuntu 22.04
 FROM ubuntu:jammy
 
 ENV LANG C.UTF-8
@@ -90,20 +90,20 @@ RUN apt-get update \
 RUN sudo apt-get install openssh-client git
 
 
-#RUN adduser --disabled-password --gecos '' developer 
-#RUN adduser developer sudo 
+#RUN adduser --disabled-password --gecos '' developer
+#RUN adduser developer sudo
 #RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 ENV DOCKER_BUILDKIT=1
 RUN apt-get install -y openssh-client
-ENV GIT_SSH_COMMAND="ssh -v" 
+ENV GIT_SSH_COMMAND="ssh -v"
 USER root
 
 RUN --mount=type=ssh id=default \
     mkdir -p -m 0600 ~/.ssh/ && \
     ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-#USER developer 
+#USER developer
 
 #install ROS Noetic
 RUN mkdir $HOME/.ros_setup
@@ -117,7 +117,7 @@ RUN cd $HOME/.ros_setup && sudo ./install_ros.sh
 RUN apt update && sudo apt install locales \
   &&  locale-gen en_US en_US.UTF-8 \
   &&  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
-  && export LANG=en_US.UTF-8 
+  && export LANG=en_US.UTF-8
 
 # set up ros2 repo
 RUN /bin/sh -c 'sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg' \
@@ -143,10 +143,10 @@ RUN apt-get install python-is-python3
 #installing CrazySim
 WORKDIR $HOME
 RUN  git clone https://github.com/gtfactslab/CrazySim.git --recursive \
-    && cd $HOME/CrazySim/crazyflie-lib-python \ 
+    && cd $HOME/CrazySim/crazyflie-lib-python \
     &&  pip install -e .
 
-RUN pip install Jinja2 
+RUN pip install Jinja2
 RUN cd $HOME/CrazySim/crazyflie-firmware \
     &&  mkdir -p sitl_make/build && cd sitl_make/build \
     &&  cmake .. \
@@ -196,7 +196,7 @@ RUN cd acados \
 RUN echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$HOME/acados/lib"" >> $HOME/.bashrc
 RUN echo "export ACADOS_SOURCE_DIR="$HOME/acados"" >> $HOME/.bashrc
 
-WORKDIR $HOME/CrazySim/ros2_ws 
+WORKDIR $HOME/CrazySim/ros2_ws
 RUN bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/CrazySim/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces"
 
 WORKDIR $HOME
@@ -207,13 +207,14 @@ COPY to_copy/start.sh $HOME/startup
 COPY to_copy/mpc_case_study_setup.sh $HOME/startup
 COPY to_copy/dottmux.conf $HOME
 COPY to_copy/install.sh $HOME
+COPY to_copy/aliases $HOME/.bash_aliases
 RUN ./install.sh
 
 
 
 # #crazyflies setup
 # RUN pip3 install rowan cflib transforms3d nicegui
-# RUN pip3 install --upgrade pip 
+# RUN pip3 install --upgrade pip
 
 # RUN sudo apt-get update && sudo apt install -y \
 #   libusb-1.0-0-dev \
