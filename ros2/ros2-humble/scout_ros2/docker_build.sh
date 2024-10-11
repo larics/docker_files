@@ -51,5 +51,6 @@ docker build \
     --build-arg ROS_MASTER_URI=$ROS_MASTER_URI \
     --build-arg ROS_IP=$ROS_IP \
     -f $DOCKERFILE \
+    --ssh default \
     -t $IMAGE_NAME:$distro .
-    #--ssh default \
+
