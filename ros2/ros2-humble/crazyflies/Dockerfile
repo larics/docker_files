@@ -6,6 +6,9 @@ ENV LC_AL C.UTF-8
 ENV ROS2_DISTRO humble
 ENV GZ_RELEASE garden
 ARG DEBIAN_FRONTEND=noninteractive
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
+ENV TZ=Europe/Zagreb
 ARG HOME=/root
 
 # Tools useful during development
