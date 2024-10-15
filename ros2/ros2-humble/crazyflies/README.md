@@ -53,9 +53,11 @@ source_ros2
 
 In the folder /root/startup is start.sh script, that starts the session with the examples from [CraySim page](https://github.com/gtfactslab/CrazySim).
 
+Before starting the session, please disable all crazyflies in crazyflies.yaml that are not in Gazebo [Check this](https://github.com/gtfactslab/CrazySim?tab=readme-ov-file#configuration)
+
 Since this is primarly supported in ROS2, there is an example how to start rosbridge, if code is written using ROS1.
 
-Also note that ros2 and ros1 packages should be always run in separate terminals to avoid mixing paths to libraries.
+Also note that ros2 and ros1 packages should always run in separate terminals to avoid mixing paths to libraries.
 
 Before starting the bridge start roscore either locally or if starting it in container, open new terminal:
 
@@ -85,4 +87,4 @@ General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/b
 - [x] Add general example
 - [x] Add startup scripts
 - [ ] One alias for sourcing
-- [ ] GPU / NO GPU version
+- [x] GPU / NO GPU version

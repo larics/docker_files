@@ -59,12 +59,19 @@ RUN apt-get update \
         python3-gnupg \
         python3-psutil \
         vim \
+        tmux \
+        tmuxinator \
         nano \
         net-tools \
         iputils-ping \
         xvfb \
         curl\
         wget\
+        ranger \
+        htop \
+        libgl1-mesa-glx \
+        libgl1-mesa-dri \
+        rfkill \
         sudo \
         usbutils \
         software-properties-common \
@@ -208,10 +215,11 @@ RUN mkdir $HOME/startup
 COPY to_copy/session.yml $HOME/startup
 COPY to_copy/start.sh $HOME/startup
 COPY to_copy/mpc_case_study_setup.sh $HOME/startup
-COPY to_copy/dottmux.conf $HOME
-COPY to_copy/install.sh $HOME
 COPY to_copy/aliases $HOME/.bash_aliases
-RUN ./install.sh
+COPY to_copy/nanorc $HOME/.nanorc
+COPY to_copy/tmux $HOME/.tmux.conf
+COPY to_copy/ranger $HOME/.config/ranger/rc.conf
+
 
 
 
