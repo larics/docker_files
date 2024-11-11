@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
     ros-humble-robot-localization \
     ros-humble-teleop-twist-keyboard \
     ros-humble-mavros \
+    ros-humble-librealsense2* \
+    ros-humble-realsense2-*
     libasio-dev \
     libtinyxml2-dev \
     nano \

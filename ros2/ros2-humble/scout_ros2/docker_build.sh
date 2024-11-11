@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DOCKERFILE=Dockerfile
-IMAGE_NAME=scout_ros2
+IMAGE_NAME=scout_ros2_test
 
 distro="humble"
 ros_distro="humble"
