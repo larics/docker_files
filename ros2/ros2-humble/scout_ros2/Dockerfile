@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     ros-humble-teleop-twist-keyboard \
     ros-humble-mavros \
     ros-humble-librealsense2* \
-    ros-humble-realsense2-*
+    ros-humble-realsense2-* \
     libasio-dev \
     libtinyxml2-dev \
     nano \
@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     iproute2 \
     net-tools \
     tmux \
+    tmuxinator \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup timezone (fix interactive package installation)
@@ -73,12 +74,20 @@ RUN rosdep update
 RUN rosdep install --from-paths src --ignore-src -r -y
 
 # Build the workspace
-RUN . /opt/ros/humble/setup.sh
+#RUN . /opt/ros/humble/setup.sh
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash; colcon build"
 #RUN . /opt/ros/humble/setup.bash
 #RUN colcon build
 
-RUN echo "source /opt/ros/humble/setup.sh" >> ~/.bashrc
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 RUN echo "source /root/scout_ws/install/setup.bash" >> ~/.bashrc
 WORKDIR /root/scout_ws/
+RUN --mount=type=ssh git clone --branch master git@github.com:mkozlik/scout_startup.git
+
+WORKDIR /root/scout_ws/scout_startup/
+RUN chmod +x start.sh
+WORKDIR /root/scout_ws/
+
+RUN bash /opt/ros/humble/lib/mavros/install_geographiclib_datasets.sh
 # Run the container as an interactive shell
 CMD ["bash"]
