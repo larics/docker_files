@@ -136,7 +136,8 @@ RUN echo "source /home/developer/ur_ws/devel/setup.bash" >> ~/.bashrc
 
 # Install ROS packages from src
 WORKDIR /home/developer/ur_ws/src
-RUN git clone -b calibration_devel https://github.com/fmauch/universal_robot 
+RUN git clone -b calibration_devel https://github.com/fmauch/universal_robot \
+    && git clone https://github.com/ACogelja/robosoft
 WORKDIR /home/developer/ur_ws
 RUN bash -c "rosdep install -y --from-paths src --ignore-src --rosdistro ${ROS_DISTRO}" \
     && bash -c "source /opt/ros/noetic/setup.bash; catkin build"
