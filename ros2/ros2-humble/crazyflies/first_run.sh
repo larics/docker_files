@@ -33,6 +33,7 @@ ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
 
 docker run -it \
     --env="DISPLAY=$DISPLAY" \
+    --env="QT_X11_NO_MITSHM=1" \
     --env="TERM=xterm-256color" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume="/dev:/dev" \

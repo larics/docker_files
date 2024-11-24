@@ -23,6 +23,13 @@ killp() {
 kill -9 "$1" > /dev/null 2> /dev/null
 }
 
+waitForCfGazebo() {
+  until gz service -l | grep cf > /dev/null 2>&1; do
+    echo "waiting for crazyflies in gazebo"
+    sleep 1;
+  done
+}
+
 waitForRos() {
   until rostopic list > /dev/null 2>&1; do
     echo "waiting for ros"

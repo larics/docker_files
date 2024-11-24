@@ -164,9 +164,11 @@ RUN cd $HOME/CrazySim/crazyflie-firmware \
 
 
 
+
 #ros1 bridge setup
 RUN cd $HOME/CrazySim/ros2_ws/src \
   && sudo git clone https://github.com/ros2/ros1_bridge \
+  && sudo git clone https://github.com/larics/mrs_crazyflies.git\
 #  && git clone https://github.com/IMRCLab/crazyswarm2 --recursive \
 #  && git clone --branch ros2 --recursive https://github.com/IMRCLab/motion_capture_tracking.git \
    && cd $HOME/CrazySim/ros2_ws  \

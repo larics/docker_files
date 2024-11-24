@@ -1,5 +1,24 @@
 ## Docker
-Install Docker using installation instruction found [here](https://docs.docker.com/engine/install/ubuntu/).
+Very briefly, Docker is a tool that provides a simple and efficient way to pack everything needed for a specific application in one container. You can also look at it as a lightweight virtual machine running on your computer.
+
+Basic information about Docker and its main concepts can be found [here](https://github.com/larics/docker_files/wiki). Of course, you can also take a look at the [official website](https://www.docker.com/). Don't follow any instructions from these links just yet. They are provided as a general overview and reference you can use in the future. Detailed step-by-step instructions are given below.
+
+#### Prerequisites
+You must have Ubuntu OS installed on your computer. Ideally, this would be Ubuntu 24.04, but another version should work as well. If you have an NVIDIA GPU, please follow [these instructions](https://github.com/larics/docker_files/wiki/2.-Installation#gpu-support) to prepare for Docker installation.
+
+#### Step-by-step instructions
+Follow these [instructions](https://docs.docker.com/engine/install/ubuntu/) to install the Docker engine.
+
+Then follow these [optional steps](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user) to manage docker as a non-root user. If you skip this, every `docker` command will have to be executed with `sudo`. Skip the _"Note: To run Docker without root privileges, see Run the Docker daemon as a non-root user (Rootless mode)."_ part. This is just a note and we do not need it.
+
+Docker containers are intended to run inside your terminal. In other words, you won't see a desktop like in regular virtual machines. However, graphical applications can still run in the container if you give them permission. To do that, execute
+```bash
+xhost +local:docker
+```
+To avoid having to do this every time, we can add that command to our `.profile` file which executes on every login.
+```bash
+echo "xhost +local:docker > /dev/null" >> ~/.profile
+```
 
 ## Run Crazyflies in the Docker container
 
@@ -10,7 +29,7 @@ git clone https://github.com/larics/docker_files.git
 ```
 Navigate to `ros2-humble` folder:
 ```
-cd docker_files/ros2-humble/crazyflies
+cd docker_files/ros2/ros2-humble/crazyflies
 
 ```
 Add  to  `~/.bashrc` and source it, or type in the current terminal:
@@ -55,6 +74,8 @@ In the folder /root/startup is start.sh script, that starts the session with the
 
 Before starting the session, please disable all crazyflies in crazyflies.yaml that are not in Gazebo [Check this](https://github.com/gtfactslab/CrazySim?tab=readme-ov-file#configuration)
 
+When starting the script the example if the frames of crazyflies do not appear in rviz and you wait too long, please check [this issue](https://github.com/gtfactslab/CrazySim/issues/1#issuecomment-1933212957) 
+
 Since this is primarly supported in ROS2, there is an example how to start rosbridge, if code is written using ROS1.
 
 Also note that ros2 and ros1 packages should always run in separate terminals to avoid mixing paths to libraries.
@@ -66,7 +87,7 @@ source_ros
 roscore
 ```
 
-Command to start bridge in the new terminal:
+Command to start bridge in the new terminal(please mind the order of using aliases for sourcing):
 
 ```
 source_ros
@@ -78,6 +99,21 @@ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 General information about Crazyflies can be found [here](https://www.bitcraze.io/products/crazyflie-2-1/).
 
 General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html)
+
+#### Bonus section
+The provided Docker image comes with a few preinstalled tools and configs which may simplify your life.
+
+**Tmuxinator** is a tool that allows you to start a tmux session with a complex layout and automatically run commands by configuring a simple yaml configuration file. Tmux is a terminal multiplexer - it can run multiple terminal windows inside a single window. This approach is simpler than having to do `docker exec` every time you need a new terminal.
+
+You don't need to write new configuration files for your projects, but some examples will use Tmuxinator. You can move between terminal panes by holding down `Ctrl` key and navigating with arrow keys. Switching between tabs is done with `Shift` and arrow keys. If you have a lot of open panes and tabs in your tmux, you can simply kill everything and exit by pressing `Ctrl+b` and then `k`.
+
+Here are some links: [Tmuxinator](https://github.com/tmuxinator/tmuxinator), [Getting starded with Tmux](https://linuxize.com/post/getting-started-with-tmux/), [Tmux Cheat Sheet](https://tmuxcheatsheet.com/)
+
+**Ranger** is a command-line file browser for Linux. While inside the Docker container, you can run the default file browser `nautilus` with a graphical interface, but it is often easier and quicker to view the files directly in the terminal window. You can start ranger with the command `ra`. Moving up and down the folders is done with arrow keys and you can exit with a `q`. When you exit, the working directory in your terminal will be set to the last directory you opened while in Ranger.
+
+**Htop** is a better version of `top` - command line interface task manager. Start it with the command `htop` and exit with `q`.
+
+**VS Code** - If you normally use VS Code as your IDE, you can install [Dev Containers](https://code.visualstudio.com/docs/remote/containers#_sharing-git-credentials-with-your-container) extension which will allow you to continue using it inside the container. Simply start the container in your terminal (`docker start -i mrs_project`) and then attach to it from the VS code (open action tray with `Ctrl+Shift+P` and select `Dev Containers: Attach to Running Container`).
 
 ### TODO
 
