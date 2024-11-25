@@ -22,6 +22,8 @@ echo "xhost +local:docker > /dev/null" >> ~/.profile
 
 ## Run Crazyflies in the Docker container
 
+### Setting up
+
 Clone the [repository](https://github.com/larics/docker_files):
 ```
 git clone https://github.com/larics/docker_files.git
@@ -59,9 +61,10 @@ docker stop crazysim_cont2
 docker rm crazysim_cont2
 
 ```
-The docker contains packages for crazyflies simulator [CrazySim](https://github.com/gtfactslab/CrazySim).
+The docker contains packages for crazyflies simulator [CrazySim](https://github.com/gtfactslab/CrazySim). General information about Crazyflies can be found [here](https://www.bitcraze.io/products/crazyflie-2-1/).
 
-The ros2 workspace is located in /root/CrazySim/ros2_ws
+> [!NOTE]
+> The ros2 workspace is located in /root/CrazySim/ros2_ws
 
 Note that before running any ros2 package you need to source ros2  using alias:
 
@@ -70,24 +73,27 @@ ros2_ws
 source_ros2
 ```
 
-In the folder /root/startup is start.sh script, that starts the session with the examples from [CraySim page](https://github.com/gtfactslab/CrazySim).
+### Running experiments
 
-Before starting the session, please disable all crazyflies in crazyflies.yaml that are not in Gazebo [Check this](https://github.com/gtfactslab/CrazySim?tab=readme-ov-file#configuration)
+In the folder `/root/startup` is `start.sh` script that starts the session with the examples from [CraySim page](https://github.com/gtfactslab/CrazySim).
 
-When starting the script the example if the frames of crazyflies do not appear in rviz and you wait too long, please check [this issue](https://github.com/gtfactslab/CrazySim/issues/1#issuecomment-1933212957) 
+Before starting the session, please comment out all crazyflies that are not in Gazebo in file `ros2_ws/src/crazyswarm2/crazyflie/config/crazyflies.yaml` ([Check this](https://github.com/gtfactslab/CrazySim?tab=readme-ov-file#configuration) for more info).
 
-Since this is primarly supported in ROS2, there is an example how to start rosbridge, if code is written using ROS1.
+When starting the example script, if the frames of crazyflies do not appear in rviz and you wait too long, please check [this issue](https://github.com/gtfactslab/CrazySim/issues/1#issuecomment-1933212957).
 
-Also note that ros2 and ros1 packages should always run in separate terminals to avoid mixing paths to libraries.
+### ROS1 info
+This package is primarily supported in ROS2, and we strongly suggest using ROS2 for development. If you insist on using ROS1, here is an example on how to start rosbridge that will enable communication between ROS1 and ROS2.
 
-Before starting the bridge start roscore either locally or if starting it in container, open new terminal:
+Note that ROS2 and ROS1 packages should always run in separate terminals to avoid mixing library paths.
+
+Before starting the bridge, start roscore either locally, or if starting it in container, open new terminal:
 
 ```
 source_ros
 roscore
 ```
 
-Command to start bridge in the new terminal(please mind the order of using aliases for sourcing):
+Command to start bridge in the new terminal (please mind the order of using aliases for sourcing):
 
 ```
 source_ros
@@ -96,11 +102,9 @@ source_ros2
 ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
 
-General information about Crazyflies can be found [here](https://www.bitcraze.io/products/crazyflie-2-1/).
-
 General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html)
 
-#### Bonus section
+## Bonus section
 The provided Docker image comes with a few preinstalled tools and configs which may simplify your life.
 
 **Tmuxinator** is a tool that allows you to start a tmux session with a complex layout and automatically run commands by configuring a simple yaml configuration file. Tmux is a terminal multiplexer - it can run multiple terminal windows inside a single window. This approach is simpler than having to do `docker exec` every time you need a new terminal.
