@@ -188,7 +188,9 @@ RUN echo "export PATH='$HOME/.local/bin:$PATH'" >> $HOME/.bashrc
 #MPC CaseStudy + Acados
 RUN apt install libboost-program-options-dev libusb-1.0-0-dev
 RUN pip3 install rowan transforms3d
-RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations
+RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations \
+                   ros-${ROS2_DISTRO}-nav2-map-server \
+                   ros-${ROS2_DISTRO}-nav2-lifecycle-manager
 
 WORKDIR $HOME
 
