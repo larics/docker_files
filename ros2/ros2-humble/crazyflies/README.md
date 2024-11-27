@@ -101,6 +101,9 @@ ros2_ws
 source_ros2
 ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
+If you are working in the group and you are all using the same network, please check [ROS_DOMAIN_ID](https://docs.ros.org/en/eloquent/Tutorials/Configuring-ROS2-Environment.html#the-ros-domain-id-variable) in .bashrc in container. Random number should be set during the build, however it is not impossible that some of you got the same number. If that is the situatation please change it, so that your simulations do  not crash.
+
+General information about Crazyflies can be found [here](https://www.bitcraze.io/products/crazyflie-2-1/).
 
 General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html)
 

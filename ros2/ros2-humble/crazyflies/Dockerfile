@@ -185,6 +185,9 @@ RUN echo "alias source_ros='source $HOME/ros_noetic/catkin_ws/devel/setup.bash'"
 RUN echo "alias source_ros2='source /opt/ros/${ROS2_DISTRO}/setup.bash'" >> $HOME/.bashrc
 RUN echo "export PATH='$HOME/.local/bin:$PATH'" >> $HOME/.bashrc
 
+# Add useful aliases
+RUN echo "alias cd_mrs_crazyflies='cd /root/CrazySim/ros2_ws/src/mrs_crazyflies'" >> $HOME/.bashrc
+
 #MPC CaseStudy + Acados
 RUN apt install libboost-program-options-dev libusb-1.0-0-dev
 RUN pip3 install rowan transforms3d
@@ -207,8 +210,12 @@ RUN cd acados \
     && pip install casadi \
     && pip install -e $HOME/acados/interfaces/acados_template
 
-RUN echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$HOME/acados/lib"" >> $HOME/.bashrc
-RUN echo "export ACADOS_SOURCE_DIR="$HOME/acados"" >> $HOME/.bashrc
+RUN echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/acados/lib" >> $HOME/.bashrc
+RUN echo "export ACADOS_SOURCE_DIR=$HOME/acados" >> $HOME/.bashrc
+
+# Generate a random number between 1 and 101 and append it to bashrc
+RUN echo "export ROS_DOMAIN_ID=$(shuf -i 1-101 -n 1)" >> $HOME/.bashrc
+
 
 WORKDIR $HOME/CrazySim/ros2_ws
 RUN bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/CrazySim/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces"
