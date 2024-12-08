@@ -120,14 +120,14 @@ Here are some links: [Tmuxinator](https://github.com/tmuxinator/tmuxinator), [Ge
 
 **Htop** is a better version of `top` - command line interface task manager. Start it with the command `htop` and exit with `q`.
 
+**Mcap** is a format to bag data in ROS2, it is added in this dockerfile and you can use it to store data from runs. Check [this link] (https://mcap.dev/guides/getting-started/ros-2). 
+
 **VS Code** - If you normally use VS Code as your IDE, you can install [Dev Containers](https://code.visualstudio.com/docs/remote/containers#_sharing-git-credentials-with-your-container) extension which will allow you to continue using it inside the container. Simply start the container in your terminal (`docker start -i mrs_project`) and then attach to it from the VS code (open action tray with `Ctrl+Shift+P` and select `Dev Containers: Attach to Running Container`).
 
 ### TODO
 
 - [x] Add SSH AUTH to first_run.sh
 - [ ] Change https to ssh
-- [ ] Add ros2 to ros1 interfaces and ./configure
 - [x] Add general example
 - [x] Add startup scripts
-- [ ] One alias for sourcing
 - [x] GPU / NO GPU version
