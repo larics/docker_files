@@ -40,8 +40,8 @@ export DOCKER_BUILDKIT=1
 ```
 Run Dockerfile from the project root directory using the following commands:
 ```bash
-# Build a Dockerfile
-docker build -t crazysim_img2 .
+# Build a Dockerfile, to install ros1_bridge and ROS Noetic set the argument INSTALL_BRIDGE to true, otherwise set it to false, and it will only install ROS2 
+docker build --build-arg INSTALL_BRIDGE=false -t crazysim_img2 .
 
 # Run the crazysim_img2 container for the fist time
 ./first_run.sh
