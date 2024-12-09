@@ -1,6 +1,6 @@
 name: mpc_case_study
 root: ./
-startup_window: crazyflies_setup
+startup_window: crazyflies_start
 pre_window: |
   source <%= @settings["setup_name"] %>
 windows:
@@ -8,14 +8,16 @@ windows:
       layout: tiled
       panes:
         - ros2_ws;source_ros2; bash ~/CrazySim/crazyflie-firmware/tools/crazyflie-simulation/simulator_files/gazebo/launch/sitl_multiagent_square.sh -n 4 -m crazyflie
-        - ros2_ws;source_ros2;sleep 30; ros2 launch crazyflie launch.py backend:=cflib
-        - ros2_ws;source_ros2;sleep 40; ros2 run crazyflie_mpc crazyflie_multiagent_mpc --n_agents=4 --build_acados
+        - ros2_ws;source_ros2; history -s  "ros2 launch crazyflie launch.py backend:=cflib"
+        - ros2_ws;source_ros2; history -s "ros2 run crazyflie_mpc crazyflie_multiagent_mpc --n_agents=4 --build_acados"
         - ros2_ws;source_ros2; history -s "ros2 topic pub -t 1 /all/mpc_takeoff std_msgs/msg/Empty"
         - ros2_ws;source_ros2; history -s "ros2 topic pub -t 1 /all/mpc_trajectory std_msgs/msg/Empty"
-  - ros1_bridge:
-      layout: tiled
-      panes:
-        - source_ros;sleep 10;ros2_ws; ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
-        - source_ros; roscore
-        - source_ros; history -s "rostopic list"
+        - ros2_ws;source_ros2; ros2 bag record -s mcap --all
+  # - ros1_bridge:
+  #     layout: tiled
+  #     panes:
+  #       - source_ros;sleep 10;ros2_ws; ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+  #       - source_ros; roscore
+  #       - source_ros; history -s "rostopic list"
+  #       - ros2_ws;source_ros2; ros2 launch rosbridge_server rosbridge_websocket_launch.xml
  

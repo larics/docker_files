@@ -34,11 +34,14 @@ ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
 docker run -it \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
+    --env="TERM=xterm-256color" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
     --volume="/dev:/dev" \
+    --volume="/var/run/dbus/:/var/run/dbus/:z" \
     --volume ~/.ssh/ssh_auth_sock:/ssh-agent \
     --env SSH_AUTH_SOCK=/ssh-agent \
     --net=host \
     --privileged \
+    --gpus all \
     --name crazysim_cont2 \
     crazysim_img2
