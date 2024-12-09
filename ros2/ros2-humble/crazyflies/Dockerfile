@@ -1,13 +1,13 @@
 # Ubuntu 22.04
 FROM ubuntu:jammy
 
-ENV LANG C.UTF-8
-ENV LC_AL C.UTF-8
-ENV ROS2_DISTRO humble
-ENV GZ_RELEASE garden
+ENV LANG=C.UTF-8
+ENV LC_AL=C.UTF-8
+ENV ROS2_DISTRO=humble
+ENV GZ_RELEASE=garden
 ARG DEBIAN_FRONTEND=noninteractive
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
 ENV TZ=Europe/Zagreb
 ARG INSTALL_BRIDGE=false
 ARG HOME=/root
@@ -213,7 +213,7 @@ RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations \
                    ros-${ROS2_DISTRO}-nav2-map-server \
                    ros-${ROS2_DISTRO}-nav2-lifecycle-manager\
                    ros-${ROS2_DISTRO}-rosbridge-suite\
-                   ros-${ROS_DISTRO}-rosbag2-storage-mcap
+                   ros-${ROS2_DISTRO}-rosbag2-storage-mcap
 
 WORKDIR $HOME
 RUN git clone https://github.com/acados/acados.git
@@ -237,7 +237,7 @@ RUN echo "export ROS_DOMAIN_ID=$(shuf -i 1-101 -n 1)" >> $HOME/.bashrc
 
 WORKDIR $HOME/CrazySim/ros2_ws
 
-# Final build of ROS2 ws 
+# Final build of ROS2 ws
 RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
       bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/CrazySim/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces";\
     else \

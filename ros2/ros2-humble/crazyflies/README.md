@@ -40,18 +40,23 @@ export DOCKER_BUILDKIT=1
 ```
 Run Dockerfile from the project root directory using the following commands:
 ```bash
-# Build a Dockerfile, to install ros1_bridge and ROS Noetic set the argument INSTALL_BRIDGE to true, otherwise set it to false, and it will only install ROS2 
+# Build the Dockerfile.
+# To install ros1_bridge and ROS Noetic set the argument INSTALL_BRIDGE to true.
+# Otherwise set it to false, and it will only install ROS2.
 docker build --build-arg INSTALL_BRIDGE=false -t crazysim_img2 .
 
 # Run the crazysim_img2 container for the fist time
 ./first_run.sh
 
 # This will create docker container crazyswarm_container and position you into the container
+```
 
+For future runs, you can use the following commands:
+```bash
 # Start the crazysim_cont:
 docker start -i crazysim_cont2
 
-# Start the crazysim_cont in another terminal, while it is already started:
+# Open the crazysim_cont in another terminal, while it is already started:
 docker exec -it crazysim_cont2 bash
 
 # Stop the conatainer
@@ -105,7 +110,7 @@ If you are working in the group and you are all using the same network, please c
 
 General information about Crazyflies can be found [here](https://www.bitcraze.io/products/crazyflie-2-1/).
 
-General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html)
+General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html).
 
 ## Bonus section
 The provided Docker image comes with a few preinstalled tools and configs which may simplify your life.
@@ -120,7 +125,7 @@ Here are some links: [Tmuxinator](https://github.com/tmuxinator/tmuxinator), [Ge
 
 **Htop** is a better version of `top` - command line interface task manager. Start it with the command `htop` and exit with `q`.
 
-**Mcap** is a format to bag data in ROS2, it is added in this dockerfile and you can use it to store data from runs. Check [this link] (https://mcap.dev/guides/getting-started/ros-2). 
+**Mcap** is a format to bag data in ROS2, it is added in this dockerfile and you can use it to store data from runs. Check [this link] (https://mcap.dev/guides/getting-started/ros-2).
 
 **VS Code** - If you normally use VS Code as your IDE, you can install [Dev Containers](https://code.visualstudio.com/docs/remote/containers#_sharing-git-credentials-with-your-container) extension which will allow you to continue using it inside the container. Simply start the container in your terminal (`docker start -i mrs_project`) and then attach to it from the VS code (open action tray with `Ctrl+Shift+P` and select `Dev Containers: Attach to Running Container`).
 
