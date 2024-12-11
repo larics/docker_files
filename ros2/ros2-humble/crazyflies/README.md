@@ -71,7 +71,7 @@ The docker contains packages for crazyflies simulator [CrazySim](https://github.
 > [!NOTE]
 > The ros2 workspace is located in /root/CrazySim/ros2_ws
 
-Note that before running any ros2 package you need to source ros2  using alias:
+Note that before running any ros2 package you need to source ros2  using alias (only if the docker was built with INSTALL_BRIDGE=true, otherwise these are already in .bashrc and they do not need to be used):
 
 ```
 ros2_ws
