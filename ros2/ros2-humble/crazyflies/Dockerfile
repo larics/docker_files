@@ -242,7 +242,7 @@ RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
       bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/CrazySim/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" ;\
       echo "ros2_ws" >> $HOME/.bashrc && \
       echo "source_ros2" >> $HOME/.bashrc;\
-      fi
+    fi
 
 WORKDIR $HOME
 RUN mkdir $HOME/startup
