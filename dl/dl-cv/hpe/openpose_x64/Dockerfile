@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.7.0-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:12.0.1-devel-ubuntu20.04
 LABEL maintainer filip.zoric@fer.hr
 
 # Env vars needed for NVIDIA container runtime (TODO: After build, pass them on the start of the Dockerfile) 
@@ -150,7 +150,7 @@ RUN sudo update-alternatives --config gcc
 WORKDIR /root
 RUN git clone https://github.com/CMU-Perceptual-Computing-Lab/openpose
 WORKDIR /root/openpose
-RUN git checkout tags/v1.7.0
+#RUN git checkout tags/v1.7.0
 RUN git submodule update --init --recursive --remote 
 # There is possibility of automated openPose build 
 
