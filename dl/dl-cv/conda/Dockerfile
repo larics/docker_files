@@ -3,6 +3,9 @@ FROM ubuntu:20.04
 
 # Set environment variables to avoid manual timezone prompts
 ENV DEBIAN_FRONTEND=noninteractive
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,utility,compute
+
 
 # Install necessary system dependencies and utilities
 RUN apt-get update && apt-get install -y \
@@ -29,7 +32,6 @@ RUN apt-get update && apt-get install -y ros-noetic-ros-base
 
 # Add ROS environment to bashrc
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-SHELL ["/bin/bash", "-c"]  
 
 # Install Miniconda (simple Conda)
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
@@ -45,4 +47,4 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc && \
     echo "export PATH=/opt/miniconda/bin:$PATH" >> ~/.bashrc
 
 # Set entry point to bash
-ENTRYPOINT ["/bin/bash"]
+CMD ["bash"]
