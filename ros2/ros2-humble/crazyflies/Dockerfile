@@ -194,8 +194,6 @@ RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
       echo "alias source_ros='source $HOME/ros_noetic/catkin_ws/devel/setup.bash'" >> $HOME/.bashrc; \
     else \
       echo "Skipping installation of ros1_bridge";\
-      echo "ros2_ws" >> $HOME/.bashrc && \
-      echo "source_ros2" >> $HOME/.bashrc;\
     fi
 
 
@@ -242,6 +240,8 @@ RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
       bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/CrazySim/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces";\
     else \
       bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/CrazySim/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" ;\
+      echo "ros2_ws" >> $HOME/.bashrc && \
+      echo "source_ros2" >> $HOME/.bashrc;\
     fi
 
 WORKDIR $HOME
