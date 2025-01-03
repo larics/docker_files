@@ -5,6 +5,11 @@ ENV LANG C.UTF-8
 ENV LC_AL C.UTF-8
 ENV ROS2_DISTRO iron
 ARG DEBIAN_FRONTEND=noninteractive
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
+ENV TZ=Europe/Zagreb
+ARG INSTALL_BRIDGE=false
+ARG HOME=/root
 
 # Tools useful during development
 RUN apt-get update \
@@ -56,10 +61,18 @@ RUN apt-get update \
         vim \
         nano \
         net-tools \
+        tmux \
+        tmuxinator \
         iputils-ping \
         xvfb \
         curl\
+        jq \
         wget\
+        ranger \
+        htop \
+        libgl1-mesa-glx \
+        libgl1-mesa-dri \
+        rfkill \
         sudo \
         usbutils \
         software-properties-common \
@@ -85,15 +98,10 @@ RUN apt-get update \
 
 # Agent forwarding during docker build https://stackoverflow.com/questions/43418188/ssh-agent-forwarding-during-docker-build
 # install ssh client and git
-RUN sudo apt-get install openssh-client git
+RUN sudo apt-get install -y openssh-client git
 
-
-RUN adduser --disabled-password --gecos '' developer 
-RUN adduser developer sudo 
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 ENV DOCKER_BUILDKIT=1
-RUN sudo apt-get install -y openssh-client
 ENV GIT_SSH_COMMAND="ssh -v" 
 USER root
 
@@ -101,15 +109,22 @@ RUN --mount=type=ssh id=default \
     mkdir -p ~/.ssh/ && \
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
-USER developer 
+COPY to_copy /tmp/to_copy
+COPY install_ros.sh /tmp/to_copy
 
 #install ROS Noetic
-RUN mkdir /home/developer/.ros_setup
-COPY to_copy/ros_comm.patch /home/developer/.ros_setup
-COPY to_copy/rosconsole.patch /home/developer/.ros_setup
-COPY to_copy/CMakeLists.txt /home/developer/.ros_setup
-COPY install_ros.sh /home/developer/.ros_setup
-RUN cd /home/developer/.ros_setup && sudo ./install_ros.sh
+RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
+      echo "Installing ROS Noetic";\
+      mkdir $HOME/.ros_setup && \
+      cp /tmp/to_copy/ros_comm.patch $HOME/.ros_setup && \
+      cp /tmp/to_copy/rosconsole.patch $HOME/.ros_setup && \
+      cp /tmp/to_copy/CMakeLists.txt $HOME/.ros_setup && \
+      cp /tmp/to_copy/install_ros.sh $HOME/.ros_setup && \
+      rm -r /tmp/to_copy/ && \
+      cd $HOME/.ros_setup && sudo ./install_ros.sh; \
+    else \
+      echo "Skipping the installation of ROS Noetic"; \
+    fi
 
 # install ROS2 Iron
 RUN sudo apt update && sudo apt install locales \
@@ -129,26 +144,38 @@ RUN sudo apt update && sudo apt install -y \
 RUN  sudo apt-get update && sudo apt-get upgrade -y && sudo apt install ros-${ROS2_DISTRO}-desktop -y
 
 RUN sudo apt-get install -y python3-colcon-common-extensions
+RUN apt-get install python-is-python3
+
+#Add mcap to bag things in ROS2
+RUN mkdir -p downloads && \
+    LATEST_RELEASE=$(curl -s https://api.github.com/repos/foxglove/mcap/releases/latest | jq -r '.assets[0].browser_download_url') && \
+    echo "Downloading latest release from: $LATEST_RELEASE" && \
+    curl -L -o /bin/mcap "$LATEST_RELEASE" && \
+    rm -r downloads && \
+    cd /bin && chmod +x mcap
+
+
+RUN echo "alias ros2_ws='source $HOME/ros2_ws/install/setup.bash'" >> $HOME/.bashrc
+RUN echo "alias source_ros2='source /opt/ros/${ROS2_DISTRO}/setup.bash'" >> $HOME/.bashrc
+
+RUN mkdir -p $HOME/ros2_ws/src && cd $HOME/ros2_ws/src \
+  && git clone https://github.com/IMRCLab/crazyswarm2 --recursive \
+  && git clone --branch ros2 --recursive https://github.com/IMRCLab/motion_capture_tracking.git 
 
 #ros1 bridge setup
-RUN mkdir -p /home/developer/ros2_ws/src \
-  && cd /home/developer/ros2_ws/src \
-  && git clone https://github.com/ros2/ros1_bridge \
-  && git clone https://github.com/IMRCLab/crazyswarm2 --recursive \
-  && git clone --branch ros2 --recursive https://github.com/IMRCLab/motion_capture_tracking.git \
-  && cd /home/developer/ros2_ws \
-  && echo "SOURCING ROS" \
-  && bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select crazyflie_interfaces motion_capture_tracking_interfaces" \
-  && bash -c "source /home/developer/ros_noetic/catkin_ws/devel/setup.bash;source /home/developer/ros2_ws/install/setup.bash;source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select ros1_bridge --cmake-force-configure"
+RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
+    cd $HOME/ros2_ws/src \
+    git clone https://github.com/ros2/ros1_bridge \
+    cd $HOME/ros2_ws \
+    echo "SOURCING ROS" \
+    bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select crazyflie_interfaces motion_capture_tracking_interfaces" \
+    bash -c "source $HOME/ros_noetic/catkin_ws/devel/setup.bash;source $HOME/ros2_ws/install/setup.bash;source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select ros1_bridge --cmake-force-configure" \
+    echo "alias source_ros='source $HOME/ros_noetic/catkin_ws/devel/setup.bash'" >> $HOME/.bashrc; \
+  else \
+    echo "Skipping installation of ros1_bridge";\
+  fi
 
-
-# Add sourcing for bridge
-RUN echo "alias ros2_ws='source /home/developer/ros2_ws/install/setup.bash'" >> /home/developer/.bashrc
-
-# Add separate aliases for noetic and ROS2_DISTRO
-RUN echo "alias source_ros='source /home/developer/ros_noetic/catkin_ws/devel/setup.bash'" >> /home/developer/.bashrc
-RUN echo "alias source_ros2='source /opt/ros/${ROS2_DISTRO}/setup.bash'" >> /home/developer/.bashrc
-RUN echo "export PATH='/home/developer/.local/bin:$PATH'" >> /home/developer/.bashrc
+RUN echo "export PATH='$HOME/.local/bin:$PATH'" >> $HOME/.bashrc
 
 
 #crazyflies setup
@@ -159,41 +186,65 @@ RUN sudo apt-get update && sudo apt install -y \
   libusb-1.0-0-dev \
   libxcb-xinerama0 \
   libxcb-cursor0 \
-  ros-iron-tf-transformations \
   make gcc-arm-none-eabi \
   swig3.0 \
   && sudo ln -s /usr/bin/swig3.0 /usr/bin/swig
 
-RUN cd /home/developer && git clone https://github.com/bitcraze/crazyflie-clients-python \
-&& cd crazyflie-clients-python \
-&& pip3 install -e .
+RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations \
+                   ros-${ROS2_DISTRO}-nav2-map-server \
+                   ros-${ROS2_DISTRO}-nav2-lifecycle-manager\
+                   ros-${ROS2_DISTRO}-rosbridge-suite\
+                   ros-${ROS2_DISTRO}-rosbag2-storage-mcap
 
-RUN cd /home/developer/ros2_ws \
-  && bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON  --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces"
+RUN cd $HOME && git clone https://github.com/bitcraze/crazyflie-clients-python \
+  && cd crazyflie-clients-python \
+  && pip3 install -e .
 
-RUN cd /home/developer && git clone --recursive https://github.com/bitcraze/crazyflie-firmware.git \
+RUN cd $HOME && git clone --recursive https://github.com/bitcraze/crazyflie-firmware.git \
  && cd crazyflie-firmware && git submodule init && git submodule update \
  && make cf2_defconfig \
  && make -j 12 \
  && make bindings_python \
  && cd build \
  && python3 setup.py install --user \
- && export PYTHONPATH=/home/developer/crazyflie-firmware/build:$PYTHONPATH
+ && export PYTHONPATH=$HOME/crazyflie-firmware/build:$PYTHONPATH
 
-# Set developer as the main used
-ENV USERNAME=developer
+ ENV USERNAME=root
 
 # Add user and add it to sudo group
 RUN sudo usermod -a -G plugdev $USERNAME
 COPY to_copy/99-bitcraze.rules /etc/udev/rules.d/.
 
-# Commands below run as the developer user
-USER $USERNAME
+RUN cd $HOME && git clone https://github.com/bitcraze/lps-tools.git \
+  && cd $HOME/lps-tools \ 
+  && pip3 install -e .
 
-WORKDIR /home/$USERNAME
-#RUN /bin/bash -c 'source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install'
+COPY to_copy/99-lps.rules /etc/udev/rules.d/.
+RUN sudo adduser $USERNAME dialout
 
-# RUN /bin/sh -c 'echo ". /opt/ros/${ROS2_DISTRO}/setup.bash" >> /home/developer/.bashrc' \
-#     && /bin/sh -c 'echo ". /home/developer/ros2_ws/install/setup.sh" >> /home/developer/.bashrc'
+# setup ros2 environment variables
+RUN echo "export ROS_LOCALHOST_ONLY=1" >> $HOME/.bashrc
+RUN echo "export ROS_DOMAIN_ID=$(shuf -i 1-101 -n 1)" >> $HOME/.bashrc
 
+
+WORKDIR $HOME/ros2_ws
+
+# Final build of ROS2 ws
+RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
+      bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces";\
+    else \
+      bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" ;\
+      echo "ros2_ws" >> $HOME/.bashrc && \
+      echo "source_ros2" >> $HOME/.bashrc;\
+    fi
+
+WORKDIR $HOME
+RUN mkdir $HOME/startup
+COPY to_copy/aliases $HOME/.bash_aliases
+COPY to_copy/nanorc $HOME/.nanorc
+COPY to_copy/tmux $HOME/.tmux.conf
+COPY to_copy/ranger $HOME/.config/ranger/rc.conf
+
+USER root
+WORKDIR $HOME
 CMD ["/bin/bash"]

@@ -20,21 +20,21 @@ export DOCKER_BUILDKIT=1
 Run Dockerfile from the project root directory using the following commands:
 ```bash
 # Build a Dockerfile
-docker build -t crazyswarm2_img2 . 
+docker build -t crazyswarm2_img . 
 
-# Run the crazyswarm2_img2 container for the fist time
+# Run the crazyswarm2_img container for the fist time
 ./first_run.sh
 
 # This will create docker container crazyswarm_container and position you into the container
 
 # Start the bebop_cont:
-docker start -i crazyswarm2_cont2
+docker start -i crazyswarm2_cont
 
 # Stop the conatainer
-docker stop crazyswarm2_cont2
+docker stop crazyswarm2_cont
 
 # Delete the container
-docker rm crazyswarm2_cont2
+docker rm crazyswarm2_cont
 ```
 Before connecting to crazyflies locally on your laptop, copy file: `to_copy/99-bitcraze.rules` to  `/etc/udev/rules.d` directory.
 
