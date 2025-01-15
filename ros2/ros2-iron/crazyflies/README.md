@@ -63,7 +63,7 @@ docker stop crazyswarm2_cont
 # Delete the container
 docker rm crazyswarm2_cont
 ```
-Before connecting to crazyflies locally on your laptop, copy file: `to_copy/99-bitcraze.rules` and `to_copy/99-lps.rules` to  `/etc/udev/rules.d` directory.
+Before connecting to crazyflies locally on your laptop, copy file: `to_copy/99-bitcraze.rules` and `to_copy/99-lps.rules` to  `/etc/udev/rules.d` directory. Please check these links on USB permissions: [crazyradio](https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/installation/usb_permissions/) and [lps](https://github.com/bitcraze/lps-tools?tab=readme-ov-file#usb-access-right-on-linux)
 
 ## Connecting to crazyflies
 
