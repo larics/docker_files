@@ -63,9 +63,8 @@ docker stop crazyswarm2_cont
 # Delete the container
 docker rm crazyswarm2_cont
 ```
-Before connecting to crazyflies locally on your laptop, copy file: `to_copy/99-bitcraze.rules` and `to_copy/99-lps.rules` to  `/etc/udev/rules.d` directory. Please check these links on USB permissions: [crazyradio](https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/installation/usb_permissions/) and [lps](https://github.com/bitcraze/lps-tools?tab=readme-ov-file#usb-access-right-on-linux)
-
 ## Connecting to crazyflies
+Before connecting to crazyflies locally on your laptop, copy file: `to_copy/99-bitcraze.rules` and `to_copy/99-lps.rules` to  `/etc/udev/rules.d` directory. Please check these links on USB permissions: [crazyradio](https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/installation/usb_permissions/) and [lps](https://github.com/bitcraze/lps-tools?tab=readme-ov-file#usb-access-right-on-linux)
 
 To connect to crazyflie you must plug in the Crazyradio [flashed USB dongle](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyradio-2-0/) into the laptop. 
 
@@ -76,8 +75,6 @@ cfclient
 ```
 For connecting with ROS2 crazyswarm2 package follow [instructions] (https://imrclab.github.io/crazyswarm2/usage.html)
 
-## Running the experiment
-TO DO
 ## ROS1 info
 If you have chosen to build the docker including ros1_bridge, please mind the sourcing.
 

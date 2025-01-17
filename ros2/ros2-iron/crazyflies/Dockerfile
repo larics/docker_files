@@ -160,7 +160,8 @@ RUN echo "alias source_ros2='source /opt/ros/${ROS2_DISTRO}/setup.bash'" >> $HOM
 
 RUN mkdir -p $HOME/ros2_ws/src && cd $HOME/ros2_ws/src \
   && git clone https://github.com/IMRCLab/crazyswarm2 --recursive \
-  && git clone --branch ros2 --recursive https://github.com/IMRCLab/motion_capture_tracking.git 
+  && git clone --branch ros2 --recursive https://github.com/IMRCLab/motion_capture_tracking.git\
+  && git clone https://github.com/larics/mrs_crazyflies_exp.git
 
 #ros1 bridge setup
 RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
@@ -176,7 +177,7 @@ RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
   fi
 
 RUN echo "export PATH='$HOME/.local/bin:$PATH'" >> $HOME/.bashrc
-
+RUN echo "alias cd_mrs_crazyflies_exp='cd /root/ros2_ws/src/mrs_crazyflies_exp'" >> $HOME/.bashrc
 
 #crazyflies setup
 RUN pip3 install rowan cflib transforms3d nicegui
