@@ -21,6 +21,9 @@ RUN apt-get update && apt-get install -y \
     ros-humble-mavros \
     ros-humble-librealsense2* \
     ros-humble-realsense2-* \
+    ros-humble-plotjuggler-ros \
+    ros-humble-rosbag2-storage-mcap \
+    ros-humble-rqt* \
     libasio-dev \
     libtinyxml2-dev \
     nano \
