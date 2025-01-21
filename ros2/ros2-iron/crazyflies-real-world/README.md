@@ -29,7 +29,7 @@ git clone https://github.com/larics/docker_files.git
 ```
 Navigate to `ros2-iron` folder:
 ```
-cd docker_files/ros2/ros2-iron/crazyflies
+cd docker_files/ros2/ros2-iron/crazyflies-real-world
 
 ```
 Add  to  `~/.bashrc` and source it, or type in the current terminal: 
