@@ -129,6 +129,8 @@ Here are some links: [Tmuxinator](https://github.com/tmuxinator/tmuxinator), [Ge
 
 **VS Code** - If you normally use VS Code as your IDE, you can install [Dev Containers](https://code.visualstudio.com/docs/remote/containers#_sharing-git-credentials-with-your-container) extension which will allow you to continue using it inside the container. Simply start the container in your terminal (`docker start -i mrs_project`) and then attach to it from the VS code (open action tray with `Ctrl+Shift+P` and select `Dev Containers: Attach to Running Container`).
 
+**Foxglove** - this is a data visualization tool. You can download it on your laptop [here](https://foxglove.dev/download) After the download you can start it from the Apps, there will be purple icon. You can visualize data or plot raw messages live, as you are flying (There is already rosbridge_websocker launched.). Checkout this [link](https://docs.foxglove.dev/docs/connecting-to-data/frameworks/ros2#rosbridge). Additionally you can record bags using mcap or any other tool, transfer the bag on your laptop and open it with foxglove. 
+
 ### TODO
 
 - [x] Add SSH AUTH to first_run.sh
