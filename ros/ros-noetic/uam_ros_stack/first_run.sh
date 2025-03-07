@@ -36,4 +36,4 @@ docker run -it \
     --privileged \
     --gpus all \
     --name uam_ros_cont \
-    uam_ros_img:noetic
+    uam_ros_img:latest
