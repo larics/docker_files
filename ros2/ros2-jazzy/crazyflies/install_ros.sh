@@ -7,7 +7,7 @@ trap 'echo "$0: \"${last_command}\" command failed with exit code $?"' ERR
 
 echo "$0: Building ros"
 
-CATKIN_WS=/home/developer/ros_noetic/catkin_ws
+CATKIN_WS=/root/ros_noetic/catkin_ws
 
 [ ! -e $CATKIN_WS/src ] && mkdir -p $CATKIN_WS/src
 
@@ -42,7 +42,7 @@ git clone https://github.com/ros/roslisp.git -b 1.9.25
 git clone https://github.com/ros/rospack.git -b 2.6.2
 git clone https://github.com/ros/std_msgs.git -b 0.5.13
 
-cd /home/developer/ros_noetic
+cd /root/ros_noetic
 
 git clone https://github.com/ros-infrastructure/catkin_pkg.git -b 0.5.2
 git clone https://github.com/ros-infrastructure/rospkg.git -b 1.5.0
@@ -52,14 +52,14 @@ cd ..
 cd rospkg && python3 setup.py install
 
 cd $CATKIN_WS/src/ros_comm
-git apply --ignore-whitespace /home/developer/.ros_setup/ros_comm.patch
+git apply --ignore-whitespace /root/.ros_setup/ros_comm.patch
 cd $CATKIN_WS/src/rosconsole
-git apply --ignore-whitespace /home/developer/.ros_setup/rosconsole.patch
+git apply --ignore-whitespace /root/.ros_setup/rosconsole.patch
 
 
 cd $CATKIN_WS/src/pluginlib/pluginlib
 rm CMakeLists.txt
-cp /home/developer/.ros_setup/CMakeLists.txt .
+cp /root/.ros_setup/CMakeLists.txt .
 
 cd $CATKIN_WS 
 ./src/catkin/bin/catkin_make install \

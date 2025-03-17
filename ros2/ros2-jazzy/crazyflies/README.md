@@ -21,72 +21,63 @@ echo "xhost +local:docker > /dev/null" >> ~/.profile
 ```
 
 ## Run Crazyflies in the Docker container
-
 ### Setting up
-
 Clone the [repository](https://github.com/larics/docker_files):
 ```
 git clone https://github.com/larics/docker_files.git
 
 ```
-Navigate to `ros2-humble` folder:
+Navigate to `ros2-jazzy` folder:
 ```
-cd docker_files/ros2/ros2-humble/crazyflies
+cd docker_files/ros2/ros2-jazzy/crazyflies
 
 ```
-Add  to  `~/.bashrc` and source it, or type in the current terminal:
+Add  to  `~/.bashrc` and source it, or type in the current terminal: 
 ```
 export DOCKER_BUILDKIT=1
 ```
 Run Dockerfile from the project root directory using the following commands:
 ```bash
-# Build the Dockerfile.
-# To install ros1_bridge and ROS Noetic set the argument INSTALL_BRIDGE to true.
+# Build a Dockerfile
+# To install ros1_bridge and ROS Noetic set the argument ~INSTALL_BRIDGE to true (currently won't work).
 # Otherwise set it to false, and it will only install ROS2.
-docker build --build-arg INSTALL_BRIDGE=false -t crazysim_img2 .
+docker build --build-arg INSTALL_BRIDGE=false -t crazyflies_img . 
 
-# Run the crazysim_img2 container for the fist time
+# Run the crazyswarm2_img container for the fist time
 ./first_run.sh
 
-# This will create docker container crazyswarm_container and position you into the container
+# This will create docker container crazyswarm2 container and position you into the container
 ```
 
 For future runs, you can use the following commands:
-```bash
-# Start the crazysim_cont:
-docker start -i crazysim_cont2
+```
+# Start the crazyflies_cont:
+docker start -i crazysflies_cont
 
-# Open the crazysim_cont in another terminal, while it is already started:
-docker exec -it crazysim_cont2 bash
+# Open the crazyflies_cont in another terminal, while it is already started:
+docker exec -it crazyflies_cont bash
 
 # Stop the conatainer
-docker stop crazysim_cont2
+docker stop crazyflies_cont
 
 # Delete the container
-docker rm crazysim_cont2
+docker rm crazyflies_cont
+```
+## Connecting to crazyflies
+Before connecting to crazyflies locally on your laptop, copy file: `to_copy/99-bitcraze.rules` and `to_copy/99-lps.rules` to  `/etc/udev/rules.d` directory. Please check these links on USB permissions: [crazyradio](https://www.bitcraze.io/documentation/repository/crazyflie-lib-python/master/installation/usb_permissions/) and [lps](https://github.com/bitcraze/lps-tools?tab=readme-ov-file#usb-access-right-on-linux)
+
+To connect to crazyflie you must plug in the Crazyradio [flashed USB dongle](https://www.bitcraze.io/documentation/tutorials/getting-started-with-crazyradio-2-0/) into the laptop. 
+
+The general application [cfclient](https://www.bitcraze.io/documentation/repository/crazyflie-clients-python/master/userguides/userguide_client/)to connect to crazyflie can be started with (this shouldn't be running while crazyswarm2 packages are launched):
 
 ```
-The docker contains packages for crazyflies simulator [CrazySim](https://github.com/gtfactslab/CrazySim). General information about Crazyflies can be found [here](https://www.bitcraze.io/products/crazyflie-2-1/).
-
-> [!NOTE]
-> The ros2 workspace is located in /root/CrazySim/ros2_ws
-
-Note that before running any ros2 package you need to source ros2  using alias (only if the docker was built with INSTALL_BRIDGE=true, otherwise these are already in .bashrc and they do not need to be used):
-
+cfclient
 ```
-ros2_ws
-source_ros2
-```
+For connecting with ROS2 crazyswarm2 package follow [instructions] (https://imrclab.github.io/crazyswarm2/usage.html)
 
-### Running experiments
+## ROS1 info - currently won't work
+If you have chosen to build the docker including ros1_bridge, please mind the sourcing.
 
-In the folder `/root/startup` is `start.sh` script that starts the session with the examples from [CraySim page](https://github.com/gtfactslab/CrazySim).
-
-Before starting the session, please comment out all crazyflies that are not in Gazebo in file `ros2_ws/src/crazyswarm2/crazyflie/config/crazyflies.yaml` ([Check this](https://github.com/gtfactslab/CrazySim?tab=readme-ov-file#configuration) for more info).
-
-When starting the example script, if the frames of crazyflies do not appear in rviz and you wait too long, please check [this issue](https://github.com/gtfactslab/CrazySim/issues/1#issuecomment-1933212957).
-
-### ROS1 info
 This package is primarily supported in ROS2, and we strongly suggest using ROS2 for development. If you insist on using ROS1, here is an example on how to start rosbridge that will enable communication between ROS1 and ROS2.
 
 Note that ROS2 and ROS1 packages should always run in separate terminals to avoid mixing library paths.
@@ -106,11 +97,20 @@ ros2_ws
 source_ros2
 ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
+Mentioned `source_ros`, `ros2_ws`, `source_ros2` are all aliases defined in the `.bashrc` inside the docker.
+
+## INFO part
 If you are working in the group and you are all using the same network, please check [ROS_DOMAIN_ID](https://docs.ros.org/en/eloquent/Tutorials/Configuring-ROS2-Environment.html#the-ros-domain-id-variable) in .bashrc in container. Random number should be set during the build, however it is not impossible that some of you got the same number. If that is the situatation please change it, so that your simulations do  not crash.
 
 General information about Crazyflies can be found [here](https://www.bitcraze.io/products/crazyflie-2-1/).
 
-General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html).
+Tutorials on Crazyflies are [here](https://www.bitcraze.io/documentation/start/).
+
+General information about Cfclient can be found [here](https://www.bitcraze.io/documentation/repository/crazyflie-clients-python/master/userguides/userguide_client/).
+
+More info about Crazyswarm2 is described in [here](https://imrclab.github.io/crazyswarm2/).
+
+General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html)
 
 ## Bonus section
 The provided Docker image comes with a few preinstalled tools and configs which may simplify your life.
@@ -129,10 +129,10 @@ Here are some links: [Tmuxinator](https://github.com/tmuxinator/tmuxinator), [Ge
 
 **VS Code** - If you normally use VS Code as your IDE, you can install [Dev Containers](https://code.visualstudio.com/docs/remote/containers#_sharing-git-credentials-with-your-container) extension which will allow you to continue using it inside the container. Simply start the container in your terminal (`docker start -i mrs_project`) and then attach to it from the VS code (open action tray with `Ctrl+Shift+P` and select `Dev Containers: Attach to Running Container`).
 
+**Foxglove** - this is a data visualization tool. You can download it on your laptop [here](https://foxglove.dev/download) After the download you can start it from the Apps, there will be purple icon. You can visualize data or plot raw messages live, as you are flying (There is already rosbridge_websocker launched.). Checkout this [link](https://docs.foxglove.dev/docs/connecting-to-data/frameworks/ros2#rosbridge). Additionally you can record bags using mcap or any other tool, transfer the bag on your laptop and open it with foxglove. 
+
 ### TODO
 
-- [x] Add SSH AUTH to first_run.sh
-- [ ] Change https to ssh
-- [x] Add general example
-- [x] Add startup scripts
-- [x] GPU / NO GPU version
+- [ ] Add GPU argemnt to first_run
+- [ ] Add starting package
+- [ ] Add bridge 

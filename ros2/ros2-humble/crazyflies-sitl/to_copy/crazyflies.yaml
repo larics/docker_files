@@ -1,0 +1,161 @@
+# named list of all robots
+robots:
+  cf_1:
+    enabled: true
+    uri: udp://0.0.0.0:19850
+    initial_position: [0.0, -0.0, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_2:
+    enabled: true
+    uri: udp://0.0.0.0:19851
+    initial_position: [0.0,-0.5, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_3:
+    enabled: true
+    uri: udp://0.0.0.0:19852
+    initial_position: [-0.5,-0.0, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_4:
+    enabled: true
+    uri: udp://0.0.0.0:19853
+    initial_position: [-0.5,-0.5, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_5:
+    enabled: false
+    uri: udp://0.0.0.0:19854
+    initial_position: [0.5, -0.0, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_6:
+    enabled: false
+    uri: udp://0.0.0.0:19855
+    initial_position: [0.5, -0.5, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_7:
+    enabled: false
+    uri: udp://0.0.0.0:19856
+    initial_position: [1.0, -0.0, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_8:
+    enabled: false
+    uri: udp://0.0.0.0:19857
+    initial_position: [1.0,-0.5, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_9:
+    enabled: false
+    uri: udp://0.0.0.0:19858
+    initial_position: [-1.0,-0.0, 0.0]
+    type: cf_sim  # see robot_types
+
+  cf_10:
+    enabled: false
+    uri: udp://0.0.0.0:19859
+    initial_position: [-1.0,-0.5, 0.0]
+    type: cf_sim  # see robot_types
+# Definition of the various robot types
+robot_types:
+  cf_sim:
+    motion_capture:
+      enabled: false
+      # only if enabled; see motion_capture.yaml
+      # marker: default_single_marker
+      # dynamics: default
+    big_quad: false
+    # battery:
+    #   voltage_warning: 3.8  # V
+    #   voltage_critical: 3.7 # V
+    firmware_logging:
+      enabled: true
+      default_topics:
+        pose:
+          frequency: 10
+      custom_topics:
+        velocity:
+          frequency: 10
+          vars: ["kalman.statePX", "kalman.statePY", "kalman.statePZ"]
+  cf21:
+    motion_capture:
+      enabled: true
+      # only if enabled; see motion_capture.yaml
+      marker: default_single_marker
+      dynamics: default
+    big_quad: false
+    battery:
+      voltage_warning: 3.8  # V
+      voltage_critical: 3.7 # V
+    # firmware_params:
+    #   kalman:
+    #     pNAcc_xy: 1.0 # default 0.5
+    #firmware_logging:
+    #   enabled: true
+    #   default_topics:
+    #   pose:
+    #     frequency: 1 # Hz
+    #   custom_topics:
+    #    topic_name3: 
+    #      frequency: 1
+    #      vars: ["acc.x", "acc.y", "acc.z"]
+
+  cf21_mocap_deck:
+    motion_capture:
+      enabled: true
+      # only if enabled; see motion_capture.yaml
+      marker: mocap_deck
+      dynamics: default
+    big_quad: false
+    battery:
+      voltage_warning: 3.8  # V
+      voltage_critical: 3.7 # V
+
+    # firmware_params:
+    #   kalman:
+    #     pNAcc_xy: 1.0 # default 0.5
+
+# global settings for all robots
+all:
+  # firmware logging for all drones (use robot_types/type_name to set per type, or
+  # robots/drone_name to set per drone)
+  # firmware_logging:
+  #   enabled: true
+  #   default_topics:
+  #    # remove to disable default topic
+  #     pose:
+  #       frequency: 10 # Hz
+  #     status:
+  #       frequency: 1 # Hz
+    #custom_topics:
+    #  topic_name1:
+    #    frequency: 10 # Hz
+    #    vars: ["stateEstimateZ.x", "stateEstimateZ.y", "stateEstimateZ.z", "pm.vbat"]
+    #  topic_name2:
+    #    frequency: 1 # Hz
+    #    vars: ["stabilizer.roll", "stabilizer.pitch", "stabilizer.yaw"]
+  # firmware parameters for all drones (use robot_types/type_name to set per type, or
+  # robots/drone_name to set per drone)
+  firmware_params:
+    commander:
+      enHighLevel: 1
+    stabilizer:
+      estimator: 2 # 1: complementary, 2: kalman
+      controller: 1 # 1: PID, 2: mellinger
+    # ring:
+    #   effect: 16 # 6: double spinner, 7: solid color, 16: packetRate
+    #   solidBlue: 255 # if set to solid color
+    #   solidGreen: 0 # if set to solid color
+    #   solidRed: 0 # if set to solid color
+    #   headlightEnable: 0
+    locSrv:
+      extPosStdDev: 1e-3
+      extQuatStdDev: 0.5e-1
+    # kalman:
+    #   resetEstimation: 1
+  broadcasts:
+    num_repeats: 15 # number of times broadcast commands are repeated
+    delay_between_repeats_ms: 1 # delay in milliseconds between individual repeats

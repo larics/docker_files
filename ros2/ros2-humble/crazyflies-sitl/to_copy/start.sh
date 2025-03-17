@@ -13,7 +13,7 @@ rm .tmuxinator.yml
 ln session.yml .tmuxinator.yml
 
 SETUP_NAME=$1
-[ -z "$SETUP_NAME" ] && SETUP_NAME=mpc_case_study_setup.sh 
+[ -z "$SETUP_NAME" ] && SETUP_NAME=_setup.sh 
 
 # start tmuxinator
-tmuxinator mpc_case_study.yml setup_name=$SETUP_NAME 
+tmuxinator example.yml setup_name=$SETUP_NAME 

@@ -25,8 +25,36 @@ kill -9 "$1" > /dev/null 2> /dev/null
 
 waitForCfGazebo() {
   until gz service -l | grep cf > /dev/null 2>&1; do
-    echo "waiting for crazyflies in gazebo"
+    echo "waiting for a crazyflie in gazebo"
     sleep 1;
+  done
+}
+
+waitForCfsGazebo() {
+  if [[ -z "$NUM_ROBOTS" ]]; then
+    waitForCfGazebo
+    return
+  fi
+
+  echo "Waiting for $NUM_ROBOTS crazyflies to appear in Gazebo..."
+
+  while true; do
+    ALL_PRESENT=true
+
+    for ((i=0; i<NUM_ROBOTS; i++)); do
+      if ! gz service -l | grep -q "cf_$i"; then
+        ALL_PRESENT=false
+        break
+      fi
+    done
+
+    if $ALL_PRESENT; then
+      echo "All $NUM_ROBOTS crazyflies are now in Gazebo!"
+      break
+    fi
+
+    echo "Waiting for crazyflies in Gazebo..."
+    sleep 1
   done
 }
 

@@ -1,0 +1,21 @@
+name: example_session_with_bridge
+root: ./
+startup_window: crazyflies_start
+pre_window: |
+  source <%= @settings["setup_name"] %>
+windows:
+  - crazyflies_start:
+      layout: tiled
+      panes:
+        - ros2_ws;source_ros2;bash ~/CrazySim/crazyflie-firmware/tools/crazyflie-simulation/simulator_files/gazebo/launch/sitl_multiagent_square.sh -n 4 -m crazyflie
+        - ros2_ws;source_ros2;waitForCfsGazebo;sleep 1;ros2 launch crazyflie launch.py backend:=cflib rviz:=True mocap:=False teleop:=False
+        - ros2_ws;source_ros2;history -s "ros2 bag record -s mcap --all"
+        - ros2_ws;source_ros2;history -s "ros2 topic list"
+  - ros1_bridge:
+      layout: tiled
+      panes:
+        - source_ros;sleep 10;ros2_ws; ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+        - source_ros;roscore
+        - source_ros;history -s "rostopic list"
+        - ros2_ws;source_ros2; ros2 launch rosbridge_server rosbridge_websocket_launch.xml #foxglove bridge 
+ 

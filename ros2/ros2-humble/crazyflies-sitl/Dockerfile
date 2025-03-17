@@ -1,15 +1,17 @@
-# Ubuntu 22.04 
+# Ubuntu 22.04
 FROM ubuntu:jammy
 
-ENV LANG C.UTF-8
-ENV LC_AL C.UTF-8
-ENV ROS2_DISTRO iron
+ENV LANG=C.UTF-8
+ENV LC_AL=C.UTF-8
+ENV ROS2_DISTRO=humble
+ENV GZ_RELEASE=garden
 ARG DEBIAN_FRONTEND=noninteractive
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
 ENV TZ=Europe/Zagreb
 ARG INSTALL_BRIDGE=false
 ARG HOME=/root
+
 
 # Tools useful during development
 RUN apt-get update \
@@ -59,14 +61,14 @@ RUN apt-get update \
         python3-gnupg \
         python3-psutil \
         vim \
-        nano \
-        net-tools \
         tmux \
         tmuxinator \
+        nano \
+        net-tools \
         iputils-ping \
         xvfb \
         curl\
-        jq \
+        jq\
         wget\
         ranger \
         htop \
@@ -97,22 +99,21 @@ RUN apt-get update \
 
 
 # Agent forwarding during docker build https://stackoverflow.com/questions/43418188/ssh-agent-forwarding-during-docker-build
-# install ssh client and git
-RUN sudo apt-get install -y openssh-client git
+# install ssh client
 
 
 ENV DOCKER_BUILDKIT=1
-ENV GIT_SSH_COMMAND="ssh -v" 
+RUN apt-get install -y openssh-client
+ENV GIT_SSH_COMMAND="ssh -v"
 USER root
 
 RUN --mount=type=ssh id=default \
-    mkdir -p ~/.ssh/ && \
-    ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+    mkdir -p -m 0600 ~/.ssh/ && \
+    ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 COPY to_copy /tmp/to_copy
 COPY install_ros.sh /tmp/to_copy
 
-#install ROS Noetic
 RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
       echo "Installing ROS Noetic";\
       mkdir $HOME/.ros_setup && \
@@ -126,25 +127,40 @@ RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
       echo "Skipping the installation of ROS Noetic"; \
     fi
 
-# install ROS2 Iron
-RUN sudo apt update && sudo apt install locales \
-  && sudo locale-gen en_US en_US.UTF-8 \
-  && sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
-  && export LANG=en_US.UTF-8 
+# install ROS2 humble
+RUN apt update && sudo apt install locales \
+  &&  locale-gen en_US en_US.UTF-8 \
+  &&  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
+  && export LANG=en_US.UTF-8
 
 # set up ros2 repo
 RUN /bin/sh -c 'sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg' \
   && /bin/sh -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null'
 
-
-RUN sudo apt update && sudo apt install -y \
+RUN apt update && sudo apt install -y \
    python3-rosdep \
-   ros-dev-tools
+   ros-dev-tools \
+   libboost-program-options-dev \
+   libusb-1.0-0-dev \ 
+   python-is-python3
 
-RUN  sudo apt-get update && sudo apt-get upgrade -y && sudo apt install ros-${ROS2_DISTRO}-desktop -y
+RUN apt-get upgrade -y && sudo apt install ros-${ROS2_DISTRO}-desktop -y
 
-RUN sudo apt-get install -y python3-colcon-common-extensions
-RUN apt-get install python-is-python3
+RUN apt-get install -y python3-colcon-common-extensions
+
+#install Gazebo Garden
+RUN /bin/sh -c ' curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg' \
+  && /bin/sh -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null'
+RUN  apt-get update \
+  && apt-get install -y gz-${GZ_RELEASE}
+
+RUN pip3 install rowan transforms3d nicegui
+RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations \
+                    ros-${ROS2_DISTRO}-nav2-map-server \
+                    ros-${ROS2_DISTRO}-motion-capture-tracking \
+                    ros-${ROS2_DISTRO}-nav2-lifecycle-manager\
+                    ros-${ROS2_DISTRO}-rosbridge-suite\
+                    ros-${ROS2_DISTRO}-rosbag2-storage-mcap
 
 #Add mcap to bag things in ROS2
 RUN VERSION="releases/mcap-cli/v0.0.50" && \
@@ -154,76 +170,51 @@ RUN VERSION="releases/mcap-cli/v0.0.50" && \
     cd /bin && chmod +x mcap
 
 
+
+#installing CrazySim
+WORKDIR $HOME
+RUN  git clone https://github.com/gtfactslab/CrazySim.git --recursive \
+    && cd $HOME/CrazySim/crazyflie-lib-python \
+    &&  pip install -e .
+
+RUN pip install Jinja2
+RUN cd $HOME/CrazySim/crazyflie-firmware \
+    &&  mkdir -p sitl_make/build && cd sitl_make/build \
+    &&  cmake .. \
+    &&  make all
+
+
+#install other ROS2 ws packages
+RUN mkdir -p $HOME/ros2_ws/src \
+  && cd $HOME/ros2_ws/src \
+  && git clone https://github.com/IMRCLab/crazyswarm2 --recursive
+
+#Adapting crazyflies.yaml for simulation
+RUN rm $HOME/ros2_ws/src/crazyswarm2/crazyflie/config/crazyflies.yaml
+COPY to_copy/crazyflies.yaml $HOME/ros2_ws/src/crazyswarm2/crazyflie/config/
+
+# Add alias for sourcing for ros2 and ros2 workspace
 RUN echo "alias ros2_ws='source $HOME/ros2_ws/install/setup.bash'" >> $HOME/.bashrc
 RUN echo "alias source_ros2='source /opt/ros/${ROS2_DISTRO}/setup.bash'" >> $HOME/.bashrc
 
-RUN mkdir -p $HOME/ros2_ws/src && cd $HOME/ros2_ws/src \
-  && git clone https://github.com/IMRCLab/crazyswarm2 --recursive \
-  && git clone --branch ros2 --recursive https://github.com/IMRCLab/motion_capture_tracking.git\
-  && git clone https://github.com/larics/mrs_crazyflies_exp.git
-
 #ros1 bridge setup
 RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
-    cd $HOME/ros2_ws/src \
-    git clone https://github.com/ros2/ros1_bridge \
-    cd $HOME/ros2_ws \
-    echo "SOURCING ROS" \
-    bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select crazyflie_interfaces motion_capture_tracking_interfaces" \
-    bash -c "source $HOME/ros_noetic/catkin_ws/devel/setup.bash;source $HOME/ros2_ws/install/setup.bash;source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select ros1_bridge --cmake-force-configure" \
-    echo "alias source_ros='source $HOME/ros_noetic/catkin_ws/devel/setup.bash'" >> $HOME/.bashrc; \
-  else \
-    echo "Skipping installation of ros1_bridge";\
-  fi
+      cd $HOME/ros2_ws/src && \
+      sudo git clone https://github.com/ros2/ros1_bridge && \
+      cd $HOME/ros2_ws && \
+      echo "SOURCING ROS" && \
+      bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select crazyflie_interfaces" && \
+      bash -c "source $HOME/ros_noetic/catkin_ws/devel/setup.bash;source $HOME/ros2_ws/install/setup.bash;source /opt/ros/${ROS2_DISTRO}/setup.bash;colcon build --merge-install --packages-select ros1_bridge --cmake-force-configure" && \
+      echo "alias source_ros='source $HOME/ros_noetic/catkin_ws/devel/setup.bash'" >> $HOME/.bashrc; \
+    else \
+      echo "Skipping installation of ros1_bridge";\
+    fi
+
 
 RUN echo "export PATH='$HOME/.local/bin:$PATH'" >> $HOME/.bashrc
-RUN echo "alias cd_mrs_crazyflies_exp='cd /root/ros2_ws/src/mrs_crazyflies_exp'" >> $HOME/.bashrc
-
-#crazyflies setup
-RUN pip3 install rowan cflib transforms3d nicegui
-RUN pip3 install --upgrade pip 
-
-RUN sudo apt-get update && sudo apt install -y \
-  libusb-1.0-0-dev \
-  libxcb-xinerama0 \
-  libxcb-cursor0 \
-  make gcc-arm-none-eabi \
-  swig3.0 \
-  && sudo ln -s /usr/bin/swig3.0 /usr/bin/swig
-
-RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations \
-                   ros-${ROS2_DISTRO}-nav2-map-server \
-                   ros-${ROS2_DISTRO}-nav2-lifecycle-manager\
-                   ros-${ROS2_DISTRO}-rosbridge-suite\
-                   ros-${ROS2_DISTRO}-rosbag2-storage-mcap
-
-RUN cd $HOME && git clone https://github.com/bitcraze/crazyflie-clients-python \
-  && cd crazyflie-clients-python \
-  && pip3 install -e .
-
-RUN cd $HOME && git clone --recursive https://github.com/bitcraze/crazyflie-firmware.git \
- && cd crazyflie-firmware && git submodule init && git submodule update \
- && make cf2_defconfig \
- && make -j 12 \
- && make bindings_python \
- && cd build \
- && python3 setup.py install --user \
- && export PYTHONPATH=$HOME/crazyflie-firmware/build:$PYTHONPATH
-
- ENV USERNAME=root
-
-# Add user and add it to sudo group
-RUN sudo usermod -a -G plugdev $USERNAME
-COPY to_copy/99-bitcraze.rules /etc/udev/rules.d/.
-
-RUN cd $HOME && git clone https://github.com/bitcraze/lps-tools.git \
-  && cd $HOME/lps-tools \ 
-  && pip3 install -e .
-
-COPY to_copy/99-lps.rules /etc/udev/rules.d/.
-RUN sudo adduser $USERNAME dialout
 
 # setup ros2 environment variables
-#RUN echo "export ROS_LOCALHOST_ONLY=1" >> $HOME/.bashrc
+RUN echo "export ROS_LOCALHOST_ONLY=1" >> $HOME/.bashrc
 RUN echo "export ROS_DOMAIN_ID=$(shuf -i 1-101 -n 1)" >> $HOME/.bashrc
 
 
@@ -231,7 +222,7 @@ WORKDIR $HOME/ros2_ws
 
 # Final build of ROS2 ws
 RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
-      bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces";\
+      bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces";\
     else \
       bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" ;\
       echo "ros2_ws" >> $HOME/.bashrc && \
@@ -240,6 +231,10 @@ RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
 
 WORKDIR $HOME
 RUN mkdir $HOME/startup
+COPY to_copy/session.yml $HOME/startup
+COPY to_copy/session_bridge.yml $HOME/startup
+COPY to_copy/start.sh $HOME/startup
+COPY to_copy/_setup.sh $HOME/startup
 COPY to_copy/aliases $HOME/.bash_aliases
 COPY to_copy/nanorc $HOME/.nanorc
 COPY to_copy/tmux $HOME/.tmux.conf
