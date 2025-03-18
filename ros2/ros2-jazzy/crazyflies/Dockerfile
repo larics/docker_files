@@ -8,7 +8,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
 ENV TZ=Europe/Zagreb
-ARG INSTALL_BRIDGE=false
 ARG HOME=/root
 
 # Tools useful during development
@@ -107,23 +106,6 @@ RUN --mount=type=ssh id=default \
     mkdir -p ~/.ssh/ && \
     ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
-COPY to_copy /tmp/to_copy
-COPY install_ros.sh /tmp/to_copy
-
-#install ROS Noetic
-RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
-      echo "Installing ROS Noetic";\
-      mkdir $HOME/.ros_setup && \
-      cp /tmp/to_copy/ros_comm.patch $HOME/.ros_setup && \
-      cp /tmp/to_copy/rosconsole.patch $HOME/.ros_setup && \
-      cp /tmp/to_copy/CMakeLists.txt $HOME/.ros_setup && \
-      cp /tmp/to_copy/install_ros.sh $HOME/.ros_setup && \
-      rm -r /tmp/to_copy/ && \
-      cd $HOME/.ros_setup && sudo ./install_ros.sh; \
-    else \
-      echo "Skipping the installation of ROS Noetic"; \
-    fi
-
 # install ROS2 Jazzy
 RUN apt update &&  apt install locales \
   && locale-gen en_US en_US.UTF-8 \
@@ -189,22 +171,7 @@ RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations \
 RUN mkdir -p $HOME/ros2_ws/src && cd $HOME/ros2_ws/src \
   && git clone https://github.com/IMRCLab/crazyswarm2 --recursive 
 
-#ros1 bridge setup
-RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
-    cd $HOME/ros2_ws/src \
-    git clone https://github.com/ros2/ros1_bridge \
-    cd $HOME/ros2_ws \
-    echo "SOURCING ROS" \
-    bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select crazyflie_interfaces motion_capture_tracking_interfaces" \
-    bash -c "source $HOME/ros_noetic/catkin_ws/devel/setup.bash;source $HOME/ros2_ws/install/setup.bash;source /opt/ros/${ROS2_DISTRO}/setup.bash; colcon build --merge-install --packages-select ros1_bridge --cmake-force-configure" \
-    echo "alias source_ros='source $HOME/ros_noetic/catkin_ws/devel/setup.bash'" >> $HOME/.bashrc; \
-  else \
-    echo "Skipping installation of ros1_bridge";\
-  fi
-
 RUN echo "export PATH='$HOME/.local/bin:$PATH'" >> $HOME/.bashrcrc
-
-
 
 # setup ros2 environment variables
 #RUN echo "export ROS_LOCALHOST_ONLY=1" >> $HOME/.bashrc
@@ -214,13 +181,9 @@ RUN echo "export ROS_DOMAIN_ID=$(shuf -i 1-101 -n 1)" >> $HOME/.bashrc
 WORKDIR $HOME/ros2_ws
 
 # Final build of ROS2 ws
-RUN if [ "$INSTALL_BRIDGE" = "true" ]; then \
-      bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON --packages-skip ros1_bridge crazyflie_interfaces motion_capture_tracking_interfaces";\
-    else \
-      bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" ;\
-      echo "ros2_ws" >> $HOME/.bashrc && \
-      echo "source_ros2" >> $HOME/.bashrc;\
-    fi
+
+RUN bash -c "source /opt/ros/${ROS2_DISTRO}/setup.bash;source $HOME/ros2_ws/install/setup.bash;colcon build --symlink-install --merge-install --cmake-args=-DCMAKE_EXPORT_COMPILE_COMMANDS=ON" && \
+    echo "ros2_ws" >> $HOME/.bashrc && echo "source_ros2" >> $HOME/.bashrc
 
 RUN  apt install -y\
     libfontconfig1-dev \
@@ -277,16 +240,12 @@ ENV USERNAME=root
 RUN sudo usermod -a -G plugdev $USERNAME
 COPY to_copy/99-bitcraze.rules /etc/udev/rules.d/.
 
-
-
 COPY to_copy/99-lps.rules /etc/udev/rules.d/.
 RUN sudo adduser $USERNAME dialout
-  
 
 WORKDIR $HOME
 RUN mkdir $HOME/startup
 COPY to_copy/session.yml $HOME/startup/
-COPY to_copy/session_bridge.yml $HOME/startup/
 COPY to_copy/start.sh $HOME/startup/
 COPY to_copy/aliases $HOME/.bash_aliases
 COPY to_copy/nanorc $HOME/.nanorc

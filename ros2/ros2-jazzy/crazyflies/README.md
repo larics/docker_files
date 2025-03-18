@@ -39,9 +39,7 @@ export DOCKER_BUILDKIT=1
 Run Dockerfile from the project root directory using the following commands:
 ```bash
 # Build a Dockerfile
-# To install ros1_bridge and ROS Noetic set the argument ~INSTALL_BRIDGE to true (currently won't work).
-# Otherwise set it to false, and it will only install ROS2.
-docker build --build-arg INSTALL_BRIDGE=false -t crazyflies_img . 
+docker build -t crazyflies_img . 
 
 # Run the crazyswarm2_img container for the fist time
 ./first_run.sh
@@ -75,29 +73,6 @@ cfclient
 ```
 For connecting with ROS2 crazyswarm2 package follow [instructions] (https://imrclab.github.io/crazyswarm2/usage.html)
 
-## ROS1 info - currently won't work
-If you have chosen to build the docker including ros1_bridge, please mind the sourcing.
-
-This package is primarily supported in ROS2, and we strongly suggest using ROS2 for development. If you insist on using ROS1, here is an example on how to start rosbridge that will enable communication between ROS1 and ROS2.
-
-Note that ROS2 and ROS1 packages should always run in separate terminals to avoid mixing library paths.
-
-Before starting the bridge, start roscore either locally, or if starting it in container, open new terminal:
-
-```
-source_ros
-roscore
-```
-
-Command to start bridge in the new terminal (please mind the order of using aliases for sourcing):
-
-```
-source_ros
-ros2_ws
-source_ros2
-ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
-```
-Mentioned `source_ros`, `ros2_ws`, `source_ros2` are all aliases defined in the `.bashrc` inside the docker.
 
 ## INFO part
 If you are working in the group and you are all using the same network, please check [ROS_DOMAIN_ID](https://docs.ros.org/en/eloquent/Tutorials/Configuring-ROS2-Environment.html#the-ros-domain-id-variable) in .bashrc in container. Random number should be set during the build, however it is not impossible that some of you got the same number. If that is the situatation please change it, so that your simulations do  not crash.
@@ -109,8 +84,6 @@ Tutorials on Crazyflies are [here](https://www.bitcraze.io/documentation/start/)
 General information about Cfclient can be found [here](https://www.bitcraze.io/documentation/repository/crazyflie-clients-python/master/userguides/userguide_client/).
 
 More info about Crazyswarm2 is described in [here](https://imrclab.github.io/crazyswarm2/).
-
-General info on bridge can be found [here](https://github.com/ros2/ros1_bridge/blob/master/README.md) and [here](https://docs.ros.org/en/humble/How-To-Guides/Using-ros1_bridge-Jammy-upstream.html)
 
 ## Bonus section
 The provided Docker image comes with a few preinstalled tools and configs which may simplify your life.
@@ -135,4 +108,3 @@ Here are some links: [Tmuxinator](https://github.com/tmuxinator/tmuxinator), [Ge
 
 - [ ] Add GPU argemnt to first_run
 - [ ] Add starting package
-- [ ] Add bridge 
