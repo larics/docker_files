@@ -1,0 +1,14 @@
+name: example_session
+root: ./
+startup_window: crazyflies_start
+pre_window: |
+  source <%= @settings["setup_name"] %>
+windows:
+  - crazyflies_start:
+      layout: tiled
+      panes:
+        - bash ~/CrazySim/crazyflie-firmware/tools/crazyflie-simulation/simulator_files/gazebo/launch/sitl_multiagent_square.sh -n 4 -m crazyflie
+        - waitForCfsGazebo;sleep 1;ros2 launch crazyflie launch.py backend:=cflib rviz:=True mocap:=False teleop:=False
+        - history -s "ros2 bag record -s mcap --all"
+        - history -s "ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args --remap cmd_vel:=/cf_1/cmd_vel"
+ 

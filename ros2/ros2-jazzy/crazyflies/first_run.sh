@@ -43,5 +43,5 @@ docker run -it \
     --net=host \
     --privileged \
     --gpus all \
-    --name crazysim_cont2 \
-    crazysim_img2
+    --name crazyflies_cont \
+    crazyflies_img
