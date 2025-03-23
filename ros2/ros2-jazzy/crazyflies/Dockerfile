@@ -164,12 +164,13 @@ RUN apt install -y ros-${ROS2_DISTRO}-tf-transformations \
                    ros-${ROS2_DISTRO}-nav2-map-server \
                    ros-${ROS2_DISTRO}-nav2-lifecycle-manager\
                    ros-${ROS2_DISTRO}-rosbridge-suite\
-                   ros-${ROS2_DISTRO}-rosbag2-storage-mcap\
-                   ros-${ROS2_DISTRO}-motion-capture-tracking
+                   ros-${ROS2_DISTRO}-rosbag2-storage-mcap
 
 
 RUN mkdir -p $HOME/ros2_ws/src && cd $HOME/ros2_ws/src \
-  && git clone https://github.com/IMRCLab/crazyswarm2 --recursive 
+  && git clone https://github.com/IMRCLab/crazyswarm2 --recursive \
+  && git clone --recurse-submodules https://github.com/IMRCLab/motion_capture_tracking \
+  && cd motion_capture_tracking && git checkout feature_jazzy
 
 RUN echo "export PATH='$HOME/.local/bin:$PATH'" >> $HOME/.bashrcrc
 
