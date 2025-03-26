@@ -16,6 +16,10 @@ if [ ! -f $XAUTH ]; then
     chmod a+r $XAUTH
 fi
 
+# Hook to the current SSH_AUTH_LOCK - since it changes
+# https://www.talkingquickly.co.uk/2021/01/tmux-ssh-agent-forwarding-vs-code/
+ln -sf $SSH_AUTH_SOCK ~/.ssh/ssh_auth_sock
+
 echo "Done."
 echo ""
 echo "Verifying file contents:"
@@ -30,10 +34,15 @@ echo "Running docker..."
 docker run -it \
     --env="DISPLAY=$DISPLAY" \
     --env="QT_X11_NO_MITSHM=1" \
-    --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+    --env SSH_AUTH_SOCK=/ssh-agent \
+    --env XAUTHORITY=${XAUTH} \
+    --env TERM=xterm-256color \
     --volume="/dev:/dev" \
+    --volume="/tmp/.X11-unix:/tmp/.X11-unix" \
+    --volume ~/.ssh/ssh_auth_sock:/ssh-agent \
     --net=host \
     --privileged \
     --gpus all \
-    --name uam_ros_cont \
-    uam_ros_img:latest
+    --name realsense_ros_cont \
+    realsense_img:noetic
+
