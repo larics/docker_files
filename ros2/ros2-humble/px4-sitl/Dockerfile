@@ -103,12 +103,13 @@ RUN apt install ros-dev-tools
 WORKDIR /root
 RUN mkdir -p uav_ws/src
 WORKDIR /root/uav_ws/src
-RUN git clone --single-branch --branch main https://github.com/PX4/px4_ros_com.git
+RUN git clone --single-branch --branch main https://github.com/larics/px4_ros_com.git
 RUN git clone --single-branch --branch release/1.15 https://github.com/PX4/px4_msgs.git
 WORKDIR /root/uav_ws
 RUN bash -c "source /opt/ros/humble/setup.bash; colcon build --symlink-install"
 RUN echo "source /opt/ros/humble >> ~/.bashrc" 
-RUN echo "source /root/uav_ws/install/local_setup.bash" >> ~/.bahsrc 
+RUN echo "source /root/uav_ws/install/local_setup.bash" >> ~/.bashrc
+RUN echo "ROS_DOMAIN_ID=20" >> ~/.bashrc 
 
 CMD ["bash"]
 
