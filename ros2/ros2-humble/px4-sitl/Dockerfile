@@ -98,6 +98,8 @@ RUN ldconfig /usr/local/lib
 
 RUN pip install --user -U setuptools==68.1.0
 
+RUN apt-get install tmuxinator
+
 # UAV_WS
 RUN apt install ros-dev-tools
 WORKDIR /root
