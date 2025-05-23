@@ -69,6 +69,13 @@ RUN apt install -y \
 RUN colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
 RUN colcon mixin update default
 
+# Moveit2! binary installation 
+RUN apt-get install -y \
+    ros-${ROS2_DISTRO}-moveit \
+    ros-${ROS2_DISTRO}-controller-manager \
+    ros-${ROS2_DISTRO}-joint-trajectory-controller \
+    ros-${ROS2_DISTRO}-joint-state-broadcaster
+
 # Copy configuration files
 COPY ./to_copy/aliases /root/.bash_aliases
 COPY ./to_copy/nanorc /root/.nanorc
@@ -85,6 +92,5 @@ RUN pip3 install piper_sdk
 WORKDIR /root/piper_ws
 RUN bash -c "source /opt/ros/humble/setup.bash; colcon build" 
 RUN echo "source /piper_ws/install/setup.bash" >> ~/.bashrc
-
 
 CMD ["bash"] 
