@@ -53,7 +53,8 @@ RUN apt-get update && \
     apt install -y \
     ros-${ROS2_DISTRO}-desktop-full \
     ros-${ROS2_DISTRO}-test-msgs \
-    ros-${ROS2_DISTRO}-generate-parameter-library 
+    ros-${ROS2_DISTRO}-generate-parameter-library \
+    ros-${ROS2_DISTRO}-ros-gzharmonic
 
 # Install ROS2 tools
 RUN apt install -y \

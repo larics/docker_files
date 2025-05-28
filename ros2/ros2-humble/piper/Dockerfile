@@ -62,6 +62,53 @@ RUN apt install -y \
     ros-dev-tools \
     python3-colcon-common-extensions \
     python3-colcon-mixin \
+    python3-vcstool 
+
+# MoveIt 2 ws
+WORKDIR /root
+ENV COLCON_WS /root/ws_moveit2
+RUN mkdir -p ${COLCON_WS}/src
+WORKDIR ${COLCON_WS}/src
+
+# Download moveit2 source code
+RUN git clone https://github.com/ros-planning/moveit2.git -b ${ROS2_DISTRO}
+RUN git clone https://github.com/moveit/py_binding_tools.git -b ros2
+RUN for repo in moveit2/moveit2.repos $(f="moveit2/moveit2_${ROS2_DISTRO}.repos"; test -r $f && echo $f); do vcs import < "$repo"; done
+RUN sudo rosdep init 
+RUN rosdep update
+RUN rosdep install -r --from-paths . --ignore-src --rosdistro ${ROS2_DISTRO} -y
+#RUN git clone https://github.com/moveit/moveit_task_constructor.git -b ${ROS2_DISTRO}
+
+# Install middleware 
+RUN sudo apt-get update
+RUN sudo apt install ros-${ROS2_DISTRO}-rmw-cyclonedds-cpp -y
+RUN export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> ~/.bashrc
+
+
+# Build MoveIt!
+WORKDIR ${COLCON_WS}
+RUN sudo apt install -y \
+    ros-${ROS2_DISTRO}-ament-cmake-python \
+    ros-${ROS2_DISTRO}-rviz-visual-tools \
+    ros-${ROS2_DISTRO}-vision-msgs 
+RUN bash -c "source /opt/ros/humble/setup.sh; source ~/.bashrc; MAKEFLAGS="-j${nproc-1}" colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release"
+WORKDIR ${COLCON_WS}/src
+RUN git clone https://github.com/moveit/moveit2_tutorials.git -b ${ROS2_DISTRO}
+RUN git clone https://github.com/moveit/moveit_visual_tools.git -b ros2
+RUN git clone https://github.com/PickNikRobotics/graph_msgs.git -b ros2
+RUN git clone https://github.com/moveit/moveit_task_constructor.git -b ${ROS2_DISTRO}
+#RUN git clone https://github.com/moveit/moveit_resources.git -b ros2
+WORKDIR ${COLCON_WS}
+RUN bash -c "source /opt/ros/humble/setup.sh; source ~/.bashrc; MAKEFLAGS="-j${nproc-1}" colcon build --event-handlers desktop_notification- status- --cmake-args -DCMAKE_BUILD_TYPE=Release"
+RUN echo "source ${COLCON_WS}/install/setup.bash" >> ~/.bashrc
+
+# Install ROS2 tools
+RUN apt install -y \
+    python3-argcomplete \
+    ros-dev-tools \
+    python3-colcon-common-extensions \
+    python3-colcon-mixin \
     python3-vcstool \
     python3-pip 
 
@@ -71,7 +118,7 @@ RUN colcon mixin update default
 
 # Moveit2! binary installation 
 RUN apt-get install -y \
-    ros-${ROS2_DISTRO}-moveit \
+#    ros-${ROS2_DISTRO}-moveit \
     ros-${ROS2_DISTRO}-controller-manager \
     ros-${ROS2_DISTRO}-joint-trajectory-controller \
     ros-${ROS2_DISTRO}-joint-state-broadcaster

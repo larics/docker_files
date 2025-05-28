@@ -1,0 +1,41 @@
+# /home/zozan/.config/tmuxinator/px4_ros_start.yml
+
+name: px4_ros_start
+root: ~/
+
+# Start local network between two PCs and enable multimaster for exchange of the body pose information 
+# as fast as possible 
+on_project_start:
+  - docker start uav_px4_cont
+on_project_exit:
+  - docker stop uav_px4_cont
+windows:
+  - openpose:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - microagent:
+          - waitForDockerContainer uav_px4_cont
+          - docker exec -it uav_px4_cont bash
+          - cd /root/sitl/PX4-Autopilot; MicroXRCEAgent udp4 -p 8888
+        - px4_sitl:
+          - waitForDockerContainer uav_px4_cont
+          - docker exec -it uav_px4_cont bash
+          - cd /root/sitl/PX4-Autopilot
+          - sleep 3
+          - PX4_GZ_WORLD=walls make px4_sitl gz_x500_depth
+        - offboard_ctl:
+          - waitForDockerContainer uav_px4_cont
+          - docker exec -it uav_px4_cont bash
+          - sleep 10
+          - ros2 launch px4_ros_com offboard_control.launch.py
+        - ros_img_bridge:
+          - waitForDockerContainer uav_px4_cont
+          - docker exec -it uav_px4_cont bash
+          - sleep 12
+          - ros2 run ros_gz_image image_bridge /world/walls/model/x500_depth_0/link/camera_link/sensor/IMX214/image
+
+
+
