@@ -25,9 +25,24 @@ windows:
           - docker exec -it uav_px4_cont bash
           - cd /root/sitl/PX4-Autopilot
           - sleep 3
-          - make px4_sitl gz_x500
+          - PX4_GZ_WORLD=walls make px4_sitl gz_x500_depth
         - offboard_ctl:
           - waitForDockerContainer uav_px4_cont
           - docker exec -it uav_px4_cont bash
           - sleep 10
           - ros2 launch px4_ros_com offboard_control.launch.py
+        - parameter_bridge:
+          - waitForDockerContaienr uav_px4_cont
+          - docker exec -it uav_px4_cont bash
+          - sleep 10
+          - ros2 run ros_gz_image image_bridge /world/walls/model/x500_depth_0/link/camera_link/sensor/IMX214/image /rgb_cam/image
+        - devel_cmd:
+          - waitForDockerContainer uav_px4_cont
+          - docker exec -it uav_px4_cont bash
+          - sleep 15
+          - echo "Command UAV"
+        - check_cam:
+          - waitForDockerContainer uav_px4_cont
+          - docker exec -it uav_px4_cont bash
+          - sleep 15
+          - echo "Check RVIZ2"

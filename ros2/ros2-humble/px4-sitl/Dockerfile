@@ -53,8 +53,7 @@ RUN apt-get update && \
     apt install -y \
     ros-${ROS2_DISTRO}-desktop-full \
     ros-${ROS2_DISTRO}-test-msgs \
-    ros-${ROS2_DISTRO}-generate-parameter-library \
-    ros-${ROS2_DISTRO}-ros-gzharmonic
+    ros-${ROS2_DISTRO}-generate-parameter-library
 
 # Install ROS2 tools
 RUN apt install -y \
@@ -86,6 +85,11 @@ RUN make px4_sitl
 # Install necessary packages
 RUN pip install --user -U empy==3.3.4 pyros-genmsg setuptools 
 
+# Install ros-gzharmonic bridge for ROS2 Image bridge
+RUN apt-get update && \
+    apt install -y \
+    ros-${ROS2_DISTRO}-ros-gzharmonic
+
 # XRCE-DDS agent
 WORKDIR /root/sitl 
 RUN git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git 
@@ -115,4 +119,3 @@ RUN echo "source /root/uav_ws/install/local_setup.bash" >> ~/.bashrc
 RUN echo "ROS_DOMAIN_ID=20" >> ~/.bashrc 
 
 CMD ["bash"]
-
