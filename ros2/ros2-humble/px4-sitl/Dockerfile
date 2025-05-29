@@ -118,4 +118,8 @@ RUN echo "source /opt/ros/humble >> ~/.bashrc"
 RUN echo "source /root/uav_ws/install/local_setup.bash" >> ~/.bashrc
 RUN echo "ROS_DOMAIN_ID=20" >> ~/.bashrc 
 
+# Set parameters to disable checks for the GCS: https://docs.px4.io/main/en/concept/system_startup.html
+RUN echo "param set NAV_RCL_ACT 0" >> /etc/config.txt
+RUN echo "param set NAV_DLL_ACT 0" >> /etc/config.txt
+
 CMD ["bash"]
