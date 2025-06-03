@@ -3,14 +3,14 @@ FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu22.04
 LABEL maintainer=filip.zoric@fer.hr
 
 # Environment setup
-ENV LANG C.UTF-8
-ENV LC_ALL C.UTF-8
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=graphics,utility,compute
-
-# Set timezone to avoid tzdata interactive prompt
 ENV TZ=Etc/UTC
+
+# Set timezone
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install dependencies
@@ -58,9 +58,10 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     software-properties-common \
     subversion \
-    liblzma-dev
+    liblzma-dev \
+    git-lfs
 
-# Install newer GCC (Blender 4.4 recommends GCC >= 9)
+# Install newer GCC
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
     apt-get update && \
     apt-get install -y gcc-12 g++-12 && \
@@ -69,24 +70,14 @@ RUN add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
 # Clone Blender source
 RUN mkdir /home/blender-git
 WORKDIR /home/blender-git
-RUN git clone https://projects.blender.org/blender/blender.git
+RUN git clone --branch v4.4.3 https://projects.blender.org/blender/blender.git
 WORKDIR /home/blender-git/blender
-RUN git checkout tags/v4.4.0
 
-# Get precompiled libraries
-WORKDIR /home/blender-git
-RUN mkdir lib && cd lib && \
-    wget https://builder.blender.org/download/daily/lib/linux_x86_64_glibc_228.zip && \
-    unzip linux_x86_64_glibc_228.zip && \
-    rm linux_x86_64_glibc_228.zip
+# Initialize Git LFS and update submodules
+RUN git lfs install --skip-repo && \
+    make update
 
-# Configure environment for Blender build
-ENV LIBDIR=/home/blender-git/lib/linux_x86_64_glibc_228
-ENV CMAKE_ARGS="-DCMAKE_BUILD_TYPE=Release -DWITH_CYCLES_DEVICE_CUDA=ON -DWITH_CYCLES_DEVICE_OPTIX=ON -DWITH_INSTALL_PORTABLE=ON"
-
-# Make and build Blender
-WORKDIR /home/blender-git/blender
-RUN make update
+# Build Blender
 RUN make -j$(nproc)
 
 CMD ["/bin/bash"]
