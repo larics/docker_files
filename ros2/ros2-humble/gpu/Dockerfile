@@ -62,7 +62,8 @@ RUN apt install -y \
     ros-dev-tools \
     python3-colcon-common-extensions \
     python3-colcon-mixin \
-    python3-vcstool 
+    python3-vcstool \
+    python3-pip
 
 # Colcon setup according to moveit tutorial 
 RUN colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
@@ -96,6 +97,13 @@ RUN bash -c "source /opt/ros/humble/setup.bash; colcon build --symlink-install"
 COPY ./to_copy/ros2_aliases /tmp/
 RUN cat /tmp/ros2_aliases >> ~/.bashrc 
 RUN echo "source /root/ros2_ws/install/setup.bash" >> ~/.bashrc
+
+# Add example for mediapipe
+# RUN pip3 install mediapipe
+# RUN python3 -m pip install 'tensorflow[and-cuda]'
+# RUN pip3 install tensorflow_hub
+
+# Optionally - add mp_ros_wrapper and hpe_ros_msgs
 
 CMD ["bash"]
 
