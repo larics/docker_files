@@ -1,0 +1,4 @@
+alias cbp="colcon build --symlink-install --packages-select" 
+alias panda_sim="ros2 launch panda gz.launch.py"
+alias kinova_sim="ros2 launch kortex_bringup kortex_sim_control.launch.py dof:=7 use_sim_time:=true launch_rviz:=false" 
+alias ur_sim="ros2 launch ur_simulation_gz ur_sim_control.launch.py ur_type:=\"ur10\""
