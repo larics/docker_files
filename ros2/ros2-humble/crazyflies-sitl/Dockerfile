@@ -193,6 +193,11 @@ RUN mkdir -p $HOME/ros2_ws/src \
 RUN rm $HOME/ros2_ws/src/crazyswarm2/crazyflie/config/crazyflies.yaml
 COPY to_copy/crazyflies.yaml $HOME/ros2_ws/src/crazyswarm2/crazyflie/config/
 
+#replace crazyflie_server.py adapted for sitl 
+RUN rm $HOME/ros2_ws/src/crazyswarm2/crazyflie/scripts/crazyflie_server.py
+COPY to_copy/crazyflie_server.py $HOME/ros2_ws/src/crazyswarm2/crazyflie/scripts/
+RUN chmod +x $HOME/ros2_ws/src/crazyswarm2/crazyflie/scripts/crazyflie_server.py
+
 # Add alias for sourcing for ros2 and ros2 workspace
 RUN echo "alias ros2_ws='source $HOME/ros2_ws/install/setup.bash'" >> $HOME/.bashrc
 RUN echo "alias source_ros2='source /opt/ros/${ROS2_DISTRO}/setup.bash'" >> $HOME/.bashrc
