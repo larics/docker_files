@@ -8,7 +8,7 @@ windows:
       layout: tiled
       panes:
         - ros2_ws;source_ros2;bash ~/CrazySim/crazyflie-firmware/tools/crazyflie-simulation/simulator_files/gazebo/launch/sitl_multiagent_square.sh -n 4 -m crazyflie
-        - ros2_ws;source_ros2;waitForCfsGazebo;sleep 1;ros2 launch crazyflie launch.py backend:=cflib rviz:=True mocap:=False teleop:=False
+        - ros2_ws;source_ros2;waitForCfsGazebo;sleep 1;ros2 launch crazyflie launch.py backend:=cflib rviz:=True mocap:=False teleop:=False gui:=False
         - ros2_ws;source_ros2;history -s "ros2 bag record -s mcap --all"
         - ros2_ws;source_ros2;history -s "ros2 topic list"
   - ros1_bridge:
